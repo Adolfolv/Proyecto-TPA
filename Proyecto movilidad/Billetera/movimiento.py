@@ -27,29 +27,19 @@ class MoverSaldo(AdicionMonto):
 
         if monto <= 0:
 
-            print("Monto invalido")
             return False
-
         if self.quitar_saldo(origen, monto):
 
             self.agregar_saldo(destino, monto)
-            print("Transferencia realizada")
             return True
-
-
-        print("Saldo insuficiente")
         return False
     
 class Pago(AdicionMonto):
     def pagar(self, billetera, monto):
 
         pago_realizado = self.quitar_saldo(billetera, monto)
-
         if pago_realizado:
-            print("Pago realizado")
             return True
-
-        print("Saldo insuficiente")
         return False
 
 
@@ -60,11 +50,7 @@ class Pago(AdicionMonto):
         )
 
         if pago_recibido:
-
-            print("Pago recibido")
             return True
-
-        print("Error al recibir pago")
         return False
 
 
