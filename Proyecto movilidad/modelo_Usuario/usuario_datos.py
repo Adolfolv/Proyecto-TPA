@@ -1,4 +1,5 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, field
+from Billetera.datos_billetera import Billetera
 
 @dataclass
 class Auto:
@@ -9,23 +10,28 @@ class Auto:
 
 @dataclass
 class Usuario:
-    id_usuario: int
+    id_usuario: str
     nombre: str
     correo: str
     edad: int
     telefono: str
     contraseña: str
+    billetera: Billetera = field(default=None, init=False)
+
+    def __post_init__(self):
+        if self.billetera is None:
+            self.billetera = Billetera()
 
 @dataclass
 class Pasajero(Usuario):
     direccion: str
-    tipo_usuario: str="pasajero"
+    tipo_usuario: str = field(default="pasajero", init=False)
 
 @dataclass
 class Conductor(Usuario):
     licencia_conducir: str
     auto: Auto
-    tipo_usuario: str="conductor"
+    tipo_usuario: str = field(default="conductor", init=False)
 
 """""""""""
 usuario1 = Pasajero(

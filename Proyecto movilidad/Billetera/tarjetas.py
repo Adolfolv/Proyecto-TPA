@@ -1,6 +1,6 @@
 import abstracciones
-
 TarjetaBase = abstracciones.TarjetaBase
+import random
 
 class TarjetaVisa(TarjetaBase):
 
@@ -26,36 +26,26 @@ class TarjetaAmericanExpress(TarjetaBase):
         return (len(numero) == 15 and numero.startswith(("34", "37")))
     
 
-agregar_algo = abstracciones.agregar_algo
-
-class ServicioTarjeta(agregar_algo):
+class ServicioTarjeta:
 
     def agregar_tarjeta(self, usuario, tarjeta):
 
-        for tarjeta_existente in usuario.billetera.tarjetas:
+        for t in usuario.billetera.tarjetas:
 
-            if (
-                tarjeta_existente.numero_tarjeta
-                == tarjeta.numero_tarjeta
-            ):
-
-                print("La tarjeta ya existe")
+            if t.numero_tarjeta == tarjeta.numero_tarjeta:
                 return False
+        if not hasattr(tarjeta, "saldo") or tarjeta.saldo is None:
+            tarjeta.saldo = random.randint(10000, 500000)
 
         usuario.billetera.tarjetas.append(tarjeta)
-        print("Tarjeta agregada correctamente")
         return True
-    
+
     def eliminar_tarjeta(self, usuario, numero_tarjeta):
 
-        for tarjeta in usuario.billetera.tarjetas:
+        for t in usuario.billetera.tarjetas:
 
-            if tarjeta.numero_tarjeta == numero_tarjeta:
-                usuario.billetera.tarjetas.remove(tarjeta)
-                print("Tarjeta eliminada correctamente")
+            if t.numero_tarjeta == numero_tarjeta:
+                usuario.billetera.tarjetas.remove(t)
                 return True
 
-        print("Tarjeta no encontrada")
         return False
-    
-    

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 @dataclass
-class tarjetas:
+class Tarjetas:
     numero_tarjeta: str
     vencimiento: str
     cvv: str
@@ -15,8 +15,8 @@ class Transaccion:
     fecha: str
 
 @dataclass
-class billetera:
-    saldo: float
-    tarjetas: list = field(default_factory=list)
-    transacciones: list = field(default_factory=list)
+class Billetera:
+    saldo: float = 0.0
+    tarjetas: list[Tarjetas] = field(default_factory=list)
+    transacciones: list[Transaccion] = field(default_factory=list)
 
