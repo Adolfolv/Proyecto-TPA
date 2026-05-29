@@ -8,9 +8,6 @@ class RepositorioJSONGenerico:
         self.archivo = archivo
         self.clase = clase
 
-    # -------------------------
-    # CARGAR (devuelve dicts)
-    # -------------------------
     def cargar_json(self):
         try:
             with open(self.archivo, "r", encoding="utf-8") as f:
@@ -18,9 +15,6 @@ class RepositorioJSONGenerico:
         except FileNotFoundError:
             return []
 
-    # -------------------------
-    # GUARDAR (recibe objetos)
-    # -------------------------
     def guardar_json(self, lista_objetos):
         datos = [asdict(obj) for obj in lista_objetos]
 
