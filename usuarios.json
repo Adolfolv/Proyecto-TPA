@@ -1,0 +1,12 @@
+[
+    {
+        "id_usuario": 1,
+        "nombre": "Adolfo Modificado",
+        "correo": "juan@mail.com",
+        "edad": 25,
+        "telefono": "999999999",
+        "contraseña": "1234",
+        "direccion": "Los Lagos",
+        "tipo_usuario": "pasajero"
+    }
+]

@@ -13,7 +13,7 @@ class Transaccion:
     tipo: str
     monto: float
     fecha: str
-   
+
 @dataclass
 class billetera:
     saldo: float

@@ -19,11 +19,13 @@ class Usuario:
 @dataclass
 class Pasajero(Usuario):
     direccion: str
+    tipo_usuario: str="pasajero"
 
 @dataclass
 class Conductor(Usuario):
     licencia_conducir: str
     auto: Auto
+    tipo_usuario: str="conductor"
 
 """""""""""
 usuario1 = Pasajero(

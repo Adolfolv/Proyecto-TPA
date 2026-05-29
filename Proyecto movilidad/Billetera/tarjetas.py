@@ -45,13 +45,17 @@ class ServicioTarjeta(agregar_algo):
         usuario.billetera.tarjetas.append(tarjeta)
         print("Tarjeta agregada correctamente")
         return True
-
-
-
-
-
-
-
-
     
-#
+    def eliminar_tarjeta(self, usuario, numero_tarjeta):
+
+        for tarjeta in usuario.billetera.tarjetas:
+
+            if tarjeta.numero_tarjeta == numero_tarjeta:
+                usuario.billetera.tarjetas.remove(tarjeta)
+                print("Tarjeta eliminada correctamente")
+                return True
+
+        print("Tarjeta no encontrada")
+        return False
+    
+    
