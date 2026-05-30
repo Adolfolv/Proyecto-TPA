@@ -1,6 +1,6 @@
 
 from modelo_Usuario.usuario_datos import Usuario
-
+# Clase para generar IDs únicos para los usuarios, con un formato específico.
 class GeneradorID:
 
     contador = 0

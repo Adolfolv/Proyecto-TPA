@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+#archivo para almacenar clases abstractas
 class TarjetaBase(ABC):
     
     @abstractmethod

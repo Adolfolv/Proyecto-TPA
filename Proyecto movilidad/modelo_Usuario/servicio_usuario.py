@@ -3,7 +3,9 @@ from modelo_Usuario.usuario_datos import Usuario, Pasajero, Conductor, Auto
 from generador_de_usuario import GeneradorID  
 from Billetera.datos_billetera import Billetera, Tarjetas, Transaccion
 
-#Esta es la unica responsable de manejar los datos de los usuarios, cargar, guardar, buscar, etc. Solo esta interactua con el repositorio JSON, el resto de la app interactua con esta clase para obtener o modificar datos de los usuarios. Es la unica que conoce la estructura del JSON y como convertirlo a objetos Usuario, Pasajero o Conductor.
+#Esta es la unica responsable de manejar los datos de los usuarios, cargar, guardar, buscar, etc. Solo esta interactua con el repositorio JSON, 
+# el resto de la app interactua con esta clase para obtener o modificar datos de los usuarios. 
+# Es la unica que conoce la estructura del JSON y como convertirlo a objetos Usuario, Pasajero o Conductor.
 #Si necesitas guardar algo llama la funcion desde aqui
 class ServicioUsuario:
 

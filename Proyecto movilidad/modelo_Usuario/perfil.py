@@ -1,3 +1,5 @@
+
+# Archivo para manejar el perfil del usuario, incluyendo la visualización y actualización de la información personal.
 class Perfil:
 
     def __init__(self, servicio_usuario):

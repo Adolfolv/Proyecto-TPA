@@ -1,3 +1,8 @@
+
+# Archivo para manejar las operaciones relacionadas con 
+# el movimiento de saldo entre la billetera y las tarjetas, 
+# así como los pagos y recepciones de dinero. Este módulo incluye clases para agregar o quitar saldo, 
+# mover saldo entre diferentes objetos (como tarjetas y billeteras), y realizar pagos o recibir pagos utilizando la billetera del usuario.
 class AdicionMonto:
 
     def agregar_saldo(self, objeto, monto):

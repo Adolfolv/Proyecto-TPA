@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from Billetera.datos_billetera import Billetera
 
+#clases para representar a los usuarios, tanto pasajeros como conductores, con sus respectivos atributos y métodos.
 @dataclass
 class Auto:
     marca: str

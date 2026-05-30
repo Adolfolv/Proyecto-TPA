@@ -1,3 +1,7 @@
+
+# archivo de controlador para manejar las operaciones relacionadas con la billetera del usuario,
+#  como agregar o eliminar tarjetas, realizar pagos, recibir pagos, cargar o retirar fondos, y consultar el saldo y las tarjetas asociadas a la billetera.
+#  Este controlador interactúa con los servicios de billetera y usuario para realizar las operaciones necesarias y guardar los cambios en el perfil del usuario.
 class ControladorBilletera:
 
     def __init__(self, servicio_billetera, servicio_usuario):
