@@ -2,6 +2,10 @@ from dataclasses import dataclass, field
 from Billetera.datos_billetera import Billetera
 
 #clases para representar a los usuarios, tanto pasajeros como conductores, con sus respectivos atributos y métodos.
+#LA IDEA DE USAR DATACLASSES ES PARA SIMPLIFICAR LA CREACION DE OBJETOS Y SU CONVERSION A JSON, 
+# PERO HAY QUE TENER CUIDADO CON LOS ATRIBUTOS QUE SON OBJETOS ANIDADOS, COMO LA BILLETERA, TARJETAS Y TRANSACCIONES, 
+# YA QUE HAY QUE MANEJAR SU CONVERSION A JSON DE MANERA ESPECIAL EN EL SERVICIOUSUARIO. 
+#MAS QUE NADA ERA PARA USAR ASDICT DE DATACLASSES PARA CONVERTIR LOS OBJETOS A DICCIONARIOS MUCHO MAS FACIL
 @dataclass
 class Auto:
     marca: str

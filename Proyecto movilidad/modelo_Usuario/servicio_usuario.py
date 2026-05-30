@@ -7,6 +7,10 @@ from Billetera.datos_billetera import Billetera, Tarjetas, Transaccion
 # el resto de la app interactua con esta clase para obtener o modificar datos de los usuarios. 
 # Es la unica que conoce la estructura del JSON y como convertirlo a objetos Usuario, Pasajero o Conductor.
 #Si necesitas guardar algo llama la funcion desde aqui
+
+#IMPORTANTE: ESTAS CLASE SE BASO EN LA IMPLEMENTACION DE DATACLASSES, SI SE HACE ALGUNA MODIFICACION EN LAS CLASES DE USUARIOS, BILLETERA, TARJETAS O TRANSACCIONES, 
+# HAY QUE MODIFICAR ESTA CLASE PARA QUE PUEDA CARGAR Y GUARDAR LOS DATOS CORRECTAMENTE.
+
 class ServicioUsuario:
 
     def __init__(self, archivo="usuarios.json"):

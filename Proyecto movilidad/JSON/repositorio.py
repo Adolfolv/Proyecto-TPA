@@ -2,6 +2,7 @@ import json
 from dataclasses import asdict
 #archivo para manejar la lectura y escritura de datos en formato JSON, con métodos genéricos para cargar y guardar listas de objetos de cualquier clase.
 
+
 class RepositorioJSONGenerico:
 
     def __init__(self, archivo, clase):
