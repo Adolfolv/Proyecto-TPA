@@ -1,3 +1,4 @@
+from Modelos.Billetera.datos_billetera import Tarjetas
 
 # archivo de controlador para manejar las operaciones relacionadas con la billetera del usuario,
 #  como agregar o eliminar tarjetas, realizar pagos, recibir pagos, cargar o retirar fondos, y consultar el saldo y las tarjetas asociadas a la billetera.
@@ -10,42 +11,31 @@ class ControladorBilletera:
 
     def agregar_tarjeta(self, usuario, numero, cvv, vencimiento):
 
-        tarjeta = type("Tarjeta", (), {})()
-        tarjeta.numero_tarjeta = numero
-        tarjeta.cvv = cvv
-        tarjeta.vencimiento = vencimiento
-        tarjeta.saldo = None  
+        tarjeta = Tarjetas(
+            numero_tarjeta=numero,
+            vencimiento=vencimiento,
+            cvv=cvv,
+            saldo=None
+        )
 
         resultado = self.servicio.agregar_tarjeta(usuario, tarjeta)
-
-        if resultado:
-            self.servicio_usuario.guardar() 
         return resultado
 
     def eliminar_tarjeta(self, usuario, numero):
 
         resultado = self.servicio.eliminar_tarjeta(usuario, numero)
-
-        if resultado:
-            self.servicio_usuario.guardar()  
-
         return resultado
 
     def pagar(self, usuario, monto):
 
         resultado = self.servicio.pagar(usuario, float(monto))
 
-        if resultado:
-            self.servicio_usuario.guardar()
 
         return resultado
 
     def recibir(self, usuario, monto):
 
         resultado = self.servicio.recibir_pago(usuario, float(monto))
-
-        if resultado:
-            self.servicio_usuario.guardar()
 
         return resultado
 
@@ -56,10 +46,6 @@ class ControladorBilletera:
             numero_tarjeta,
             float(monto)
         )
-
-        if resultado:
-            self.servicio_usuario.guardar()
-
         return resultado
 
     def retirar_a_tarjeta(self, usuario, numero_tarjeta, monto):
@@ -69,10 +55,6 @@ class ControladorBilletera:
             numero_tarjeta,
             float(monto)
         )
-
-        if resultado:
-            self.servicio_usuario.guardar()
-
         return resultado
 
     def listar_tarjetas(self, usuario):
