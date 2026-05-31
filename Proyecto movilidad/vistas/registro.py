@@ -26,6 +26,7 @@ class VistaRegistro(tk.Frame):
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 
+    #activa mostrar pasajero
     def crear_widgets(self):
         contenedor = self.moldes.crear_frame(self, tema.PANEL, tema.BORDE, 1, 18, 18, llenar="both", expandir=True, margen_x=24, margen_y=24)
         cabecera = self.moldes.crear_frame(contenedor, tema.PANEL, llenar="x")
@@ -46,6 +47,7 @@ class VistaRegistro(tk.Frame):
         for widget in self.area_formulario.winfo_children():
             widget.destroy()
 
+    #activa crear formulario pasajero y cambia el color
     def mostrar_pasajero(self):
         self.boton_pasajero.configure(bg=tema.PRIMARIO, fg=tema.PRIMARIO_TEXTO)
         self.boton_conductor.configure(bg=tema.SECUNDARIO, fg=tema.TEXTO)
