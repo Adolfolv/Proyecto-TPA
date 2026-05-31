@@ -1,4 +1,16 @@
-from Modelos.modelo_Usuario.usuario_datos import Pasajero, Conductor, Auto
+from dataclasses import dataclass
+
+from Modelos.Usuario.usuario_datos import Pasajero, Conductor, Auto
+
+
+@dataclass
+class ResultadoRegistro:
+    usuario: object = None
+    error: str = ""
+
+    @property
+    def exitoso(self):
+        return self.error == ""
 
 
 class ControladorRegistro:
@@ -29,10 +41,7 @@ class ControladorRegistro:
             direccion=direccion,
         )
 
-        return self.servicio_registro.registrar_usuario(
-            usuario,
-            confirmar_contrasena
-        )
+        return self._registrar(usuario, confirmar_contrasena)
 
     def registrar_conductor(
         self,
@@ -74,7 +83,14 @@ class ControladorRegistro:
             auto=auto,
         )
 
-        return self.servicio_registro.registrar_usuario(
-            usuario,
-            confirmar_contrasena,
-        )
+        return self._registrar(usuario, confirmar_contrasena)
+
+    def _registrar(self, usuario, confirmar_contrasena):
+        try:
+            usuario_registrado = self.servicio_registro.registrar_usuario(
+                usuario,
+                confirmar_contrasena,
+            )
+            return ResultadoRegistro(usuario=usuario_registrado)
+        except ValueError as error:
+            return ResultadoRegistro(error=str(error))

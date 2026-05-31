@@ -1,4 +1,4 @@
-from Validaciones.validaciones import ValidadorMontoPositivo, ValidadorSaldoSuficiente
+from Validaciones.billetera import ValidadorMontoPositivo, ValidadorSaldoSuficiente
 
 # Archivo para manejar las operaciones relacionadas con 
 # el movimiento de saldo entre la billetera y las tarjetas, 

@@ -1,7 +1,7 @@
 import abstracciones
 TarjetaBase = abstracciones.TarjetaBase
 import random
-from Validaciones.validaciones import (
+from Validaciones.billetera import (
     ValidadorNumeroTarjetaAmericanExpress,
     ValidadorNumeroTarjetaMastercard,
     ValidadorNumeroTarjetaVisa,

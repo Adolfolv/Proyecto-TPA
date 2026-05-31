@@ -10,6 +10,10 @@ PRIMARIO = "#3b82f6"
 PRIMARIO_TEXTO = "#ffffff"
 SECUNDARIO = "#374151"
 BORDE = "#4b5563"
+ERROR = "#ef4444"
+ERROR_FONDO = "#3b1f2a"
+EXITO = "#22c55e"
+EXITO_FONDO = "#1d3a2a"
 
 #pa registro
 FUENTE_TITULO = ("Arial", 22, "bold")

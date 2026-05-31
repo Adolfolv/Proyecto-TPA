@@ -1,12 +1,8 @@
-from Validaciones.validaciones import (
-    ValidadorCorreo,
-    ValidadorEdad,
-    ValidadorPerfilCargado,
-    ValidadorTelefono,
-)
+from Validaciones.perfil import ValidadorPerfilCargado
+from Validaciones.registro import ValidadorCorreo, ValidadorEdad, ValidadorTelefono
 
-# Archivo para manejar el perfil del usuario, incluyendo la visualización y actualización de la información personal.
-class Perfil:
+
+class ServicioPerfil:
 
     def __init__(self, servicio_usuario):
         self.servicio_usuario = servicio_usuario
@@ -48,9 +44,6 @@ class Perfil:
                 return False
 
             self.usuario_actual.telefono = datos["telefono"]
-
-        if "contraseña" in datos:
-            self.usuario_actual.contrasena = datos["contraseña"]
 
         if "contrasena" in datos:
             self.usuario_actual.contrasena = datos["contrasena"]

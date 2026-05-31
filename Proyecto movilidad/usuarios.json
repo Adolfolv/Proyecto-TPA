@@ -1,0 +1,43 @@
+[
+    {
+        "id_usuario": "USR0001",
+        "nombre": "hardy",
+        "apellido": "aguila",
+        "correo": "hardy@gmail.com",
+        "edad": "18",
+        "telefono": "+56 9 30356421",
+        "contrasena": "123456",
+        "billetera": {
+            "saldo": 0.0,
+            "tarjetas": [],
+            "transacciones": []
+        },
+        "direccion": "sdafsadf",
+        "tipo_usuario": "pasajero"
+    },
+    {
+        "id_usuario": "USR0002",
+        "nombre": "Hardy",
+        "apellido": "Aguila",
+        "correo": "hardyy@gmail.com",
+        "edad": "18",
+        "telefono": "+56 930364232",
+        "contrasena": "123456",
+        "billetera": {
+            "saldo": 0.0,
+            "tarjetas": [],
+            "transacciones": []
+        },
+        "tipo_licencia": "Categoria A2",
+        "licencia_conducir": "22224358-0",
+        "auto": {
+            "marca": "Toyota",
+            "modelo": "Yaris",
+            "año": "2006",
+            "patente": "LS2134",
+            "cantidad_asientos": "5",
+            "peso_equipaje": "200"
+        },
+        "tipo_usuario": "conductor"
+    }
+]

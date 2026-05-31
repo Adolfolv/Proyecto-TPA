@@ -1,6 +1,6 @@
-from Billetera.tarjetas import ServicioTarjeta
-from Billetera.movimiento import Pago, MoverSaldo
-from Validaciones.validaciones import ValidadorMontoPositivo, ValidadorTarjetaEncontrada
+from Modelos.Billetera.tarjetas import ServicioTarjeta
+from Modelos.Billetera.movimiento import Pago, MoverSaldo
+from Validaciones.billetera import ValidadorMontoPositivo, ValidadorTarjetaEncontrada
 
 #archivo para manejar la lógica de negocio relacionada con la billetera, 
 # incluyendo la gestión de tarjetas, movimientos de saldo, pagos y recepciones. 

@@ -1,7 +1,6 @@
 """Pantalla de registro."""
 
 import tkinter as tk
-from tkinter import messagebox
 
 from .estilizacion import tema
 from .estilizacion.constantes_vistas import CATEGORIAS_LICENCIA, MARCAS_MODELOS
@@ -21,6 +20,7 @@ class VistaRegistro(tk.Frame):
         self.boton_pasajero = None
         self.boton_conductor = None
         self.area_formulario = None
+        self.mensaje_registro = None
         self.tipo_registro = "pasajero"
 
         super().__init__(master, bg=tema.FONDO)
@@ -54,40 +54,67 @@ class VistaRegistro(tk.Frame):
     def limpiar_formulario(self):
         for widget in self.area_formulario.winfo_children():
             widget.destroy()
+        self.mensaje_registro = None
+
+    def crear_mensaje_registro(self, padre, compacto=False):
+        alto = 42 if compacto else 58
+        fuente = ("Arial", 9, "bold") if compacto else tema.FUENTE_BOTON
+        wrap = 430 if compacto else 720
+
+        contenedor = tk.Frame(
+            padre,
+            bg=tema.PANEL_SUAVE,
+            highlightbackground=tema.BORDE,
+            highlightthickness=1,
+            height=alto,
+        )
+        etiqueta = tk.Label(
+            contenedor,
+            text="",
+            font=fuente,
+            fg=tema.TEXTO,
+            bg=tema.PANEL_SUAVE,
+            wraplength=wrap,
+            justify="left",
+        )
+        etiqueta.pack(fill="both", expand=True, padx=12, pady=8)
+        return contenedor, etiqueta, compacto
+
+    def mostrar_mensaje_registro(self, texto, exito=False):
+        if self.mensaje_registro is None:
+            return
+
+        contenedor, etiqueta, compacto = self.mensaje_registro
+        fondo = tema.EXITO_FONDO if exito else tema.ERROR_FONDO
+        borde = tema.EXITO if exito else tema.ERROR
+        margen_y = (6, 0) if compacto else (10, 0)
+
+        contenedor.configure(bg=fondo, highlightbackground=borde)
+        etiqueta.configure(text=texto, bg=fondo, fg=tema.TEXTO)
+
+        if not contenedor.winfo_manager():
+            contenedor.pack(fill="x", padx=10, pady=margen_y)
 
     def configurar_entrada_telefono(self, entrada):
         entrada.insert(0, PREFIJO_TELEFONO)
 
-        def mantener_prefijo(evento=None):
-            texto = entrada.get()
-            if not texto.startswith(PREFIJO_TELEFONO):
-                if PREFIJO_TELEFONO.startswith(texto):
-                    texto = ""
-                else:
-                    for cantidad in range(len(PREFIJO_TELEFONO), 0, -1):
-                        if texto.startswith(PREFIJO_TELEFONO[:cantidad]):
-                            texto = texto[cantidad:]
-                            break
+        def proteger_prefijo(evento=None):
+            if not entrada.get().startswith(PREFIJO_TELEFONO):
                 entrada.delete(0, tk.END)
-                entrada.insert(0, PREFIJO_TELEFONO + texto)
+                entrada.insert(0, PREFIJO_TELEFONO)
 
             if entrada.index(tk.INSERT) < len(PREFIJO_TELEFONO):
                 entrada.icursor(len(PREFIJO_TELEFONO))
 
-        def bloquear_borrado_prefijo(evento):
+        def bloquear_prefijo(evento):
             posicion = entrada.index(tk.INSERT)
-            if evento.keysym == "BackSpace" and posicion <= len(PREFIJO_TELEFONO):
-                entrada.icursor(len(PREFIJO_TELEFONO))
-                return "break"
-            if evento.keysym == "Delete" and posicion < len(PREFIJO_TELEFONO):
-                entrada.icursor(len(PREFIJO_TELEFONO))
+            if evento.keysym in ("BackSpace", "Delete") and posicion <= len(PREFIJO_TELEFONO):
                 return "break"
             return None
 
-        entrada.bind("<KeyPress>", bloquear_borrado_prefijo)
-        entrada.bind("<KeyRelease>", mantener_prefijo)
-        entrada.bind("<ButtonRelease-1>", mantener_prefijo)
-        entrada.bind("<FocusIn>", mantener_prefijo)
+        entrada.bind("<KeyPress>", bloquear_prefijo)
+        entrada.bind("<KeyRelease>", proteger_prefijo)
+        entrada.bind("<FocusIn>", proteger_prefijo)
         return entrada
 
     #activa crear formulario pasajero y cambia el color
@@ -136,6 +163,7 @@ class VistaRegistro(tk.Frame):
         self.entrada_confirmar = self.moldes.crear_entrada(bloque, mostrar="*")
         self.entrada_confirmar.grid(row=10, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.moldes.crear_boton(bloque, "Mostrar contrasena", False, None, None).grid(row=11, column=0, sticky="w", padx=5, pady=(0, 4))
+        self.mensaje_registro = self.crear_mensaje_registro(contenido)
 
         # --- DECORACIONES PASAJERO ---
         #lucete jorge deidad
@@ -143,8 +171,9 @@ class VistaRegistro(tk.Frame):
     def crear_formulario_conductor(self):
         self.limpiar_formulario()
         contenido = self.moldes.crear_frame(self.area_formulario, tema.PANEL, llenar="both", expandir=True)
-        izquierda = self.moldes.crear_frame(contenido, tema.PANEL, llenar="both", expandir=True, lado="left", margen_x=(0, 6))
-        derecha = self.moldes.crear_frame(contenido, tema.PANEL, llenar="both", expandir=True, lado="left", margen_x=(6, 0))
+        formularios = self.moldes.crear_frame(contenido, tema.PANEL, llenar="both", expandir=True)
+        izquierda = self.moldes.crear_frame(formularios, tema.PANEL, llenar="both", expandir=True, lado="left", margen_x=(0, 6))
+        derecha = self.moldes.crear_frame(formularios, tema.PANEL, llenar="both", expandir=True, lado="left", margen_x=(6, 0))
 
         bloque_personal = self.moldes.crear_frame(izquierda, tema.PANEL_SUAVE, tema.BORDE, 1, 14, 14, llenar="both", expandir=True, margen_x=10, margen_y=8)
         bloque_personal.grid_columnconfigure(0, weight=1)
@@ -218,7 +247,11 @@ class VistaRegistro(tk.Frame):
         self.moldes.crear_label(bloque_derecho, "Vencimiento de licencia -> formato(DD-MM-YYYY)", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=12, column=1, sticky="w", padx=5, pady=(6, 0))
         self.moldes.crear_entrada(bloque_derecho).grid(row=13, column=0, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.moldes.crear_entrada(bloque_derecho).grid(row=13, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
+        self.mensaje_registro = self.crear_mensaje_registro(contenido, compacto=True)
 
+#si en el apartado superior se relleno el formulario de pasajero, al apretar 
+#el boton registrar se ejecuta el metodo registrar_pasajero, si se relleno 
+#el formulario de conductor se ejecuta el metodo registrar_conductor
     def registrar(self):
         if self.tipo_registro == "conductor":
             self.registrar_conductor()
@@ -226,8 +259,7 @@ class VistaRegistro(tk.Frame):
             self.registrar_pasajero()
 
     def registrar_pasajero(self):
-        try:
-            usuario = self.controlador.registrar_pasajero(
+        resultado = self.controlador.registrar_pasajero(
                 self.entrada_nombre.get(),
                 self.entrada_apellido.get(),
                 self.entrada_correo.get(),
@@ -237,17 +269,16 @@ class VistaRegistro(tk.Frame):
                 self.entrada_confirmar.get(),
                 self.entrada_direccion.get(),
             )
-        except ValueError as error:
-            messagebox.showerror("Registro", str(error))
+        if not resultado.exitoso:
+            self.mostrar_mensaje_registro(f"Revisa este dato: {resultado.error}")
             return
 
-        messagebox.showinfo("Registro", "Usuario registrado correctamente.")
+        self.mostrar_mensaje_registro("Usuario registrado correctamente.", True)
         if self.al_registrar is not None:
-            self.al_registrar(usuario)
+            self.after(700, lambda: self.al_registrar(resultado.usuario))
 
     def registrar_conductor(self):
-        try:
-            usuario = self.controlador.registrar_conductor(
+        resultado = self.controlador.registrar_conductor(
                 self.entrada_conductor_nombre.get(),
                 self.entrada_conductor_apellido.get(),
                 self.entrada_conductor_correo.get(),
@@ -264,10 +295,10 @@ class VistaRegistro(tk.Frame):
                 self.entrada_cantidad_asientos.get(),
                 self.entrada_peso_equipaje.get(),
             )
-        except ValueError as error:
-            messagebox.showerror("Registro", str(error))
+        if not resultado.exitoso:
+            self.mostrar_mensaje_registro(f"Revisa este dato: {resultado.error}")
             return
 
-        messagebox.showinfo("Registro", "Conductor registrado correctamente.")
+        self.mostrar_mensaje_registro("Conductor registrado correctamente.", True)
         if self.al_registrar is not None:
-            self.al_registrar(usuario)
+            self.after(700, lambda: self.al_registrar(resultado.usuario))

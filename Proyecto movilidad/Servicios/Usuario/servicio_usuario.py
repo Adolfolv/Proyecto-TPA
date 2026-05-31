@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from JSON.repositorio import RepositorioJSONGenerico
-from Modelos.modelo_Usuario.generador_de_usuario import GeneradorID
-from modelo_Usuario.usuario_datos import Usuario, Pasajero, Conductor, Auto
+from Repositorios.repositorio_json import RepositorioJSONGenerico
+from Servicios.Usuario.generador_id import GeneradorID
+from Modelos.Usuario.usuario_datos import Usuario, Pasajero, Conductor, Auto
 from Modelos.Billetera.datos_billetera import Billetera, Tarjetas, Transaccion
 
 #Esta es la unica responsable de manejar los datos de los usuarios, cargar, guardar, buscar, etc. Solo esta interactua con el repositorio JSON, 
