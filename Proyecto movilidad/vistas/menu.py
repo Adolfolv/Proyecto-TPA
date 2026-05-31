@@ -2,22 +2,17 @@
 
 import tkinter as tk
 
-from estilizacion import tema
-from estilizacion.decoraciones import crear_decoracion_menu_viaje
-from estilizacion.widgets import Moldes
+from .estilizacion import tema
+from .estilizacion.decoraciones import crear_decoracion_menu_viaje
+from .estilizacion.widgets import Moldes
 
 
 class VistaMenu(tk.Frame):
-    def __init__(self):
-        ventana = tk.Tk()
-        ventana.title("Menu principal")
-        ventana.geometry("1000x720")
-        ventana.minsize(860, 620)
-        ventana.attributes("-fullscreen", True)
-
+    def __init__(self, master, navegar):
+        self.navegar = navegar
         self.moldes = Moldes()
 
-        super().__init__(ventana, bg=tema.FONDO)
+        super().__init__(master, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 
@@ -29,7 +24,7 @@ class VistaMenu(tk.Frame):
         self.moldes.crear_boton(cabecera, "Perfil", False, None, None, metodo="grid", fila=0, columna=0, sticky="w")
         textos = self.moldes.crear_frame(cabecera, tema.PANEL, fila=0, columna=1, sticky="")
         self.moldes.crear_label(textos, "Menu principal", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL).pack()
-        self.moldes.crear_boton(cabecera, "Cerrar sesion", False, None, None, metodo="grid", fila=0, columna=2, sticky="e")
+        self.moldes.crear_boton(cabecera, "Cerrar sesion", False, None, lambda: self.navegar("pantalla_inicial"), metodo="grid", fila=0, columna=2, sticky="e")
 
         contenido = self.moldes.crear_frame(panel, tema.PANEL, fila=1, columna=0, columnas_peso=((0, 1), (1, 2), (2, 1)), filas_peso=((0, 1),))
         contenido.grid_columnconfigure(0, uniform="menu")
@@ -39,7 +34,7 @@ class VistaMenu(tk.Frame):
         izquierda = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=0, margen_x=(0, 16), columnas_peso=((0, 1),), filas_peso=((0, 1), (1, 1)))
 
         self.moldes.crear_tarjeta_acceso_menu(izquierda, "Servicios", "Gestiona solicitudes y opciones disponibles.", metodo="grid", fila=0, columna=0, sticky="nsew", margen_y=(0, 8))
-        self.moldes.crear_tarjeta_acceso_menu(izquierda, "Billetera", "Revisa saldo, pagos y movimientos recientes.", metodo="grid", fila=1, columna=0, sticky="nsew", margen_y=(8, 0))
+        self.moldes.crear_tarjeta_acceso_menu(izquierda, "Billetera", "Revisa saldo, pagos y movimientos recientes.", comando=lambda: self.navegar("billetera"), metodo="grid", fila=1, columna=0, sticky="nsew", margen_y=(8, 0))
 
         centro = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=1, columnas_peso=((0, 1),), filas_peso=((0, 1),))
         crear_decoracion_menu_viaje(centro, metodo="grid", row=0, column=0, sticky="nsew")
@@ -54,10 +49,3 @@ class VistaMenu(tk.Frame):
         self.moldes.crear_boton(acciones, "Ayuda", False, None, None, lado="left", margen_x=5)
         self.moldes.crear_boton(acciones, "Cambiar modo", False, None, None, lado="left", margen_x=5)
         self.moldes.crear_label(pie, "Selecciona una opcion para continuar.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 900, "center", metodo="grid", fila=1, columna=0, margen_y=(10, 0))
-
-    def ejecutar(self):
-        self.master.mainloop()
-
-
-if __name__ == "__main__":
-    VistaMenu().ejecutar()

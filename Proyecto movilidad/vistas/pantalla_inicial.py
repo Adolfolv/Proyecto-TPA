@@ -2,21 +2,16 @@
 
 import tkinter as tk
 
-from estilizacion import tema
-from estilizacion.widgets import Moldes
+from .estilizacion import tema
+from .estilizacion.widgets import Moldes
 
 
 class VistaPantallaInicial(tk.Frame):
-    def __init__(self):
-        ventana = tk.Tk()
-        ventana.title("Movilidad")
-        ventana.geometry("720x520")
-        ventana.minsize(620, 460)
-        ventana.attributes("-fullscreen", True)
-
+    def __init__(self, master, navegar):
+        self.navegar = navegar
         self.moldes = Moldes()
 
-        super().__init__(ventana, bg=tema.FONDO)
+        super().__init__(master, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 
@@ -25,18 +20,11 @@ class VistaPantallaInicial(tk.Frame):
 
         barra_superior = self.moldes.crear_frame(panel_central, tema.PANEL, llenar="x")
         self.moldes.crear_boton(barra_superior, "Tema", lado="left", margen_x=4)
-        self.moldes.crear_boton(barra_superior, "Salir", lado="right", margen_x=4)
+        self.moldes.crear_boton(barra_superior, "Salir", comando=lambda: self.navegar("salir"), lado="right", margen_x=4)
         self.moldes.crear_label(panel_central, "Bienvenido a Movilidad", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, margen_y=(34, 10))
         self.moldes.crear_label(panel_central, "Gestiona tus viajes, tu perfil y tu billetera desde una sola pantalla.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 430, "center", margen_y=(0, 22))
         self.moldes.crear_label(panel_central, "Accesos disponibles", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL, margen_y=(0, 8))
-        self.moldes.crear_boton(panel_central, "Registrarse", True, 28, margen_y=6)
-        self.moldes.crear_boton(panel_central, "Iniciar Sesion", False, 28, margen_y=6)
+        self.moldes.crear_boton(panel_central, "Registrarse", True, 28, lambda: self.navegar("registro"), margen_y=6)
+        self.moldes.crear_boton(panel_central, "Iniciar Sesion", False, 28, lambda: self.navegar("inicio_sesion"), margen_y=6)
         self.moldes.crear_boton(panel_central, "Ayuda", False, 28, margen_y=6)
         self.moldes.crear_label(panel_central, "Selecciona una opcion para continuar.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 430, "center", lado="bottom", margen_y=(10, 2))
-
-    def ejecutar(self):
-        self.master.mainloop()
-
-
-if __name__ == "__main__":
-    VistaPantallaInicial().ejecutar()

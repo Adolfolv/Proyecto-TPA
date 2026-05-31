@@ -3,7 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from estilizacion import tema
+from . import tema
 
 
 class Moldes:
@@ -222,11 +222,11 @@ class Moldes:
             self.ubicar(selector, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
         return selector
 
-    def crear_tarjeta_acceso_menu(self, padre, titulo, descripcion, metodo=None, margen_x=0, margen_y=0, **ubicacion):
+    def crear_tarjeta_acceso_menu(self, padre, titulo, descripcion, comando=None, metodo=None, margen_x=0, margen_y=0, **ubicacion):
         tarjeta = self.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 16)
         self.crear_label(tarjeta, titulo, tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE).pack(anchor="w")
         self.crear_label(tarjeta, descripcion, tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, 260, "left").pack(anchor="w", fill="x", pady=(8, 18))
-        self.crear_boton(tarjeta, "Abrir", False, 14, None).pack(anchor="w", side="bottom")
+        self.crear_boton(tarjeta, "Abrir", False, 14, comando).pack(anchor="w", side="bottom")
         if metodo is not None:
             self.ubicar(tarjeta, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
         return tarjeta

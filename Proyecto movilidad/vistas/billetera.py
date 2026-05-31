@@ -2,22 +2,17 @@
 
 import tkinter as tk
 
-from estilizacion import tema
-from estilizacion.widgets import Moldes
+from .estilizacion import tema
+from .estilizacion.widgets import Moldes
 
 
 class VistaBilletera(tk.Frame):
-    def __init__(self):
-        ventana = tk.Tk()
-        ventana.title("Billetera virtual")
-        ventana.geometry("1000x720")
-        ventana.minsize(860, 620)
-        ventana.attributes("-fullscreen", True)
-
+    def __init__(self, master, navegar):
+        self.navegar = navegar
         self.moldes = Moldes()
-        self.moldes.configurar_selectores(ventana)
+        self.moldes.configurar_selectores(master)
 
-        super().__init__(ventana, bg=tema.FONDO)
+        super().__init__(master, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 
@@ -26,7 +21,7 @@ class VistaBilletera(tk.Frame):
 
         cabecera = self.moldes.crear_frame(panel, tema.PANEL, fila=0, columna=0, sticky="ew", margen_y=(0, 12), columnas_peso=((0, 1),))
         self.moldes.crear_label(cabecera, "Billetera virtual", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
-        self.moldes.crear_boton(cabecera, "Volver", False, None, None, metodo="grid", fila=0, columna=1, sticky="e")
+        self.moldes.crear_boton(cabecera, "Volver", False, None, lambda: self.navegar("menu"), metodo="grid", fila=0, columna=1, sticky="e")
         self.moldes.crear_label(cabecera, "Administra tarjetas principales y movimientos entre billetera y tarjetas adjuntas.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 880, "left", metodo="grid", fila=1, columna=0, columnas=2, sticky="w", margen_y=(4, 0))
 
         resumen = self.moldes.crear_frame(panel, tema.PANEL, fila=1, columna=0, sticky="ew", margen_y=(0, 10))
@@ -77,11 +72,3 @@ class VistaBilletera(tk.Frame):
         lista_historial = tk.Listbox(movimiento, height=8, activestyle="none", relief="solid", bd=1, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO)
         lista_historial.insert(tk.END, "Aun no hay transacciones registradas.")
         self.moldes.ubicar(lista_historial, "grid", fila=9, columna=0, columnas=2, sticky="nsew")
-
-
-    def ejecutar(self):
-        self.master.mainloop()
-
-
-if __name__ == "__main__":
-    VistaBilletera().ejecutar()

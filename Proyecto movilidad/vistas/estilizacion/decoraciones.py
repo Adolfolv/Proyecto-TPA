@@ -2,7 +2,7 @@
 
 import tkinter as tk
 
-from estilizacion import tema
+from . import tema
 
 
 # --- DECORACION MENU ---
