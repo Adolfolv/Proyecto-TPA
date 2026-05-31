@@ -31,7 +31,7 @@ class Perfil:
             self.usuario_actual.telefono = datos["telefono"]
 
         if "contraseña" in datos:
-            self.usuario_actual.contraseña = datos["contraseña"]
+            self.usuario_actual.contrasena = datos["contraseña"]
 
         self.servicio_usuario.guardar()
         return True
