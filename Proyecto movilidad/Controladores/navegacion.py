@@ -11,8 +11,11 @@ from Vistas.pantalla_inicial import VistaPantallaInicial
 from Vistas.registro import VistaRegistro
 from Vistas.viaje import VistaViaje
 from Modelos.modelo_Usuario.servicio_usuario import ServicioUsuario
-from Modelos.modelo_Usuario.inicio_registro import ServicioRegistro
+from Modelos.modelo_Usuario.inicio_registro import ServicioAutenticacion, ServicioRegistro
+from Modelos.Billetera.servicio_billetera import ServicioBilletera
+from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_registro import ControladorRegistro
+from Controladores.controlador_billetera import ControladorBilletera
 
 class Navegacion:
     def __init__(self):
@@ -23,10 +26,19 @@ class Navegacion:
         self.ventana.attributes("-fullscreen", True)
         self.servicio_usuario = ServicioUsuario()
         self.servicio_registro = ServicioRegistro(self.servicio_usuario)
+        self.servicio_autenticacion = ServicioAutenticacion(self.servicio_usuario)
+        self.servicio_billetera = ServicioBilletera()
         self.usuario_actual = None
 
+        self.controlador_inicio_sesion = ControladorInicioSesion(
+            self.servicio_autenticacion,
+        )
         self.controlador_registro = ControladorRegistro(
             self.servicio_registro
+        )
+        self.controlador_billetera = ControladorBilletera(
+            self.servicio_billetera,
+            self.servicio_usuario,
         )
 
     def iniciar(self):
@@ -65,9 +77,13 @@ class Navegacion:
         )
 
     def mostrar_inicio_sesion(self):
-        self.mostrar(
-            VistaInicioSesion,
-            "Inicio de sesion",
+        self.limpiar_pantalla()
+        self.ventana.title("Inicio de sesion")
+        VistaInicioSesion(
+            self.ventana,
+            self.navegar,
+            self.controlador_inicio_sesion,
+            self.inicio_sesion_exitoso,
         )
 
     def mostrar_registro(self):
@@ -84,6 +100,10 @@ class Navegacion:
         self.usuario_actual = usuario
         self.mostrar_menu()
 
+    def inicio_sesion_exitoso(self, usuario):
+        self.usuario_actual = usuario
+        self.mostrar_menu()
+
     def mostrar_menu(self):
         self.mostrar(
             VistaMenu,
@@ -91,9 +111,15 @@ class Navegacion:
         )
 
     def mostrar_billetera(self):
-        self.mostrar(
-            VistaBilletera,
-            "Billetera virtual",
+        self.limpiar_pantalla()
+        self.ventana.title("Billetera virtual")
+        vista = VistaBilletera(
+            self.ventana,
+            self.navegar,
+        )
+        self.controlador_billetera.conectar_vista(
+            vista,
+            self.obtener_usuario_actual(),
         )
 
     def mostrar_viaje(self):
@@ -103,16 +129,20 @@ class Navegacion:
         VistaViaje(self.ventana, self.navegar, tipo_usuario)
 
     def obtener_tipo_usuario(self):
-        usuario = self.usuario_actual
-
-        if usuario is None:
-            usuarios = self.servicio_usuario.listar_usuarios()
-            usuario = usuarios[0] if usuarios else None
+        usuario = self.obtener_usuario_actual()
 
         if usuario is None:
             return "pasajero"
 
         return getattr(usuario, "tipo_usuario", "pasajero")
+
+    def obtener_usuario_actual(self):
+        if self.usuario_actual is not None:
+            return self.usuario_actual
+
+        usuarios = self.servicio_usuario.listar_usuarios()
+        self.usuario_actual = usuarios[0] if usuarios else None
+        return self.usuario_actual
 
 
     def salir(self):
