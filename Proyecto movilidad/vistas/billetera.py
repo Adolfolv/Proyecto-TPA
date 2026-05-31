@@ -43,7 +43,7 @@ class VistaBilletera(tk.Frame):
         gestion.grid_columnconfigure(0, weight=1, uniform="gestion")
         gestion.grid_columnconfigure(1, weight=1, uniform="gestion")
         
-        tarjeta = self.moldes.crear_frame(gestion, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 14, fila=0, columna=0, margen_x=(0, 8), columnas_peso=((0, 1), (1, 1)))
+        tarjeta = self.moldes.crear_frame(gestion, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 14, fila=0, columna=0, margen_x=(0, 8), columnas_peso=((0, 1), (1, 1)), filas_peso=((9, 1),))
         self.moldes.crear_label(tarjeta, "Agregar tarjeta", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 10))
         self.moldes.crear_label(tarjeta, "Tipo", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=0, sticky="w", margen_x=4, margen_y=(0, 4))
         self.moldes.crear_label(tarjeta, "Titular", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=1, sticky="w", margen_x=4, margen_y=(0, 4))
@@ -59,11 +59,11 @@ class VistaBilletera(tk.Frame):
         self.moldes.crear_boton(acciones_tarjeta, "Anadir tarjeta", True, None, None, lado="left", margen_x=(0, 6))
         self.moldes.crear_boton(acciones_tarjeta, "Eliminar tarjeta", False, None, None, lado="left")
         self.moldes.crear_label(tarjeta, "Tarjetas agregadas: 0", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=8, columna=0, columnas=2, sticky="w", margen_y=(0, 6))
-        lista_tarjetas = tk.Listbox(tarjeta, height=4, activestyle="none", relief="solid", bd=1, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO)
+        lista_tarjetas = tk.Listbox(tarjeta, height=8, activestyle="none", relief="solid", bd=1, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO)
         lista_tarjetas.insert(tk.END, "Aun no hay tarjetas agregadas.")
         self.moldes.ubicar(lista_tarjetas, "grid", fila=9, columna=0, columnas=2, sticky="nsew")
 
-        movimiento = self.moldes.crear_frame(gestion, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 14, fila=0, columna=1, margen_x=(8, 0), columnas_peso=((0, 1), (1, 1)))
+        movimiento = self.moldes.crear_frame(gestion, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 14, fila=0, columna=1, margen_x=(8, 0), columnas_peso=((0, 1), (1, 1)), filas_peso=((9, 1),))
         self.moldes.crear_label(movimiento, "Mover saldo", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 10))
         self.moldes.crear_label(movimiento, "Tarjeta", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=0, sticky="w", margen_x=4, margen_y=(0, 4))
         self.moldes.crear_label(movimiento, "Direccion", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=1, sticky="w", margen_x=4, margen_y=(0, 4))
@@ -73,6 +73,10 @@ class VistaBilletera(tk.Frame):
         self.moldes.crear_entrada(movimiento, metodo="grid", fila=4, columna=0, sticky="ew", margen_x=4, margen_y=(0, 10), ipady=4)
         self.moldes.crear_label(movimiento, "Puedes mover saldo desde una tarjeta hacia la billetera o devolver saldo a una tarjeta.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, 420, "left", metodo="grid", fila=5, columna=0, columnas=2, sticky="w", margen_y=(0, 12))
         self.moldes.crear_boton(movimiento, "Mover saldo", True, None, None, metodo="grid", fila=6, columna=0, sticky="w")
+        self.moldes.crear_label(movimiento, "Historial de transacciones", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=8, columna=0, columnas=2, sticky="w", margen_y=(14, 6))
+        lista_historial = tk.Listbox(movimiento, height=8, activestyle="none", relief="solid", bd=1, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO)
+        lista_historial.insert(tk.END, "Aun no hay transacciones registradas.")
+        self.moldes.ubicar(lista_historial, "grid", fila=9, columna=0, columnas=2, sticky="nsew")
 
 
     def ejecutar(self):
