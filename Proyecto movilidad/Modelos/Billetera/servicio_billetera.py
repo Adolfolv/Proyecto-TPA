@@ -15,8 +15,8 @@ class ServicioBilletera:
         self.validador_monto_positivo = ValidadorMontoPositivo()
         self.validador_tarjeta_encontrada = ValidadorTarjetaEncontrada()
 
-    def agregar_tarjeta(self, usuario, tarjeta):
-        return self.tarjeta_service.agregar_tarjeta(usuario, tarjeta)
+    def agregar_tarjeta(self, usuario, tipo, titular, numero, vencimiento, cvv):
+        return self.tarjeta_service.agregar_tarjeta(usuario, tipo, titular, numero, vencimiento, cvv)
 
     def eliminar_tarjeta(self, usuario, numero_tarjeta):
         return self.tarjeta_service.eliminar_tarjeta(usuario, numero_tarjeta)

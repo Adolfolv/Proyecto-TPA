@@ -1,10 +1,15 @@
-from modelo_Usuario.generador_de_usuario import GeneradorID
-from Billetera.datos_billetera import Billetera
+from Modelos.modelo_Usuario.generador_de_usuario import GeneradorID
+from Modelos.Billetera.datos_billetera import Billetera
+from Modelos.modelo_Usuario.usuario_datos import Conductor
 from Validaciones.validaciones import (
+    ValidadorAsientos,
     ValidadorContrasenaUsuario,
     ValidadorCorreo,
     ValidadorCorreoUnico,
     ValidadorEdad,
+    ValidadorEquipaje,
+    ValidadorNumeroLicencia,
+    ValidadorPatente,
     ValidadorTelefono,
     ValidadorUsuarioEncontrado,
 )
@@ -18,6 +23,10 @@ class ServicioRegistro:
         self.validador_correo_unico = ValidadorCorreoUnico(servicio_usuario)
         self.validador_edad = ValidadorEdad()
         self.validador_telefono = ValidadorTelefono()
+        self.validador_patente = ValidadorPatente()
+        self.validador_asientos = ValidadorAsientos()
+        self.validador_equipaje = ValidadorEquipaje()
+        self.validador_numero_licencia = ValidadorNumeroLicencia()
 
     def registrar_usuario(self, usuario):
 
@@ -34,6 +43,19 @@ class ServicioRegistro:
             raise ValueError(
                 "El correo ya se encuentra registrado."
             )
+
+        if isinstance(usuario, Conductor):
+            if not self.validador_patente.validar(usuario.auto.patente):
+                raise ValueError("Patente invalida.")
+
+            if not self.validador_asientos.validar(usuario.auto.cantidad_asientos):
+                raise ValueError("Cantidad de pasajeros invalida.")
+
+            if not self.validador_equipaje.validar(usuario.auto.peso_equipaje):
+                raise ValueError("Peso maximo de equipaje invalido.")
+
+            if not self.validador_numero_licencia.validar(usuario.licencia_conducir):
+                raise ValueError("Numero de licencia invalido.")
 
         if usuario.id_usuario is None:
             usuario.id_usuario = GeneradorID.generar("USR")
