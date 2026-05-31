@@ -13,6 +13,7 @@ from Validaciones.validaciones import (
     ValidadorTelefono,
     ValidadorUsuarioEncontrado,
     ValidadorContrasena,
+    ValidadorConfirmacionContrasena,
     ValidadorNombre,
     ValidadorApellido,
 )
@@ -31,10 +32,11 @@ class ServicioRegistro:
         self.validador_equipaje = ValidadorEquipaje()
         self.validador_numero_licencia = ValidadorNumeroLicencia()
         self.validador_contrasena = ValidadorContrasena()
+        self.validador_confirmacion_contrasena = ValidadorConfirmacionContrasena()
         self.validador_nombre = ValidadorNombre()
         self.validador_apellido = ValidadorApellido()
 
-    def registrar_usuario(self, usuario):
+    def registrar_usuario(self, usuario, confirmar_contrasena=None):
 
         if not self.validador_nombre.validar(usuario.nombre):
             raise ValueError("El nombre solo puede contener letras.")
@@ -55,6 +57,15 @@ class ServicioRegistro:
             raise ValueError(
                 "El correo ya se encuentra registrado."
             )
+
+        if (
+            confirmar_contrasena is not None
+            and not self.validador_confirmacion_contrasena.validar(
+                (usuario.contrasena, confirmar_contrasena)
+            )
+        ):
+            raise ValueError("Las contraseñas no coinciden.")
+
         if not self.validador_contrasena.validar(usuario.contrasena):
             raise ValueError("La contraseña es demasiado corta.")
 

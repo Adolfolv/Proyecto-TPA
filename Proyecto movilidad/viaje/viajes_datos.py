@@ -1,15 +1,24 @@
 from dataclasses import dataclass
 
+
 @dataclass
-class solicitud_viaje:
-    condutor: str
-    pasajeros:str
+class Ubicacion:
     origen: str
     destino: str
-    fecha_hora: str
-    
 @dataclass
-class viaje:
-    estado: str
+class SolicitudViaje:
+    cant_pasajeros:int
+    fecha_hora: str
+    ubicacion: Ubicacion
+@dataclass
+class Viaje:
+    usuario: str
+    conductor: str
+    vehiculo: str
+    estado: bool
+    precio: float
+    distancia: float
+    duracion: float
+    solicitud: SolicitudViaje
     
 
