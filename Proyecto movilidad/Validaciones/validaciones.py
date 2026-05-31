@@ -1,37 +1,40 @@
 import re
 from datetime import datetime, date
 
-def texto(self, valor):
-    return bool(str(valor or "").strip())
+from abstracciones import Validador
 
-def numero(self, valor):
+
+def es_numero(valor):
     return str(valor or "").strip().isdigit()
 
+class ValidadorCorreo(Validador):
 
-class ValidadorDatosPersonales:
-    def correo(self, valor):
+    def validar(self, valor):
         return bool(
             re.fullmatch(
                 r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$",
                 str(valor or "").strip(),
             )
         )
-    
-    def validar_edad(self, valor):
-        if not self.numero(valor):
+class ValidadorEdad(Validador):
+
+    def validar(self, valor):
+        if not es_numero(valor):
             return False
-        edad = int(valor)
-        return 18 <= edad <= 100
 
-def validar_telefono(self, valor):
-    if not self.numero(valor):
-        return False
-    telefono = str(valor).strip()
-    return len(telefono) == 8
+        return 18 <= int(valor) <= 100
 
-class ValidadorDatosAuto:
+class ValidadorTelefono(Validador):
 
-    def patente_chilena(self, valor):
+    def validar(self, valor):
+        if not es_numero(valor):
+            return False
+
+        return len(str(valor).strip()) == 8
+
+class ValidadorPatente(Validador):
+
+    def validar(self, valor):
         patente = (
             str(valor or "")
             .upper()
@@ -42,24 +45,35 @@ class ValidadorDatosAuto:
 
         return bool(
             re.fullmatch(r"[A-Z]{4}[0-9]{2}", patente)
-            or
-            re.fullmatch(r"[A-Z]{2}[0-9]{4}", patente)
+            or re.fullmatch(r"[A-Z]{2}[0-9]{4}", patente)
         )
-    
-    def cantidad_asientos(self, valor):
-        if not self.numero(valor):
+
+class ValidadorAsientos(Validador):
+
+    def validar(self, valor):
+        if not es_numero(valor):
             return False
-        asientos = int(valor)
-        return 1 <= asientos <= 9
-    
-    def peso_equipaje(self, valor):
-        if not self.numero(valor):
+
+        return 1 <= int(valor) <= 9
+
+class ValidadorEquipaje(Validador):
+
+    def validar(self, valor):
+        try:
+            peso = float(valor)
+            return 0 <= peso <= 500
+
+        except (TypeError, ValueError):
             return False
-        peso = float(valor)
-        return 0 <= peso <= 500
-    
-    def licencia_chilena(self, valor):
-        rut = str(valor or "").upper().replace(".", "").replace("-", "")
+class ValidadorNumeroLicencia(Validador):
+
+    def validar(self, valor):
+        rut = (
+            str(valor or "")
+            .upper()
+            .replace(".", "")
+            .replace("-", "")
+        )
 
         if len(rut) < 8:
             return False
@@ -75,7 +89,10 @@ class ValidadorDatosAuto:
 
         for digito in reversed(cuerpo):
             suma += int(digito) * multiplicador
-            multiplicador = 2 if multiplicador == 7 else multiplicador + 1
+            multiplicador = (
+                2 if multiplicador == 7
+                else multiplicador + 1
+            )
 
         resto = 11 - (suma % 11)
 
@@ -85,14 +102,13 @@ class ValidadorDatosAuto:
         }.get(resto, str(resto))
 
         return dv == dv_esperado
-    
-    from datetime import datetime, date
+class ValidadorVencimientoLicencia(Validador):
 
-    def validar_vencimiento_licencia(self, valor):
+    def validar(self, valor):
         try:
             fecha = datetime.strptime(
                 str(valor).strip(),
-                "%d-%m-%Y"
+                "%d-%m-%Y",
             ).date()
 
             return fecha >= date.today()
