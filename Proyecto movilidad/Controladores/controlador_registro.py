@@ -6,13 +6,6 @@ class ControladorRegistro:
     def __init__(self, servicio_registro):
         self.servicio_registro = servicio_registro
 
-    def _validar_contrasenas(self, contrasena, confirmar):
-        if not contrasena:
-            raise ValueError("Debe ingresar una contraseña.")
-
-        if contrasena != confirmar:
-            raise ValueError("Las contraseñas no coinciden.")
-
     def registrar_pasajero(
         self,
         nombre,
@@ -23,8 +16,6 @@ class ControladorRegistro:
         contrasena,
         confirmar_contrasena,
     ):
-        self._validar_contrasenas(contrasena, confirmar_contrasena)
-
         usuario = Pasajero(
             id_usuario=None,
             nombre=nombre,
@@ -36,7 +27,10 @@ class ControladorRegistro:
             direccion=""
         )
 
-        return self.servicio_registro.registrar_usuario(usuario)
+        return self.servicio_registro.registrar_usuario(
+            usuario,
+            confirmar_contrasena,
+        )
 
     def registrar_conductor(
         self,
@@ -56,8 +50,6 @@ class ControladorRegistro:
         cantidad_asientos,
         peso_equipaje,
     ):
-        self._validar_contrasenas(contrasena, confirmar_contrasena)
-
         auto = Auto(
             marca=marca,
             modelo=modelo,
@@ -80,4 +72,7 @@ class ControladorRegistro:
             auto=auto,
         )
 
-        return self.servicio_registro.registrar_usuario(usuario)
+        return self.servicio_registro.registrar_usuario(
+            usuario,
+            confirmar_contrasena,
+        )

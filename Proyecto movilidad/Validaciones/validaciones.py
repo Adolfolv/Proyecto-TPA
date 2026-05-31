@@ -227,3 +227,9 @@ class ValidadorContrasena(Validador):
     def validar(self, valor):
         contrasena = str(valor or "")
         return len(contrasena) >= 6
+
+class ValidadorConfirmacionContrasena(Validador):
+
+    def validar(self, datos):
+        contrasena, confirmar_contrasena = datos
+        return contrasena == confirmar_contrasena
