@@ -24,7 +24,7 @@ class Navegacion:
     def limpiar_pantalla(self):
         for widget in self.ventana.winfo_children():
             widget.destroy()
-
+    #redirige a la pantalla correspondiente segun el destino solicitado
     def navegar(self, destino):
         if destino == "pantalla_inicial":
             self.mostrar_pantalla_inicial()
