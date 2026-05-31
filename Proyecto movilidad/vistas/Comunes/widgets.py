@@ -7,6 +7,16 @@ from Comunes import tema
 
 
 class Moldes:
+    def configurar_selectores(self, ventana):
+        estilo = ttk.Style(ventana)
+        estilo.theme_use("clam")
+        estilo.configure("Selector.TCombobox", fieldbackground=tema.SECUNDARIO, background=tema.SECUNDARIO, foreground=tema.TEXTO, arrowcolor=tema.TEXTO, bordercolor=tema.BORDE)
+        estilo.map("Selector.TCombobox", fieldbackground=[("readonly", tema.SECUNDARIO)], foreground=[("readonly", tema.TEXTO)])
+        ventana.option_add("*TCombobox*Listbox.background", tema.SECUNDARIO)
+        ventana.option_add("*TCombobox*Listbox.foreground", tema.TEXTO)
+        ventana.option_add("*TCombobox*Listbox.selectBackground", tema.PRIMARIO)
+        ventana.option_add("*TCombobox*Listbox.selectForeground", tema.PRIMARIO_TEXTO)
+
     def crear_frame(
         self,
         padre,
@@ -147,18 +157,10 @@ class Moldes:
 
         return entrada
 
-    def crear_canvas(self, padre, color, llenar=None, expandir=False, lado=None, margen_x=0, margen_y=0):
-        canvas = tk.Canvas(padre, bg=color, bd=0, highlightthickness=0, yscrollincrement=24)
+    def crear_selector(self, padre, opciones):
+        selector = ttk.Combobox(padre, values=opciones, state="readonly", font=tema.FUENTE_TEXTO, style="Selector.TCombobox")
+        selector.current(0)
+        return selector
 
-        if llenar or expandir or lado or margen_x or margen_y:
-            canvas.pack(fill=llenar, expand=expandir, side=lado, padx=margen_x, pady=margen_y)
-
-        return canvas
-
-    def crear_scroll_vertical(self, padre, comando, llenar=None, expandir=False, lado=None, margen_x=0, margen_y=0):
-        barra = ttk.Scrollbar(padre, orient="vertical", command=comando)
-
-        if llenar or expandir or lado or margen_x or margen_y:
-            barra.pack(fill=llenar, expand=expandir, side=lado, padx=margen_x, pady=margen_y)
-
-        return barra
+    # --- DECORACIONES ---
+  #lucete jorge deidad
