@@ -2,8 +2,9 @@
 
 import tkinter as tk
 
-from Comunes import tema
-from Comunes.widgets import Moldes
+from estilizacion import tema
+from estilizacion.decoraciones import crear_decoracion_menu_viaje
+from estilizacion.widgets import Moldes
 
 
 class VistaMenu(tk.Frame):
@@ -41,7 +42,7 @@ class VistaMenu(tk.Frame):
         self.moldes.crear_tarjeta_acceso_menu(izquierda, "Billetera", "Revisa saldo, pagos y movimientos recientes.", metodo="grid", fila=1, columna=0, sticky="nsew", margen_y=(8, 0))
 
         centro = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=1, columnas_peso=((0, 1),), filas_peso=((0, 1),))
-        self.moldes.crear_decoracion_menu_viaje(centro, metodo="grid", fila=0, columna=0, sticky="nsew")
+        crear_decoracion_menu_viaje(centro, metodo="grid", row=0, column=0, sticky="nsew")
 
         derecha = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=2, margen_x=(16, 0), columnas_peso=((0, 1),), filas_peso=((0, 1), (1, 1)))
 

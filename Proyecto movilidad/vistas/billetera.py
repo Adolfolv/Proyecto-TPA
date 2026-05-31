@@ -2,8 +2,8 @@
 
 import tkinter as tk
 
-from Comunes import tema
-from Comunes.widgets import Moldes
+from estilizacion import tema
+from estilizacion.widgets import Moldes
 
 
 class VistaBilletera(tk.Frame):

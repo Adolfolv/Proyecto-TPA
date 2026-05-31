@@ -4,8 +4,8 @@ import tkinter as tk
 
 from constantes_vistas import (CATEGORIAS_LICENCIA, GEOMETRIA_REGISTRO, MARCAS_MODELOS, PANTALLA_COMPLETA_REGISTRO, TAMANO_MINIMO_REGISTRO, TITULO_REGISTRO)
 
-from Comunes import tema
-from Comunes.widgets import Moldes
+from estilizacion import tema
+from estilizacion.widgets import Moldes
 
 
 class VistaRegistro(tk.Frame):
