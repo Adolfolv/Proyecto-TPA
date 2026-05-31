@@ -15,7 +15,9 @@ class ControladorRegistro:
         telefono,
         contrasena,
         confirmar_contrasena,
+        direccion,
     ):
+
         usuario = Pasajero(
             id_usuario=None,
             nombre=nombre,
@@ -24,12 +26,12 @@ class ControladorRegistro:
             edad=edad,
             telefono=telefono,
             contrasena=contrasena,
-            direccion=""
+            direccion=direccion,
         )
 
         return self.servicio_registro.registrar_usuario(
             usuario,
-            confirmar_contrasena,
+            confirmar_contrasena
         )
 
     def registrar_conductor(

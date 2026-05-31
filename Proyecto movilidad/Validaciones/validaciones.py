@@ -43,10 +43,12 @@ class ValidadorEdad(Validador):
 class ValidadorTelefono(Validador):
 
     def validar(self, valor):
-        if not es_numero(valor):
-            return False
+        telefono = re.sub(r"\D", "", str(valor or ""))
 
-        return len(str(valor).strip()) == 8
+        if telefono.startswith("569"):
+            return len(telefono) == 11
+
+        return len(telefono) == 8
 
 class ValidadorPatente(Validador):
 
