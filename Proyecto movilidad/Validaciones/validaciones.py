@@ -1,37 +1,40 @@
 import re
 from datetime import datetime, date
 
-def texto(self, valor):
-    return bool(str(valor or "").strip())
+from abstracciones import Validador
 
-def numero(self, valor):
+
+def es_numero(valor):
     return str(valor or "").strip().isdigit()
 
+class ValidadorCorreo(Validador):
 
-class ValidadorDatosPersonales:
-    def correo(self, valor):
+    def validar(self, valor):
         return bool(
             re.fullmatch(
                 r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$",
                 str(valor or "").strip(),
             )
         )
-    
-    def validar_edad(self, valor):
-        if not self.numero(valor):
+class ValidadorEdad(Validador):
+
+    def validar(self, valor):
+        if not es_numero(valor):
             return False
-        edad = int(valor)
-        return 18 <= edad <= 100
 
-def validar_telefono(self, valor):
-    if not self.numero(valor):
-        return False
-    telefono = str(valor).strip()
-    return len(telefono) == 8
+        return 18 <= int(valor) <= 100
 
-class ValidadorDatosAuto:
+class ValidadorTelefono(Validador):
 
-    def patente_chilena(self, valor):
+    def validar(self, valor):
+        if not es_numero(valor):
+            return False
+
+        return len(str(valor).strip()) == 8
+
+class ValidadorPatente(Validador):
+
+    def validar(self, valor):
         patente = (
             str(valor or "")
             .upper()
@@ -42,24 +45,35 @@ class ValidadorDatosAuto:
 
         return bool(
             re.fullmatch(r"[A-Z]{4}[0-9]{2}", patente)
-            or
-            re.fullmatch(r"[A-Z]{2}[0-9]{4}", patente)
+            or re.fullmatch(r"[A-Z]{2}[0-9]{4}", patente)
         )
-    
-    def cantidad_asientos(self, valor):
-        if not self.numero(valor):
+
+class ValidadorAsientos(Validador):
+
+    def validar(self, valor):
+        if not es_numero(valor):
             return False
-        asientos = int(valor)
-        return 1 <= asientos <= 9
-    
-    def peso_equipaje(self, valor):
-        if not self.numero(valor):
+
+        return 1 <= int(valor) <= 9
+
+class ValidadorEquipaje(Validador):
+
+    def validar(self, valor):
+        try:
+            peso = float(valor)
+            return 0 <= peso <= 500
+
+        except (TypeError, ValueError):
             return False
-        peso = float(valor)
-        return 0 <= peso <= 500
-    
-    def licencia_chilena(self, valor):
-        rut = str(valor or "").upper().replace(".", "").replace("-", "")
+class ValidadorNumeroLicencia(Validador):
+
+    def validar(self, valor):
+        rut = (
+            str(valor or "")
+            .upper()
+            .replace(".", "")
+            .replace("-", "")
+        )
 
         if len(rut) < 8:
             return False
@@ -75,7 +89,10 @@ class ValidadorDatosAuto:
 
         for digito in reversed(cuerpo):
             suma += int(digito) * multiplicador
-            multiplicador = 2 if multiplicador == 7 else multiplicador + 1
+            multiplicador = (
+                2 if multiplicador == 7
+                else multiplicador + 1
+            )
 
         resto = 11 - (suma % 11)
 
@@ -85,27 +102,106 @@ class ValidadorDatosAuto:
         }.get(resto, str(resto))
 
         return dv == dv_esperado
-    
-    from datetime import datetime, date
+class ValidadorVencimientoLicencia(Validador):
 
-    def validar_vencimiento_licencia(self, valor):
+    def validar(self, valor):
         try:
             fecha = datetime.strptime(
                 str(valor).strip(),
-                "%d-%m-%Y"
+                "%d-%m-%Y",
             ).date()
 
             return fecha >= date.today()
 
         except ValueError:
             return False
+class ValidadorCorreoUnico(Validador):
 
+    def __init__(self, servicio_usuario):
+        self.servicio_usuario = servicio_usuario
 
+    def validar(self, valor):
+        return self.servicio_usuario.buscar_por_correo(valor) is None
 
+class ValidadorUsuarioEncontrado(Validador):
 
+    def validar(self, valor):
+        return valor is not None
 
+class ValidadorContrasenaUsuario(Validador):
 
+    def validar(self, datos):
+        usuario, contrasena = datos
+        return getattr(usuario, "contrasena", None) == contrasena
 
+class ValidadorPerfilCargado(Validador):
 
+    def validar(self, valor):
+        return valor is not None
 
-#
+class ValidadorMontoPositivo(Validador):
+
+    def validar(self, valor):
+        try:
+            return float(valor) > 0
+
+        except (TypeError, ValueError):
+            return False
+
+class ValidadorSaldoSuficiente(Validador):
+
+    def __init__(self):
+        self.validador_monto = ValidadorMontoPositivo()
+
+    def validar(self, datos):
+        objeto, monto = datos
+
+        if not self.validador_monto.validar(monto):
+            return False
+
+        return getattr(objeto, "saldo", 0) >= monto
+
+class ValidadorTarjetaEncontrada(Validador):
+
+    def validar(self, valor):
+        return valor is not None
+
+class ValidadorTarjetaNoDuplicada(Validador):
+
+    def validar(self, datos):
+        usuario, tarjeta = datos
+
+        for tarjeta_guardada in usuario.billetera.tarjetas:
+            if tarjeta_guardada.numero_tarjeta == tarjeta.numero_tarjeta:
+                return False
+
+        return True
+
+class ValidadorSaldoDefinido(Validador):
+
+    def validar(self, valor):
+        return hasattr(valor, "saldo") and valor.saldo is not None
+
+class ValidadorNumeroTarjetaVisa(Validador):
+
+    def validar(self, valor):
+        numero = str(valor or "")
+        return numero.startswith("4") and 13 <= len(numero) <= 19
+
+class ValidadorNumeroTarjetaMastercard(Validador):
+
+    def validar(self, valor):
+        numero = str(valor or "")
+
+        if len(numero) != 16 or not numero.isdigit():
+            return False
+
+        dos = int(numero[:2])
+        cuatro = int(numero[:4])
+        return 51 <= dos <= 55 or 2221 <= cuatro <= 2720
+
+class ValidadorNumeroTarjetaAmericanExpress(Validador):
+
+    def validar(self, valor):
+        numero = str(valor or "")
+        return len(numero) == 15 and numero.startswith(("34", "37"))
