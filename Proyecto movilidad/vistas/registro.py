@@ -2,9 +2,8 @@
 
 import tkinter as tk
 
-from .constantes_vistas import CATEGORIAS_LICENCIA, MARCAS_MODELOS
-
 from .estilizacion import tema
+from .estilizacion.constantes_vistas import CATEGORIAS_LICENCIA, MARCAS_MODELOS
 from .estilizacion.widgets import Moldes
 
 

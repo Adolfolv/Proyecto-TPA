@@ -3,10 +3,7 @@
 
 # --- constantes archivo registro.py ---
 
-TITULO_REGISTRO = "Registro"
-GEOMETRIA_REGISTRO = "900x700"
-TAMANO_MINIMO_REGISTRO = (760, 620)
-PANTALLA_COMPLETA_REGISTRO = True
+
 
 CATEGORIAS_LICENCIA = ("Categoria A1", "Categoria A2", "Categoria A3", "Categoria B")
 PREFIJO_TELEFONO = "+56 9"
@@ -37,10 +34,7 @@ MARCAS_MODELOS = {
     "Volvo": ("S60", "S90", "V40", "XC40", "XC60", "XC90", "C40", "EX30"),
 }
 
-
-TITULO_VIAJE = "Viaje"
-GEOMETRIA_VIAJE = "1200x720"
-TAMANO_MINIMO_VIAJE = (900, 620)
+# --- constantes archivo viaje.py ---
 
 OSORNO_LAT_NORTE = -40.5480
 OSORNO_LAT_SUR = -40.6050

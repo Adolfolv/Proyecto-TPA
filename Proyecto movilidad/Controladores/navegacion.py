@@ -1,12 +1,15 @@
 """Controlador simple para manejar el flujo entre pantallas."""
 
+import json
 import tkinter as tk
+from pathlib import Path
 
-from Vistas.billetera import VistaBilletera
-from Vistas.inicio_sesion import VistaInicioSesion
-from Vistas.menu import VistaMenu
-from Vistas.pantalla_inicial import VistaPantallaInicial
-from Vistas.registro import VistaRegistro
+from vistas.billetera import VistaBilletera
+from vistas.inicio_sesion import VistaInicioSesion
+from vistas.menu import VistaMenu
+from vistas.pantalla_inicial import VistaPantallaInicial
+from vistas.registro import VistaRegistro
+from vistas.viaje import VistaViaje
 
 
 class Navegacion:
@@ -36,6 +39,8 @@ class Navegacion:
             self.mostrar_menu()
         elif destino == "billetera":
             self.mostrar_billetera()
+        elif destino == "viaje":
+            self.mostrar_viaje()
         elif destino == "salir":
             self.salir()
 
@@ -73,6 +78,16 @@ class Navegacion:
             VistaBilletera,
             "Billetera virtual",
         )
+
+    def mostrar_viaje(self):
+        tipo_usuario = self.obtener_tipo_usuario()
+        self.limpiar_pantalla()
+        self.ventana.title("Viaje")
+        VistaViaje(self.ventana, self.navegar, tipo_usuario)
+
+    def obtener_tipo_usuario(self):
+        print("conecta con lo del registro ")
+
 
     def salir(self):
         self.ventana.destroy()

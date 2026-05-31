@@ -37,7 +37,7 @@ class VistaMenu(tk.Frame):
         self.moldes.crear_tarjeta_acceso_menu(izquierda, "Billetera", "Revisa saldo, pagos y movimientos recientes.", comando=lambda: self.navegar("billetera"), metodo="grid", fila=1, columna=0, sticky="nsew", margen_y=(8, 0))
 
         centro = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=1, columnas_peso=((0, 1),), filas_peso=((0, 1),))
-        crear_decoracion_menu_viaje(centro, metodo="grid", row=0, column=0, sticky="nsew")
+        crear_decoracion_menu_viaje(centro, comando=lambda: self.navegar("viaje"), metodo="grid", row=0, column=0, sticky="nsew")
 
         derecha = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=2, margen_x=(16, 0), columnas_peso=((0, 1),), filas_peso=((0, 1), (1, 1)))
 

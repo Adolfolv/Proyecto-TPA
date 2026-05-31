@@ -7,28 +7,17 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from tkintermapview import TkinterMapView
 
-try:
-    from .constantes_vistas import (
-        COORDENADAS_REALES_OSORNO,
-        GEOMETRIA_VIAJE,
-        IMAGENES_LUGARES_OSORNO,
-        LUGARES_OSORNO,
-        TAMANO_MINIMO_VIAJE,
-        TITULO_VIAJE,
-    )
-    from .estilizacion import tema
-    from .estilizacion.widgets import Moldes
-except ImportError:
-    from constantes_vistas import (
-        COORDENADAS_REALES_OSORNO,
-        GEOMETRIA_VIAJE,
-        IMAGENES_LUGARES_OSORNO,
-        LUGARES_OSORNO,
-        TAMANO_MINIMO_VIAJE,
-        TITULO_VIAJE,
-    )
-    from estilizacion import tema
-    from estilizacion.widgets import Moldes
+from .estilizacion import tema
+from .estilizacion.constantes_vistas import (
+    COORDENADAS_REALES_OSORNO,
+    IMAGENES_LUGARES_OSORNO,
+    LUGARES_OSORNO,
+    OSORNO_LAT_NORTE,
+    OSORNO_LAT_SUR,
+    OSORNO_LNG_ESTE,
+    OSORNO_LNG_OESTE,
+)
+from .estilizacion.widgets import Moldes
 
 
 RUTA_IMAGENES_LUGARES = (
@@ -40,8 +29,9 @@ RUTA_IMAGENES_LUGARES = (
 
 
 class VistaViaje(tk.Frame):
-    def __init__(self, master, navegar=None):
+    def __init__(self, master, navegar=None, tipo_usuario="pasajero"):
         self.navegar = navegar
+        self.tipo_usuario = tipo_usuario
         self.moldes = Moldes()
         self.moldes.configurar_selectores(master)
 
@@ -74,27 +64,37 @@ class VistaViaje(tk.Frame):
         self.moldes.crear_label(frame, "Viaje normal", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), ipady=8)
 
         datos = self.moldes.crear_frame(frame, tema.PANEL, fila=3, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
-        campo_usuarios = self.moldes.crear_frame(datos, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=(0, 8), columnas_peso=((0, 1),))
-        self.moldes.crear_label(campo_usuarios, "Cantidad usuarios", ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 4))
-        entrada_usuarios = self.moldes.crear_entrada(campo_usuarios)
-        entrada_usuarios.insert(0, "1")
-        entrada_usuarios.grid(row=1, column=0, sticky="ew", ipady=3)
+        if self.tipo_usuario == "conductor":
+            self.moldes.crear_label(datos, "Ubicacion inicial", ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 4))
+            self.moldes.crear_selector(datos, tuple(LUGARES_OSORNO), metodo="grid", fila=1, columna=0, columnas=2, sticky="ew", ipady=4)
+        else:
+            campo_usuarios = self.moldes.crear_frame(datos, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=(0, 8), columnas_peso=((0, 1),))
+            self.moldes.crear_label(campo_usuarios, "Cantidad usuarios", ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 4))
+            entrada_usuarios = self.moldes.crear_entrada(campo_usuarios)
+            entrada_usuarios.insert(0, "1")
+            entrada_usuarios.grid(row=1, column=0, sticky="ew", ipady=3)
 
-        campo_peso = self.moldes.crear_frame(datos, tema.PANEL, fila=0, columna=1, sticky="ew", margen_x=(8, 0), columnas_peso=((0, 1),))
-        self.moldes.crear_label(campo_peso, "Peso aprox. total (kg)", ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 4))
-        entrada_peso = self.moldes.crear_entrada(campo_peso)
-        entrada_peso.insert(0, "0")
-        entrada_peso.grid(row=1, column=0, sticky="ew", ipady=3)
+            campo_peso = self.moldes.crear_frame(datos, tema.PANEL, fila=0, columna=1, sticky="ew", margen_x=(8, 0), columnas_peso=((0, 1),))
+            self.moldes.crear_label(campo_peso, "Peso aprox. total (kg)", ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 4))
+            entrada_peso = self.moldes.crear_entrada(campo_peso)
+            entrada_peso.insert(0, "0")
+            entrada_peso.grid(row=1, column=0, sticky="ew", ipady=3)
 
         contenedor_tabla = self.moldes.crear_frame(frame, tema.PANEL, fila=4, columna=0, sticky="nsew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
-        self.moldes.crear_boton(contenedor_tabla, "Buscar vehiculos", True, None, None, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 8))
-        self.moldes.crear_label(contenedor_tabla, "Vehiculos disponibles", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 6))
-        self.tabla = self.moldes.crear_tabla(contenedor_tabla, (("nombre", "Nombre", 105), ("detalle", "Detalle", 140), ("precio", "Precio", 80), ("tiempo", "Tiempo", 70)), 5, metodo="grid", fila=2, columna=0, sticky="nsew")
+        if self.tipo_usuario == "conductor":
+            self.moldes.crear_boton(contenedor_tabla, "Buscar pasajeros", True, None, None, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 8))
+            self.moldes.crear_label(contenedor_tabla, "Cronometro", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 6))
+            self.moldes.crear_label(contenedor_tabla, "00:00", ("Arial", 28, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", ipady=24)
+        else:
+            self.moldes.crear_boton(contenedor_tabla, "Buscar vehiculos", True, None, None, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 8))
+            self.moldes.crear_label(contenedor_tabla, "Vehiculos disponibles", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 6))
+            self.tabla = self.moldes.crear_tabla(contenedor_tabla, (("nombre", "Nombre", 105), ("detalle", "Detalle", 140), ("precio", "Precio", 80), ("tiempo", "Tiempo", 70)), 5, metodo="grid", fila=2, columna=0, sticky="nsew")
 
         self.moldes.crear_boton(frame, "Pagar", True, None, None, metodo="grid", fila=5, columna=0, sticky="ew", margen_x=16, margen_y=(0, 8))
 
         confirmacion = self.moldes.crear_frame(frame, tema.FONDO, tema.BORDE, 1, fila=6, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
-        self.moldes.crear_label(confirmacion, "Confirmar pago del viaje seleccionado?", tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
+        texto_confirmacion = "Confirmar viaje?" if self.tipo_usuario == "conductor" else "Confirmar pago del viaje seleccionado?"
+        self.moldes.crear_label(confirmacion, texto_confirmacion, tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
         self.moldes.crear_boton(confirmacion, "Si, confirmar", True, None, None, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
         self.moldes.crear_boton(confirmacion, "Cancelar", False, None, None, metodo="grid", fila=1, columna=1, sticky="ew", margen_x=(4, 10), margen_y=(0, 8))
 
@@ -103,6 +103,8 @@ class VistaViaje(tk.Frame):
         ttk.Progressbar(progreso, maximum=100, mode="determinate", value=35).grid(row=1, column=0, sticky="ew")
         self.moldes.crear_label(progreso, "35%", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(6, 0))
 
+
+#mapa + funciones basicas mapa
     def crear_frame_derecho(self, padre):
         frame = self.moldes.crear_frame(padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=1, sticky="nsew", margen_x=(12, 0))
         frame.grid_columnconfigure(0, weight=1)
@@ -123,6 +125,7 @@ class VistaViaje(tk.Frame):
         self.mapa.set_position(-40.5739, -73.1335)
         self.mapa.set_zoom(15)
         self.bloquear_zoom_mapa()
+        self.restringir_mapa_osorno()
         self.pintar_mapa_real()
 
     def bloquear_zoom_mapa(self):
@@ -136,6 +139,18 @@ class VistaViaje(tk.Frame):
             boton.command = None
             self.mapa.canvas.itemconfigure(boton.canvas_rect, state="hidden")
             self.mapa.canvas.itemconfigure(boton.canvas_text, state="hidden")
+
+    def restringir_mapa_osorno(self, evento=None):
+        if evento is None:
+            self.mapa.canvas.bind("<ButtonRelease-1>", self.restringir_mapa_osorno)
+            return
+
+        self.mapa.mouse_release(evento)
+        latitud, longitud = self.mapa.get_position()
+        latitud = min(OSORNO_LAT_NORTE, max(OSORNO_LAT_SUR, latitud))
+        longitud = min(OSORNO_LNG_ESTE, max(OSORNO_LNG_OESTE, longitud))
+        self.mapa.set_position(latitud, longitud)
+        self.mapa.fading_possible = False
 
     def pintar_mapa_real(self):
         for lugar in LUGARES_OSORNO:
@@ -151,18 +166,3 @@ class VistaViaje(tk.Frame):
     def volver_menu(self):
         if self.navegar:
             self.navegar("menu")
-
-
-def ejecutar():
-    ventana = tk.Tk()
-    ventana.title(TITULO_VIAJE)
-    ventana.geometry(GEOMETRIA_VIAJE)
-    ventana.minsize(*TAMANO_MINIMO_VIAJE)
-    ventana.attributes("-fullscreen", True)
-
-    VistaViaje(ventana)
-    ventana.mainloop()
-
-
-if __name__ == "__main__":
-    ejecutar()
