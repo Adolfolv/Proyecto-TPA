@@ -4,13 +4,16 @@ import json
 import tkinter as tk
 from pathlib import Path
 
-from vistas.billetera import VistaBilletera
-from vistas.inicio_sesion import VistaInicioSesion
-from vistas.menu import VistaMenu
-from vistas.pantalla_inicial import VistaPantallaInicial
-from vistas.registro import VistaRegistro
-from vistas.viaje import VistaViaje
-
+from Vistas.billetera import VistaBilletera
+from Vistas.inicio_sesion import VistaInicioSesion
+from Vistas.menu import VistaMenu
+from Vistas.pantalla_inicial import VistaPantallaInicial
+from Vistas.registro import VistaRegistro
+from Vistas.viaje import VistaViaje
+from Modelos.modelo_Usuario.servicio_usuario import ServicioUsuario
+from Modelos.modelo_Usuario.inicio_registro import ServicioRegistro
+from Controladores.controlador_registro import ControladorRegistro
+from Modelos.modelo_Usuario.servicio_usuario import ServicioUsuario
 
 class Navegacion:
     def __init__(self):
@@ -19,6 +22,13 @@ class Navegacion:
         self.ventana.geometry("1000x720")
         self.ventana.minsize(760, 620)
         self.ventana.attributes("-fullscreen", True)
+        self.servicio_usuario = ServicioUsuario()
+        self.servicio_registro = ServicioRegistro(self.servicio_usuario)
+        self.usuario_actual = None
+
+        self.controlador_registro = ControladorRegistro(
+            self.servicio_registro
+        )
 
     def iniciar(self):
         self.mostrar_pantalla_inicial()
@@ -62,10 +72,17 @@ class Navegacion:
         )
 
     def mostrar_registro(self):
-        self.mostrar(
-            VistaRegistro,
-            "Registro",
+        self.limpiar_pantalla()
+        self.ventana.title("Registro")
+        vista = VistaRegistro(self.ventana, self.navegar)
+        self.controlador_registro.conectar_vista(
+            vista,
+            self.registro_exitoso,
         )
+
+    def registro_exitoso(self, usuario):
+        self.usuario_actual = usuario
+        self.mostrar_menu()
 
     def mostrar_menu(self):
         self.mostrar(
@@ -86,7 +103,16 @@ class Navegacion:
         VistaViaje(self.ventana, self.navegar, tipo_usuario)
 
     def obtener_tipo_usuario(self):
-        print("conecta con lo del registro ")
+        usuario = self.usuario_actual
+
+        if usuario is None:
+            usuarios = self.servicio_usuario.listar_usuarios()
+            usuario = usuarios[0] if usuarios else None
+
+        if usuario is None:
+            return "pasajero"
+
+        return getattr(usuario, "tipo_usuario", "pasajero")
 
 
     def salir(self):

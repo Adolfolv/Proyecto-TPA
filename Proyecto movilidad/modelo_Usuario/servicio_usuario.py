@@ -63,6 +63,7 @@ class ServicioUsuario:
                 "tipo_usuario",
             )
         }
+        datos_usuario.setdefault("apellido", "")
 
         if tipo == "conductor":
 

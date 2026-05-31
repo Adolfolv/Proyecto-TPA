@@ -19,6 +19,7 @@ class Auto:
 class Usuario:
     id_usuario: str
     nombre: str
+    apellido: str
     correo: str
     edad: int
     telefono: str

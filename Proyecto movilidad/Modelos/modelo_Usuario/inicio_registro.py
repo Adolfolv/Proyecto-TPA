@@ -12,6 +12,9 @@ from Validaciones.validaciones import (
     ValidadorPatente,
     ValidadorTelefono,
     ValidadorUsuarioEncontrado,
+    ValidadorContrasena,
+    ValidadorNombre,
+    ValidadorApellido,
 )
 
 class ServicioRegistro:
@@ -27,15 +30,24 @@ class ServicioRegistro:
         self.validador_asientos = ValidadorAsientos()
         self.validador_equipaje = ValidadorEquipaje()
         self.validador_numero_licencia = ValidadorNumeroLicencia()
+        self.validador_contrasena = ValidadorContrasena()
+        self.validador_nombre = ValidadorNombre()
+        self.validador_apellido = ValidadorApellido()
 
     def registrar_usuario(self, usuario):
 
+        if not self.validador_nombre.validar(usuario.nombre):
+            raise ValueError("El nombre solo puede contener letras.")
+        
+        if not self.validador_apellido.validar(usuario.apellido):
+            raise ValueError("El apellido solo puede contener letras.")
+        
         if not self.validador_correo.validar(usuario.correo):
             raise ValueError("Correo invalido.")
 
         if not self.validador_edad.validar(usuario.edad):
             raise ValueError("Edad invalida.")
-
+        
         if not self.validador_telefono.validar(usuario.telefono):
             raise ValueError("Telefono invalido.")
 
@@ -43,6 +55,8 @@ class ServicioRegistro:
             raise ValueError(
                 "El correo ya se encuentra registrado."
             )
+        if not self.validador_contrasena.validar(usuario.contrasena):
+            raise ValueError("La contraseña es demasiado corta.")
 
         if isinstance(usuario, Conductor):
             if not self.validador_patente.validar(usuario.auto.patente):

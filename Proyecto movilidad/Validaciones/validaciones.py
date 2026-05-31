@@ -7,8 +7,24 @@ from abstracciones import Validador
 def es_numero(valor):
     return str(valor or "").strip().isdigit()
 
-class ValidadorCorreo(Validador):
+class ValidadorNombre(Validador):
+    def validar(self, valor):
+        if not valor:
+            return False
+        if es_numero(valor):
+            return False
+        return True
 
+
+class ValidadorApellido(Validador):
+    def validar(self, valor):
+        if not valor:
+            return False
+        if es_numero(valor):
+            return False
+        return True
+
+class ValidadorCorreo(Validador):
     def validar(self, valor):
         return bool(
             re.fullmatch(
@@ -205,3 +221,9 @@ class ValidadorNumeroTarjetaAmericanExpress(Validador):
     def validar(self, valor):
         numero = str(valor or "")
         return len(numero) == 15 and numero.startswith(("34", "37"))
+
+class ValidadorContrasena(Validador):
+
+    def validar(self, valor):
+        contrasena = str(valor or "")
+        return len(contrasena) >= 6
