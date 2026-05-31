@@ -123,6 +123,11 @@ class ValidadorNumeroLicencia(Validador):
         return dv == dv_esperado
 
 
+class ValidadorSelfie(Validador):
+    def validar(self, valor):
+        return bool(str(valor or "").strip())
+
+
 class ValidadorVencimientoLicencia(Validador):
     def validar(self, valor):
         try:

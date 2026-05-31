@@ -39,6 +39,7 @@ class Pasajero(Usuario):
 class Conductor(Usuario):
     tipo_licencia: str
     licencia_conducir: str
+    selfie: str
     auto: Auto
     tipo_usuario: str = field(default="conductor", init=False)
 

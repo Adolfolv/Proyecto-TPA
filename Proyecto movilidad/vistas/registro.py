@@ -1,6 +1,7 @@
 """Pantalla de registro."""
 
 import tkinter as tk
+from tkinter import filedialog
 
 from .estilizacion import tema
 from .estilizacion.constantes_vistas import CATEGORIAS_LICENCIA, MARCAS_MODELOS
@@ -22,6 +23,7 @@ class VistaRegistro(tk.Frame):
         self.boton_conductor = None
         self.area_formulario = None
         self.mostrar_mensaje_registro = None
+        self.ruta_selfie = ""
         self.tipo_registro = "pasajero"
 
         super().__init__(master, bg=tema.FONDO)
@@ -49,6 +51,35 @@ class VistaRegistro(tk.Frame):
         for widget in self.area_formulario.winfo_children():
             widget.destroy()
         self.mostrar_mensaje_registro = None
+        self.ruta_selfie = ""
+
+    def alternar_contrasena(self, entradas, boton):
+        mostrar = entradas[0].cget("show") == "*"
+        caracter = "" if mostrar else "*"
+        texto = "Ocultar contrasena" if mostrar else "Mostrar contrasena"
+
+        for entrada in entradas:
+            entrada.configure(show=caracter)
+        boton.configure(text=texto)
+
+    def seleccionar_selfie(self):
+        ruta = filedialog.askopenfilename(
+            title="Seleccionar selfie",
+            filetypes=(
+                ("Imagenes", "*.png *.jpg *.jpeg"),
+                ("Todos los archivos", "*.*"),
+            ),
+        )
+
+        if not ruta:
+            return
+
+        self.ruta_selfie = ruta
+        self.etiqueta_selfie.configure(text="Selfie seleccionada")
+
+    def quitar_selfie(self):
+        self.ruta_selfie = ""
+        self.etiqueta_selfie.configure(text="Sin selfie seleccionada")
 
     def configurar_entrada_telefono(self, entrada):
         entrada.insert(0, PREFIJO_TELEFONO)
@@ -113,11 +144,18 @@ class VistaRegistro(tk.Frame):
         self.moldes.crear_label(bloque, "Datos de la cuenta", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, 780, "center").grid(row=8, column=0, columnspan=2, sticky="ew", pady=(12, 4))
         self.moldes.crear_label(bloque, "Contrasena", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=9, column=0, sticky="w", padx=5, pady=(6, 0))
         self.moldes.crear_label(bloque, "Confirmar contrasena", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=9, column=1, sticky="w", padx=5, pady=(6, 0))
-        self.entrada_contraseña = self.moldes.crear_entrada(bloque, mostrar="*")
-        self.entrada_contraseña.grid(row=10, column=0, sticky="ew", padx=5, pady=(5, 6), ipady=7)
+        self.entrada_contrasena = self.moldes.crear_entrada(bloque, mostrar="*")
+        self.entrada_contrasena.grid(row=10, column=0, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.entrada_confirmar = self.moldes.crear_entrada(bloque, mostrar="*")
         self.entrada_confirmar.grid(row=10, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
-        self.moldes.crear_boton(bloque, "Mostrar contrasena", False, None, None).grid(row=11, column=0, sticky="w", padx=5, pady=(0, 4))
+        boton_mostrar = self.moldes.crear_boton(bloque, "Mostrar contrasena", False, None, None)
+        boton_mostrar.configure(
+            command=lambda: self.alternar_contrasena(
+                (self.entrada_contrasena, self.entrada_confirmar),
+                boton_mostrar,
+            )
+        )
+        boton_mostrar.grid(row=11, column=0, sticky="w", padx=5, pady=(0, 4))
         self.mostrar_mensaje_registro = crear_panel_mensaje_registro(contenido)
 
         # --- DECORACIONES PASAJERO ---
@@ -150,8 +188,16 @@ class VistaRegistro(tk.Frame):
         self.entrada_conductor_edad = self.moldes.crear_entrada(bloque_personal)
         self.entrada_conductor_edad.grid(row=7, column=0, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.moldes.crear_label(bloque_personal, "Selfie", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=8, column=0, columnspan=2, pady=(6, 0))
-        self.moldes.crear_boton(bloque_personal, "Seleccionar selfie", False, None, None).grid(row=9, column=0, columnspan=2, sticky="ew", padx=5, pady=(5, 4))
-        self.moldes.crear_boton(bloque_personal, "Quitar selfie", False, None, None).grid(row=10, column=0, columnspan=2, sticky="ew", padx=5, pady=(0, 6))
+        self.etiqueta_selfie = self.moldes.crear_label(
+            bloque_personal,
+            "Sin selfie seleccionada",
+            tema.FUENTE_TEXTO,
+            tema.TEXTO_SUAVE,
+            tema.PANEL_SUAVE,
+        )
+        self.etiqueta_selfie.grid(row=9, column=0, columnspan=2, sticky="ew", padx=5, pady=(2, 3))
+        self.moldes.crear_boton(bloque_personal, "Seleccionar selfie", False, None, self.seleccionar_selfie).grid(row=10, column=0, sticky="ew", padx=5, pady=(2, 6))
+        self.moldes.crear_boton(bloque_personal, "Quitar selfie", False, None, self.quitar_selfie).grid(row=10, column=1, sticky="ew", padx=5, pady=(2, 6))
         self.moldes.crear_label(bloque_personal, "Datos de la cuenta", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, 780, "center").grid(row=11, column=0, columnspan=2, sticky="ew", pady=(12, 4))
         self.moldes.crear_label(bloque_personal, "Contrasena", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=12, column=0, sticky="w", padx=5, pady=(6, 0))
         self.moldes.crear_label(bloque_personal, "Confirmar contrasena", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=12, column=1, sticky="w", padx=5, pady=(6, 0))
@@ -159,7 +205,9 @@ class VistaRegistro(tk.Frame):
         self.entrada_conductor_contrasena.grid(row=13, column=0, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.entrada_conductor_confirmar = self.moldes.crear_entrada(bloque_personal, mostrar="*")
         self.entrada_conductor_confirmar.grid(row=13, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
-        self.moldes.crear_boton(bloque_personal, "Mostrar contrasena", False, None, None).grid(row=14, column=0, sticky="w", padx=5, pady=(0, 4))
+        boton_mostrar = self.moldes.crear_boton(bloque_personal, "Mostrar contrasena", False, None, None)
+        boton_mostrar.configure(command=lambda: self.alternar_contrasena((self.entrada_conductor_contrasena, self.entrada_conductor_confirmar),boton_mostrar,))
+        boton_mostrar.grid(row=14, column=0, sticky="w", padx=5, pady=(0, 4))
 
         bloque_derecho = self.moldes.crear_frame(derecha, tema.PANEL_SUAVE, tema.BORDE, 1, 14, 14, llenar="both", expandir=True, margen_x=10, margen_y=8)
         bloque_derecho.grid_columnconfigure(0, weight=1)
@@ -224,7 +272,7 @@ class VistaRegistro(tk.Frame):
                 self.entrada_correo.get(),
                 self.entrada_edad.get(),
                 self.entrada_telefono.get(),
-                self.entrada_contraseña.get(),
+                self.entrada_contrasena.get(),
                 self.entrada_confirmar.get(),
                 self.entrada_direccion.get(),
             )
@@ -247,6 +295,7 @@ class VistaRegistro(tk.Frame):
                 self.entrada_conductor_confirmar.get(),
                 self.selector_categoria.get(),
                 self.entrada_licencia.get(),
+                self.ruta_selfie,
                 self.selector_marca.get(),
                 self.selector_modelo.get(),
                 self.entrada_ano.get(),

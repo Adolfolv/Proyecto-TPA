@@ -13,6 +13,7 @@ from Validaciones.registro import (
     ValidadorNombre,
     ValidadorNumeroLicencia,
     ValidadorPatente,
+    ValidadorSelfie,
     ValidadorTelefono,
 )
 
@@ -34,23 +35,24 @@ class ServicioRegistro:
         self.validador_confirmacion_contrasena = ValidadorConfirmacionContrasena()
         self.validador_nombre = ValidadorNombre()
         self.validador_apellido = ValidadorApellido()
+        self.validador_selfie = ValidadorSelfie()
 
     def registrar_usuario(self, usuario, confirmar_contrasena=None):
 
         if not self.validador_nombre.validar(usuario.nombre):
-            raise ValueError("El nombre solo puede contener letras.")
+            raise ValueError("El nombre es obligatorio y debe contener letras.")
 
         if not self.validador_apellido.validar(usuario.apellido):
-            raise ValueError("El apellido solo puede contener letras.")
+            raise ValueError("El apellido es obligatorio y debe contener letras.")
 
         if not self.validador_correo.validar(usuario.correo):
-            raise ValueError("Correo invalido.")
+            raise ValueError("Correo invalido. Usa un formato como nombre@correo.com.")
 
         if not self.validador_edad.validar(usuario.edad):
-            raise ValueError("Edad invalida.")
+            raise ValueError("Edad invalida. Debe ser un numero entre 18 y 100.")
 
         if not self.validador_telefono.validar(usuario.telefono):
-            raise ValueError("Telefono invalido.")
+            raise ValueError("Telefono invalido. Usa +56 9 seguido de 8 digitos.")
 
         if not self.validador_correo_unico.validar(usuario.correo):
             raise ValueError("El correo ya se encuentra registrado.")
@@ -61,10 +63,10 @@ class ServicioRegistro:
                 (usuario.contrasena, confirmar_contrasena)
             )
         ):
-            raise ValueError("Las contrasenas no coinciden.")
+            raise ValueError("Las contrasenas no coinciden. Escribe la misma contrasena en ambos campos.")
 
         if not self.validador_contrasena.validar(usuario.contrasena):
-            raise ValueError("La contrasena es demasiado corta.")
+            raise ValueError("La contrasena es demasiado corta. Debe tener al menos 6 caracteres.")
 
         if isinstance(usuario, Conductor):
             self._validar_conductor(usuario)
@@ -79,13 +81,16 @@ class ServicioRegistro:
 
     def _validar_conductor(self, usuario):
         if not self.validador_patente.validar(usuario.auto.patente):
-            raise ValueError("Patente invalida.")
+            raise ValueError("Patente invalida. Usa formato chileno: ABCD12 o AB1234.")
 
         if not self.validador_asientos.validar(usuario.auto.cantidad_asientos):
-            raise ValueError("Cantidad de pasajeros invalida.")
+            raise ValueError("Cantidad de pasajeros invalida. Debe ser un numero entre 1 y 9.")
 
         if not self.validador_equipaje.validar(usuario.auto.peso_equipaje):
-            raise ValueError("Peso maximo de equipaje invalido.")
+            raise ValueError("Peso maximo de equipaje invalido. Debe ser un numero entre 0 y 500.")
 
         if not self.validador_numero_licencia.validar(usuario.licencia_conducir):
-            raise ValueError("Numero de licencia invalido.")
+            raise ValueError("Numero de licencia invalido. Ingresa un RUT valido, con digito verificador.")
+
+        if not self.validador_selfie.validar(usuario.selfie):
+            raise ValueError("Selfie obligatoria. Selecciona una imagen antes de registrarte.")

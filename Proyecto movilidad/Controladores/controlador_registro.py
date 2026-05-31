@@ -54,6 +54,7 @@ class ControladorRegistro:
         confirmar_contrasena,
         tipo_licencia,
         licencia_conducir,
+        selfie,
         marca,
         modelo,
         ano,
@@ -80,6 +81,7 @@ class ControladorRegistro:
             contrasena=contrasena,
             tipo_licencia=tipo_licencia,
             licencia_conducir=licencia_conducir,
+            selfie=selfie,
             auto=auto,
         )
 

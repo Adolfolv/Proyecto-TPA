@@ -71,6 +71,7 @@ class ServicioUsuario:
 
             if isinstance(auto, dict):
                 datos_usuario["auto"] = Auto(**auto)
+            datos_usuario.setdefault("selfie", "")
             usuario = Conductor(**datos_usuario)
 
         elif tipo == "pasajero":
