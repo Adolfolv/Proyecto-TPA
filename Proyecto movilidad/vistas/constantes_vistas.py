@@ -38,40 +38,187 @@ MARCAS_MODELOS = {
 }
 
 
-# --- constantes archivo viaje.py ---
-
 TITULO_VIAJE = "Viaje"
 GEOMETRIA_VIAJE = "1200x720"
 TAMANO_MINIMO_VIAJE = (900, 620)
 
-LUGARES_OSORNO = (
-    "Plaza de Armas Osorno",
-    "Terminal de Buses Osorno",
-    "Hospital Base San Jose",
-    "Universidad de Los Lagos",
-    "Portal Osorno",
-    "Parque Chuyaca",
-    "Mercado Municipal Osorno",
-    "Estadio Ruben Marcos Peralta",
-    "Casino Marina del Sol Osorno",
-)
+OSORNO_LAT_NORTE = -40.5480
+OSORNO_LAT_SUR = -40.6050
+OSORNO_LNG_OESTE = -73.1650
+OSORNO_LNG_ESTE = -73.0850
 
-COORDENADAS_OSORNO = {
-    "Plaza de Armas Osorno": (-40.5736242, -73.1358144),
-    "Terminal de Buses Osorno": (-40.5729093, -73.1258629),
-    "Hospital Base San Jose": (-40.5878547, -73.1288600),
-    "Universidad de Los Lagos": (-40.5793089, -73.1323055),
-    "Portal Osorno": (-40.5741404, -73.1305151),
-    "Parque Chuyaca": (-40.5750802, -73.1029830),
-    "Mercado Municipal Osorno": (-40.5729830, -73.1287142),
-    "Estadio Ruben Marcos Peralta": (-40.5832579, -73.1315144),
-    "Casino Marina del Sol Osorno": (-40.5754457, -73.1455984),
+COORDENADAS_REALES_OSORNO = {
+    "Plaza de Armas Osorno": (-40.57397, -73.13572),
+    "Terminal de Buses Osorno": (-40.57293, -73.12563),
+    "Hospital Base San Jose": (-40.58794, -73.12787),
+    "Universidad de Los Lagos": (-40.587167, -73.089164),
+    "Portal Osorno": (-40.57408, -73.13048),
+    "Parque Chuyaca": (-40.575000, -73.103889),
+    "Mercado Municipal Osorno": (-40.57296, -73.12880),
+    "Estadio Ruben Marcos Peralta": (-40.58333, -73.13167),
+    "Casino Marina del Sol Osorno": (-40.57539, -73.14577),
 }
 
-CONDUCTORES_DEMO = (
-    ("Camila R.", "Toyota Yaris", "$3.800", "4 min"),
-    ("Ignacio P.", "Hyundai Accent", "$4.100", "6 min"),
-    ("Valentina M.", "Kia Rio", "$3.650", "7 min"),
-    ("Tomas A.", "Chevrolet Onix", "$4.450", "9 min"),
-    ("Fernanda S.", "Nissan Versa", "$4.000", "10 min"),
+IMAGENES_LUGARES_OSORNO = {
+    "Plaza de Armas Osorno": "plazadearmas.png",
+    "Terminal de Buses Osorno": "terminal.png",
+    "Hospital Base San Jose": "hospital base.png",
+    "Universidad de Los Lagos": "ulagos.png",
+    "Portal Osorno": "portalosorno.png",
+    "Parque Chuyaca": "parquechuyaca.png",
+    "Mercado Municipal Osorno": "mercadomunicipalosorno.png",
+    "Estadio Ruben Marcos Peralta": "estadiorubenmarcos.png",
+    "Casino Marina del Sol Osorno": "casino.png",
+}
+
+def _punto_relativo_desde_coordenada(latitud: float, longitud: float) -> tuple[float, float]:
+    x = (longitud - OSORNO_LNG_OESTE) / (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
+    y = (latitud - OSORNO_LAT_NORTE) / (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
+    return (
+        min(1.0, max(0.0, round(x, 5))),
+        min(1.0, max(0.0, round(y, 5))),
+    )
+
+
+LUGARES_OSORNO = {
+    nombre: _punto_relativo_desde_coordenada(latitud, longitud)
+    for nombre, (latitud, longitud) in COORDENADAS_REALES_OSORNO.items()
+}
+
+CALLES_OSORNO = (
+    (
+        "Av. Republica - eje centro oriente",
+        (
+            _punto_relativo_desde_coordenada(-40.57450, -73.13630),
+            _punto_relativo_desde_coordenada(-40.57397, -73.13572),
+            _punto_relativo_desde_coordenada(-40.57408, -73.13048),
+            _punto_relativo_desde_coordenada(-40.57296, -73.12880),
+            _punto_relativo_desde_coordenada(-40.57293, -73.12563),
+            _punto_relativo_desde_coordenada(-40.57380, -73.11800),
+            _punto_relativo_desde_coordenada(-40.57500, -73.103889),
+        ),
+        8,
+    ),
+    (
+        "Juan Mackenna - Manuel Rodriguez",
+        (
+            _punto_relativo_desde_coordenada(-40.57296, -73.12880),
+            _punto_relativo_desde_coordenada(-40.57920, -73.13020),
+            _punto_relativo_desde_coordenada(-40.58333, -73.13167),
+            _punto_relativo_desde_coordenada(-40.58794, -73.12787),
+        ),
+        7,
+    ),
+    (
+        "Los Carrera - acceso sur centro",
+        (
+            _punto_relativo_desde_coordenada(-40.57408, -73.13048),
+            _punto_relativo_desde_coordenada(-40.57920, -73.13020),
+            _punto_relativo_desde_coordenada(-40.58333, -73.13167),
+        ),
+        6,
+    ),
+    (
+        "Rene Soriano - Chuyaca - ULagos",
+        (
+            _punto_relativo_desde_coordenada(-40.57500, -73.103889),
+            _punto_relativo_desde_coordenada(-40.57980, -73.10100),
+            _punto_relativo_desde_coordenada(-40.58420, -73.09500),
+            _punto_relativo_desde_coordenada(-40.587167, -73.089164),
+        ),
+        8,
+    ),
+    (
+        "Ruta 5 Sur - enlace oriente",
+        (
+            _punto_relativo_desde_coordenada(-40.56000, -73.10650),
+            _punto_relativo_desde_coordenada(-40.57500, -73.103889),
+            _punto_relativo_desde_coordenada(-40.58420, -73.09500),
+            _punto_relativo_desde_coordenada(-40.59600, -73.09200),
+        ),
+        9,
+    ),
+    (
+        "Rahue Centro",
+        (
+            _punto_relativo_desde_coordenada(-40.57539, -73.14577),
+            _punto_relativo_desde_coordenada(-40.57520, -73.14420),
+        ),
+        6,
+    ),
+    (
+        "Costanera centro",
+        (
+            _punto_relativo_desde_coordenada(-40.57520, -73.14420),
+            _punto_relativo_desde_coordenada(-40.57450, -73.13630),
+            _punto_relativo_desde_coordenada(-40.57397, -73.13572),
+        ),
+        5,
+    ),
+    (
+        "Calle Burchard - acceso directo Hospital",
+        (
+            _punto_relativo_desde_coordenada(-40.57293, -73.12563),
+            _punto_relativo_desde_coordenada(-40.57600, -73.12580),
+            _punto_relativo_desde_coordenada(-40.57900, -73.12640),
+            _punto_relativo_desde_coordenada(-40.58300, -73.12700),
+            _punto_relativo_desde_coordenada(-40.58794, -73.12787),
+        ),
+        6,
+    ),
+    (
+        "Av. Errazuriz - eje sur transversal",
+        (
+            _punto_relativo_desde_coordenada(-40.58333, -73.13167),
+            _punto_relativo_desde_coordenada(-40.58300, -73.12700),
+            _punto_relativo_desde_coordenada(-40.58200, -73.12000),
+            _punto_relativo_desde_coordenada(-40.58100, -73.10500),
+            _punto_relativo_desde_coordenada(-40.57980, -73.10100),
+        ),
+        7,
+    ),
+    (
+        "Calle Arturo Prat - eje norte sur oriente",
+        (
+            _punto_relativo_desde_coordenada(-40.57380, -73.11800),
+            _punto_relativo_desde_coordenada(-40.57600, -73.11780),
+            _punto_relativo_desde_coordenada(-40.57900, -73.11600),
+            _punto_relativo_desde_coordenada(-40.58100, -73.10500),
+        ),
+        6,
+    ),
+)
+
+PUENTES_OSORNO = (
+    (
+        "Puente San Pedro",
+        _punto_relativo_desde_coordenada(-40.57520, -73.14420),
+        _punto_relativo_desde_coordenada(-40.57450, -73.13630),
+    ),
+)
+
+CONDUCTORES_SIMULADOS = (
+    {"nombre": "Martin Rojas", "imagen": "hombre1.png"},
+    {"nombre": "Matias Soto", "imagen": "hombre2.png"},
+    {"nombre": "Diego Perez", "imagen": "hombre3.png"},
+    {"nombre": "Felipe Munoz", "imagen": "hombre4.png"},
+    {"nombre": "Sebastian Vidal", "imagen": "hombre5.png"},
+    {"nombre": "Cristobal Arias", "imagen": "hombre6.png"},
+    {"nombre": "Nicolas Munoz", "imagen": "hombre7.png"},
+    {"nombre": "Benjamin Torres", "imagen": "hombre8.png"},
+    {"nombre": "Pablo Lagos", "imagen": "hombre9.png"},
+    {"nombre": "Agustin Cardenas", "imagen": "hombre10.png"},
+)
+
+USUARIOS_SOLICITANTES_SIMULADOS = (
+    {"nombre": "Nicolas Vera", "imagen": "hombre11.png"},
+    {"nombre": "Felipe Castro", "imagen": "hombre12.png"},
+    {"nombre": "Benjamin Silva", "imagen": "hombre13.png"},
+    {"nombre": "Tomas Paredes", "imagen": "hombre14.png"},
+    {"nombre": "Agustin Navarro", "imagen": "hombre15.png"},
+    {"nombre": "Martin Fuentes", "imagen": "hombre16.png"},
+    {"nombre": "Antonia Reyes", "imagen": "mujer1.png"},
+    {"nombre": "Catalina Morales", "imagen": "mujer2.png"},
+    {"nombre": "Isidora Fuentes", "imagen": "mujer3.png"},
+    {"nombre": "Martina Alvarez", "imagen": "mujer4.png"},
 )

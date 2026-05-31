@@ -222,6 +222,19 @@ class Moldes:
             self.ubicar(selector, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
         return selector
 
+    def crear_tabla(self, padre, columnas, alto=5, metodo=None, margen_x=0, margen_y=0, **ubicacion):
+        estilo = ttk.Style(padre)
+        estilo.configure("Tabla.Treeview", background=tema.SECUNDARIO, fieldbackground=tema.SECUNDARIO, foreground=tema.TEXTO, rowheight=28, bordercolor=tema.BORDE)
+        estilo.configure("Tabla.Treeview.Heading", background=tema.PANEL_SUAVE, foreground=tema.TEXTO, font=("Arial", 9, "bold"))
+        estilo.map("Tabla.Treeview", background=[("selected", tema.PRIMARIO)], foreground=[("selected", tema.PRIMARIO_TEXTO)])
+        tabla = ttk.Treeview(padre, columns=tuple(columna[0] for columna in columnas), show="headings", style="Tabla.Treeview", height=alto)
+        for clave, texto, ancho in columnas:
+            tabla.heading(clave, text=texto)
+            tabla.column(clave, width=ancho, anchor="center", stretch=True)
+        if metodo is not None:
+            self.ubicar(tabla, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
+        return tabla
+
     def crear_tarjeta_acceso_menu(self, padre, titulo, descripcion, comando=None, metodo=None, margen_x=0, margen_y=0, **ubicacion):
         tarjeta = self.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 16)
         self.crear_label(tarjeta, titulo, tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE).pack(anchor="w")
