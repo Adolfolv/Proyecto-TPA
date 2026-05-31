@@ -5,6 +5,45 @@ import tkinter as tk
 from . import tema
 
 
+# --- DECORACION REGISTRO ---
+def crear_panel_mensaje_registro(padre, compacto=False):
+    alto = 42 if compacto else 58
+    fuente = ("Arial", 9, "bold") if compacto else tema.FUENTE_BOTON
+    wrap = 430 if compacto else 720
+
+    contenedor = tk.Frame(
+        padre,
+        bg=tema.PANEL_SUAVE,
+        highlightbackground=tema.BORDE,
+        highlightthickness=1,
+        height=alto,
+    )
+    etiqueta = tk.Label(
+        contenedor,
+        text="",
+        font=fuente,
+        fg=tema.TEXTO,
+        bg=tema.PANEL_SUAVE,
+        wraplength=wrap,
+        justify="left",
+    )
+    etiqueta.pack(fill="both", expand=True, padx=12, pady=8)
+
+    margen_y = (6, 0) if compacto else (10, 0)
+
+    def mostrar(texto, exito=False):
+        fondo = tema.EXITO_FONDO if exito else tema.ERROR_FONDO
+        borde = tema.EXITO if exito else tema.ERROR
+
+        contenedor.configure(bg=fondo, highlightbackground=borde)
+        etiqueta.configure(text=texto, bg=fondo, fg=tema.TEXTO)
+
+        if not contenedor.winfo_manager():
+            contenedor.pack(fill="x", padx=10, pady=margen_y)
+
+    return mostrar
+
+
 # --- DECORACION MENU ---
 def crear_decoracion_menu_viaje(padre, comando=None, metodo=None, margen_x=0, margen_y=0, **ubicacion):
     canvas = tk.Canvas(padre, bg=tema.PANEL, bd=0, highlightthickness=0, cursor="hand2")

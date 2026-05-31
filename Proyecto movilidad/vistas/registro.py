@@ -4,6 +4,7 @@ import tkinter as tk
 
 from .estilizacion import tema
 from .estilizacion.constantes_vistas import CATEGORIAS_LICENCIA, MARCAS_MODELOS
+from .estilizacion.decoraciones import crear_panel_mensaje_registro
 from .estilizacion.widgets import Moldes
 
 
@@ -20,7 +21,7 @@ class VistaRegistro(tk.Frame):
         self.boton_pasajero = None
         self.boton_conductor = None
         self.area_formulario = None
-        self.mensaje_registro = None
+        self.mostrar_mensaje_registro = None
         self.tipo_registro = "pasajero"
 
         super().__init__(master, bg=tema.FONDO)
@@ -39,14 +40,7 @@ class VistaRegistro(tk.Frame):
         self.boton_conductor = self.moldes.crear_boton(selector, "Conductor", False, None, self.mostrar_conductor, llenar="x", expandir=True, lado="left", margen_x=(0, 5))
 
         barra_acciones = self.moldes.crear_frame(contenedor, tema.PANEL, llenar="x", lado="bottom", margen_y=(12, 0))
-        self.moldes.crear_boton(
-            barra_acciones,
-            "Registrarse",
-            True,
-            16,
-            self.registrar,
-            lado="right",
-        )
+        self.moldes.crear_boton(barra_acciones,"Registrarse",True,16,self.registrar,lado="right",)
         self.area_formulario = self.moldes.crear_frame(contenedor, tema.PANEL, llenar="both", expandir=True, margen_y=(12, 0))
 
         self.mostrar_pasajero()
@@ -54,46 +48,7 @@ class VistaRegistro(tk.Frame):
     def limpiar_formulario(self):
         for widget in self.area_formulario.winfo_children():
             widget.destroy()
-        self.mensaje_registro = None
-
-    def crear_mensaje_registro(self, padre, compacto=False):
-        alto = 42 if compacto else 58
-        fuente = ("Arial", 9, "bold") if compacto else tema.FUENTE_BOTON
-        wrap = 430 if compacto else 720
-
-        contenedor = tk.Frame(
-            padre,
-            bg=tema.PANEL_SUAVE,
-            highlightbackground=tema.BORDE,
-            highlightthickness=1,
-            height=alto,
-        )
-        etiqueta = tk.Label(
-            contenedor,
-            text="",
-            font=fuente,
-            fg=tema.TEXTO,
-            bg=tema.PANEL_SUAVE,
-            wraplength=wrap,
-            justify="left",
-        )
-        etiqueta.pack(fill="both", expand=True, padx=12, pady=8)
-        return contenedor, etiqueta, compacto
-
-    def mostrar_mensaje_registro(self, texto, exito=False):
-        if self.mensaje_registro is None:
-            return
-
-        contenedor, etiqueta, compacto = self.mensaje_registro
-        fondo = tema.EXITO_FONDO if exito else tema.ERROR_FONDO
-        borde = tema.EXITO if exito else tema.ERROR
-        margen_y = (6, 0) if compacto else (10, 0)
-
-        contenedor.configure(bg=fondo, highlightbackground=borde)
-        etiqueta.configure(text=texto, bg=fondo, fg=tema.TEXTO)
-
-        if not contenedor.winfo_manager():
-            contenedor.pack(fill="x", padx=10, pady=margen_y)
+        self.mostrar_mensaje_registro = None
 
     def configurar_entrada_telefono(self, entrada):
         entrada.insert(0, PREFIJO_TELEFONO)
@@ -163,7 +118,7 @@ class VistaRegistro(tk.Frame):
         self.entrada_confirmar = self.moldes.crear_entrada(bloque, mostrar="*")
         self.entrada_confirmar.grid(row=10, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.moldes.crear_boton(bloque, "Mostrar contrasena", False, None, None).grid(row=11, column=0, sticky="w", padx=5, pady=(0, 4))
-        self.mensaje_registro = self.crear_mensaje_registro(contenido)
+        self.mostrar_mensaje_registro = crear_panel_mensaje_registro(contenido)
 
         # --- DECORACIONES PASAJERO ---
         #lucete jorge deidad
@@ -247,7 +202,11 @@ class VistaRegistro(tk.Frame):
         self.moldes.crear_label(bloque_derecho, "Vencimiento de licencia -> formato(DD-MM-YYYY)", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=12, column=1, sticky="w", padx=5, pady=(6, 0))
         self.moldes.crear_entrada(bloque_derecho).grid(row=13, column=0, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.moldes.crear_entrada(bloque_derecho).grid(row=13, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
-        self.mensaje_registro = self.crear_mensaje_registro(contenido, compacto=True)
+        self.mostrar_mensaje_registro = crear_panel_mensaje_registro(contenido, compacto=True)
+
+
+#---Apartado de logica---#
+
 
 #si en el apartado superior se relleno el formulario de pasajero, al apretar 
 #el boton registrar se ejecuta el metodo registrar_pasajero, si se relleno 
