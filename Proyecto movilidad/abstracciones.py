@@ -6,3 +6,8 @@ class TarjetaBase(ABC):
     @abstractmethod
     def numero_valido(self, numero):
         pass
+
+class Validador(ABC):
+    @abstractmethod
+    def validar(self, datos):
+        pass
