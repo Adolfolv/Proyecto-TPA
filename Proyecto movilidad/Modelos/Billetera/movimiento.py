@@ -1,3 +1,4 @@
+from Validaciones.validaciones import ValidadorMontoPositivo, ValidadorSaldoSuficiente
 
 # Archivo para manejar las operaciones relacionadas con 
 # el movimiento de saldo entre la billetera y las tarjetas, 
@@ -5,9 +6,13 @@
 # mover saldo entre diferentes objetos (como tarjetas y billeteras), y realizar pagos o recibir pagos utilizando la billetera del usuario.
 class AdicionMonto:
 
+    def __init__(self):
+        self.validador_monto_positivo = ValidadorMontoPositivo()
+        self.validador_saldo_suficiente = ValidadorSaldoSuficiente()
+
     def agregar_saldo(self, objeto, monto):
 
-        if monto > 0:
+        if self.validador_monto_positivo.validar(monto):
 
             objeto.saldo += monto
             return True
@@ -17,7 +22,7 @@ class AdicionMonto:
 
     def quitar_saldo(self, billetera, monto):
 
-        if monto > 0 and billetera.saldo >= monto:
+        if self.validador_saldo_suficiente.validar((billetera, monto)):
 
             billetera.saldo -= monto
             return True
@@ -30,7 +35,7 @@ class MoverSaldo(AdicionMonto):
 
     def mover_saldo(self, origen, destino, monto):
 
-        if monto <= 0:
+        if not self.validador_monto_positivo.validar(monto):
 
             return False
         if self.quitar_saldo(origen, monto):

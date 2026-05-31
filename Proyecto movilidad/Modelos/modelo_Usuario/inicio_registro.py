@@ -1,6 +1,13 @@
 from modelo_Usuario.generador_de_usuario import GeneradorID
 from Billetera.datos_billetera import Billetera
-from Validaciones.validaciones import ValidadorCorreo, ValidadorEdad, ValidadorTelefono
+from Validaciones.validaciones import (
+    ValidadorContrasenaUsuario,
+    ValidadorCorreo,
+    ValidadorCorreoUnico,
+    ValidadorEdad,
+    ValidadorTelefono,
+    ValidadorUsuarioEncontrado,
+)
 
 class ServicioRegistro:
 
@@ -8,6 +15,7 @@ class ServicioRegistro:
         self.servicio_usuario = servicio_usuario
 
         self.validador_correo = ValidadorCorreo()
+        self.validador_correo_unico = ValidadorCorreoUnico(servicio_usuario)
         self.validador_edad = ValidadorEdad()
         self.validador_telefono = ValidadorTelefono()
 
@@ -22,7 +30,7 @@ class ServicioRegistro:
         if not self.validador_telefono.validar(usuario.telefono):
             raise ValueError("Telefono invalido.")
 
-        if self.servicio_usuario.buscar_por_correo(usuario.correo):
+        if not self.validador_correo_unico.validar(usuario.correo):
             raise ValueError(
                 "El correo ya se encuentra registrado."
             )
@@ -40,6 +48,8 @@ class ServicioAutenticacion:
 
     def __init__(self, servicio_usuario):
         self.servicio_usuario = servicio_usuario
+        self.validador_usuario_encontrado = ValidadorUsuarioEncontrado()
+        self.validador_contrasena_usuario = ValidadorContrasenaUsuario()
 
     def iniciar_sesion(
         self,
@@ -51,10 +61,10 @@ class ServicioAutenticacion:
             .buscar_por_correo(correo)
         )
 
-        if usuario is None:
+        if not self.validador_usuario_encontrado.validar(usuario):
             return None
 
-        if usuario.contraseña != contrasena:
+        if not self.validador_contrasena_usuario.validar((usuario, contrasena)):
             return None
 
         return usuario

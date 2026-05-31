@@ -1,5 +1,6 @@
 from Billetera.tarjetas import ServicioTarjeta
 from Billetera.movimiento import Pago, MoverSaldo
+from Validaciones.validaciones import ValidadorMontoPositivo, ValidadorTarjetaEncontrada
 
 #archivo para manejar la lógica de negocio relacionada con la billetera, 
 # incluyendo la gestión de tarjetas, movimientos de saldo, pagos y recepciones. 
@@ -11,6 +12,8 @@ class ServicioBilletera:
         self.tarjeta_service = ServicioTarjeta()
         self.mover = MoverSaldo()
         self.pago = Pago()
+        self.validador_monto_positivo = ValidadorMontoPositivo()
+        self.validador_tarjeta_encontrada = ValidadorTarjetaEncontrada()
 
     def agregar_tarjeta(self, usuario, tarjeta):
         return self.tarjeta_service.agregar_tarjeta(usuario, tarjeta)
@@ -26,24 +29,24 @@ class ServicioBilletera:
 
     def cargar_desde_tarjeta(self, usuario, numero_tarjeta, monto):
 
-        if monto <= 0:
+        if not self.validador_monto_positivo.validar(monto):
             return False
 
         tarjeta = self._buscar_tarjeta(usuario, numero_tarjeta)
 
-        if not tarjeta:
+        if not self.validador_tarjeta_encontrada.validar(tarjeta):
             return False
 
         return self.mover.mover_saldo(tarjeta, usuario.billetera, monto)
 
     def retirar_a_tarjeta(self, usuario, numero_tarjeta, monto):
 
-        if monto <= 0:
+        if not self.validador_monto_positivo.validar(monto):
             return False
 
         tarjeta = self._buscar_tarjeta(usuario, numero_tarjeta)
 
-        if not tarjeta:
+        if not self.validador_tarjeta_encontrada.validar(tarjeta):
             return False
 
         return self.mover.mover_saldo(usuario.billetera, tarjeta, monto)
