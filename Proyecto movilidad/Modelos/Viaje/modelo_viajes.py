@@ -15,7 +15,6 @@ class Viaje:
     usuario: str
     conductor: str
     vehiculo: str
-    estado: bool
     precio: float
     distancia: float
     duracion: float

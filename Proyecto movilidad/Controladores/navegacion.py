@@ -12,9 +12,11 @@ from Servicios.Usuario.autenticacion import ServicioAutenticacion
 from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.Usuario.servicio_usuario import ServicioUsuario
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
+from Servicios.Viajes.servicio_viaje import ServicioViaje
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_registro import ControladorRegistro
 from Controladores.controlador_billetera import ControladorBilletera
+from Controladores.controlador_viaje import ControladorViaje
 
 class Navegacion:
     def __init__(self):
@@ -27,6 +29,7 @@ class Navegacion:
         self.servicio_registro = ServicioRegistro(self.servicio_usuario)
         self.servicio_autenticacion = ServicioAutenticacion(self.servicio_usuario)
         self.servicio_billetera = ServicioBilletera()
+        self.servicio_viaje = ServicioViaje()
         self.usuario_actual = None
 
         self.controlador_inicio_sesion = ControladorInicioSesion(
@@ -38,6 +41,9 @@ class Navegacion:
         self.controlador_billetera = ControladorBilletera(
             self.servicio_billetera,
             self.servicio_usuario,
+        )
+        self.controlador_viaje = ControladorViaje(
+            self.servicio_viaje,
         )
 
     def iniciar(self):
@@ -125,7 +131,16 @@ class Navegacion:
         tipo_usuario = self.obtener_tipo_usuario()
         self.limpiar_pantalla()
         self.ventana.title("Viaje")
-        VistaViaje(self.ventana, self.navegar, tipo_usuario)
+        VistaViaje(
+            self.ventana,
+            self.navegar,
+            tipo_usuario,
+            self.volver_menu,
+            self.controlador_viaje,
+        )
+
+    def volver_menu(self):
+        self.mostrar_menu()
 
     def obtener_tipo_usuario(self):
         usuario = self.obtener_usuario_actual()
