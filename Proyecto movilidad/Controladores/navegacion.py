@@ -44,6 +44,8 @@ class Navegacion:
         )
         self.controlador_viaje = ControladorViaje(
             self.servicio_viaje,
+            self.servicio_billetera,
+            self.servicio_usuario,
         )
 
     def iniciar(self):
