@@ -22,8 +22,8 @@ class ComponenteViaje:
     def __init__(self, panel):
         self.panel = panel
         self.moldes = panel.moldes
-        self.tipo_usuario = panel.tipo_usuario
         self.callbacks = panel.callbacks
+        self.tipo_usuario = panel.tipo_usuario
 
 class ProgresoViaje(ComponenteViaje):
     def crear(self):

@@ -1,4 +1,5 @@
 from abstracciones import Validador
+from datetime import date
 
 
 class ValidadorMontoPositivo(Validador):
@@ -42,6 +43,31 @@ class ValidadorTarjetaNoDuplicada(Validador):
 class ValidadorSaldoDefinido(Validador):
     def validar(self, valor):
         return hasattr(valor, "saldo") and valor.saldo is not None
+
+
+class ValidadorFechaVencimientoTarjeta(Validador):
+    def validar(self, valor):
+        partes = str(valor or "").strip().split("/")
+
+        if len(partes) != 2:
+            return False
+
+        mes, ano = partes
+
+        if not mes.isdigit() or not ano.isdigit():
+            return False
+
+        if len(mes) != 2 or len(ano) != 2:
+            return False
+
+        mes = int(mes)
+        ano = 2000 + int(ano)
+
+        if mes < 1 or mes > 12:
+            return False
+
+        hoy = date.today()
+        return ano > hoy.year or (ano == hoy.year and mes >= hoy.month)
 
 
 class ValidadorNumeroTarjetaVisa(Validador):

@@ -2,12 +2,12 @@
 
 import tkinter as tk
 
-from vistas.billetera import VistaBilletera
-from vistas.inicio_sesion import VistaInicioSesion
-from vistas.menu import VistaMenu
-from vistas.pantalla_inicial import VistaPantallaInicial
-from vistas.registro import VistaRegistro
-from vistas.viaje import VistaViaje
+from Vistas.billetera import VistaBilletera
+from Vistas.inicio_sesion import VistaInicioSesion
+from Vistas.menu import VistaMenu
+from Vistas.pantalla_inicial import VistaPantallaInicial
+from Vistas.registro import VistaRegistro
+from Vistas.viaje import VistaViaje
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
 from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.Usuario.servicio_usuario import ServicioUsuario

@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from Modelos.Billetera.datos_billetera import Transaccion
 from Validaciones.billetera import ValidadorMontoPositivo, ValidadorSaldoSuficiente
 
 # Archivo para manejar las operaciones relacionadas con 
@@ -64,53 +67,20 @@ class Pago(AdicionMonto):
         return False
 
 
-"""""""""""
-import datos_billetera
+class HistorialTransacciones:
+    def crear_transaccion(self, billetera, tipo, monto):
+        transaccion = Transaccion(
+            id_transaccion=self._generar_id(billetera),
+            tipo=tipo,
+            monto=float(monto),
+            fecha=datetime.now().strftime("%d-%m-%Y %H:%M"),
+        )
+        billetera.transacciones.append(transaccion)
+        return transaccion
 
-tarjeta = datos_billetera.tarjetas(
-    numero_tarjeta="1234567812345678",
-    vencimiento="12/30",
-    cvv="123",
-    saldo=10000
-)
+    def _generar_id(self, billetera):
+        return f"TRX{len(billetera.transacciones) + 1:04d}"
 
-# -------------------------
-# CREAR BILLETERA
-# -------------------------
-
-billetera = datos_billetera.billetera(
-    saldo=2000
-)
-
-# -------------------------
-# MOSTRAR SALDOS INICIALES
-# -------------------------
-
-print("SALDOS INICIALES")
-print("Tarjeta:", tarjeta.saldo)
-print("Billetera:", billetera.saldo)
-
-# -------------------------
-# MOVER SALDO
-# TARJETA -> BILLETERA
-# -------------------------
-
-movimiento = MoverSaldo()
-
-movimiento.mover_saldo(
-    tarjeta,
-    billetera,
-    5000
-)
-
-# -------------------------
-# MOSTRAR SALDOS FINALES
-# -------------------------
-
-print("\nSALDOS FINALES")
-print("Tarjeta:", tarjeta.saldo)
-print("Billetera:", billetera.saldo)
-"""""""""
 
 
     

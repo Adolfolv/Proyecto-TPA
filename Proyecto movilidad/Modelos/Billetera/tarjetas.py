@@ -2,6 +2,7 @@ import abstracciones
 TarjetaBase = abstracciones.TarjetaBase
 import random
 from Validaciones.billetera import (
+    ValidadorFechaVencimientoTarjeta,
     ValidadorNumeroTarjetaAmericanExpress,
     ValidadorNumeroTarjetaMastercard,
     ValidadorNumeroTarjetaVisa,
@@ -62,6 +63,10 @@ class ServicioTarjeta:
             ValidadorSaldoDefinido()
         )
 
+        self.validador_fecha_vencimiento = (
+            ValidadorFechaVencimientoTarjeta()
+        )
+
     def agregar_tarjeta( self, usuario, tipo, titular, numero, vencimiento, cvv):
         clase_tarjeta = self.TIPOS_TARJETA.get(tipo)
 
@@ -74,6 +79,9 @@ class ServicioTarjeta:
             return False
 
         if len(str(cvv)) != tarjeta_validadora.longitud_cvv:
+            return False
+
+        if not self.validador_fecha_vencimiento.validar(vencimiento):
             return False
 
         tarjeta = Tarjetas(
