@@ -43,11 +43,13 @@ class VistaViaje(tk.Frame):
         tipo_usuario="pasajero",
         comando_volver_menu=None,
         controlador_viaje=None,
+        usuario_actual=None,
     ):
         self.navegar = navegar
         self.tipo_usuario = tipo_usuario
         self.comando_volver_menu = comando_volver_menu
         self.controlador_viaje = controlador_viaje
+        self.usuario_actual = usuario_actual
         self.moldes = Moldes()
         self.moldes.configurar_selectores(master)
 
@@ -61,11 +63,17 @@ class VistaViaje(tk.Frame):
         self.label_cronometro = None
         self.frame_pasajero = None
         self.frame_confirmacion = None
+        self.label_estado_viaje = None
+        self.barra_progreso = None
+        self.label_estado_progreso = None
+        self.label_porcentaje_progreso = None
         self.pasajero_encontrado = None
         self.imagen_pasajero = None
         self.info_pasajero_busqueda = None
         self.trayectoria_pasajero = None
         self.ubicacion_inicial_busqueda = None
+        self.marcadores_lugares = []
+        self.viaje_en_proceso = False
 
         super().__init__(master, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
@@ -130,14 +138,18 @@ class VistaViaje(tk.Frame):
         texto_confirmacion = "Confirmar viaje?" if self.tipo_usuario == "conductor" else "Confirmar pago del viaje seleccionado?"
         self.moldes.crear_label(confirmacion, texto_confirmacion, tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
         self.boton_confirmar_viaje = self.moldes.crear_boton(confirmacion, "Si, confirmar", True, None, self.iniciar_viaje, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
-        self.boton_cancelar_viaje = self.moldes.crear_boton(confirmacion, "Cancelar", False, None, self.cancelar_busqueda_pasajeros, metodo="grid", fila=1, columna=1, sticky="ew", margen_x=(4, 10), margen_y=(0, 8))
+        self.boton_cancelar_viaje = self.moldes.crear_boton(confirmacion, "Cancelar", False, None, lambda: self.navegar("viaje"), metodo="grid", fila=1, columna=1, sticky="ew", margen_x=(4, 10), margen_y=(0, 8))
         if self.tipo_usuario == "conductor":
             self.frame_confirmacion.grid_remove()
 
+        self.label_estado_viaje = self.moldes.crear_label(frame, "", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=7, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10))
+        self.label_estado_viaje.grid_remove()
+
         progreso = self.moldes.crear_frame(frame, tema.PANEL, fila=8, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
-        self.moldes.crear_label(progreso, "Progreso del trayecto", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 8))
-        ttk.Progressbar(progreso, maximum=100, mode="determinate", value=35).grid(row=1, column=0, sticky="ew")
-        self.moldes.crear_label(progreso, "35%", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(6, 0))
+        self.label_estado_progreso = self.moldes.crear_label(progreso, "Progreso del trayecto", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 8))
+        self.barra_progreso = ttk.Progressbar(progreso, maximum=100, mode="determinate", value=0)
+        self.barra_progreso.grid(row=1, column=0, sticky="ew")
+        self.label_porcentaje_progreso = self.moldes.crear_label(progreso, "0%", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(6, 0))
 
 #mapa + funciones basicas mapa
     def crear_frame_derecho(self, padre):
@@ -196,15 +208,13 @@ class VistaViaje(tk.Frame):
                 imagen.thumbnail((42, 42))
                 self.imagenes_lugares[lugar] = ImageTk.PhotoImage(imagen)
 
-            self.mapa.set_marker(latitud, longitud, text=lugar, icon=self.imagenes_lugares[lugar], image_zoom_visibility=(0, float("inf")))
+            marcador = self.mapa.set_marker(latitud, longitud, text=lugar, icon=self.imagenes_lugares[lugar], image_zoom_visibility=(0, float("inf")))
+            self.marcadores_lugares.append(marcador)
 
 #-- flujo viaje pasajero ---#
 
 #-- flujo viaje conductor ---#
     def buscar_pasajeros(self):
-        if not self.controlador_viaje:
-            return
-
         ubicacion_inicial = self.selector_ubicacion.get()
         self.ubicacion_inicial_busqueda = ubicacion_inicial
         self.info_pasajero_busqueda = self.controlador_viaje.buscar_pasajeros(
@@ -216,29 +226,43 @@ class VistaViaje(tk.Frame):
             RUTA_IMAGENES_USUARIOS,
             self.moldes,
             tema,
-            self.finalizar_busqueda_pasajeros,
+            lambda: (
+                setattr(self, "trayectoria_pasajero", self.controlador_viaje.formar_trayectoria(self.mapa,self.info_pasajero_busqueda["ubicacion_inicial"],self.info_pasajero_busqueda["ubicacion_final"],)),
+                self.frame_pasajero.grid(),
+                self.frame_confirmacion.grid(),
+                self.boton_volver.config(command=self.mostrar_aviso_seleccionar_opcion),
+            ),
         )
-        return self.info_pasajero_busqueda
-
-    def finalizar_busqueda_pasajeros(self):
-        self.trayectoria_pasajero = self.controlador_viaje.formar_trayectoria(self.mapa,
-            self.info_pasajero_busqueda["ubicacion_inicial"],
-            self.info_pasajero_busqueda["ubicacion_final"],
-        )
-        self.frame_pasajero.grid()
-        self.frame_confirmacion.grid()
-        self.boton_volver.config(command=self.mostrar_aviso_seleccionar_opcion)
-
-    def cancelar_busqueda_pasajeros(self):
-        if self.navegar:
-            self.navegar("viaje")
 
     def iniciar_viaje(self):
-        self.controlador_viaje.iniciar_viaje(
-            self.ubicacion_inicial_busqueda,
-            self.info_pasajero_busqueda,
-        )
+        self.viaje_en_proceso = True
+        self.boton_confirmar_viaje.config(state="disabled", cursor="arrow")
+        self.boton_cancelar_viaje.config(state="disabled", cursor="arrow")
+        self.boton_buscar_pasajeros.config(state="disabled", cursor="arrow")
+        self.selector_ubicacion.config(state="disabled")
         self.boton_volver.config(command=self.mostrar_aviso_viaje_en_proceso)
+        self.frame_confirmacion.grid_remove()
+        self.label_estado_viaje.config(text="viaje en proceso")
+        self.label_estado_viaje.grid()
+
+        self.controlador_viaje.iniciar_viaje(self.ubicacion_inicial_busqueda,self.info_pasajero_busqueda,self.usuario_actual,self.crear_contexto_animacion_viaje(),)
+
+    def crear_contexto_animacion_viaje(self):
+        return {
+            "mapa": self.mapa,
+            "marcadores_lugares": self.marcadores_lugares,
+            "ruta_imagenes_usuarios": RUTA_IMAGENES_USUARIOS,
+            "datos_pasajero": self.info_pasajero_busqueda,
+            "barra_progreso": self.barra_progreso,
+            "label_estado": self.label_estado_progreso,
+            "label_porcentaje": self.label_porcentaje_progreso,
+            "al_terminar_viaje": self.reiniciar_pantalla_viaje,
+        }
+
+    def reiniciar_pantalla_viaje(self):
+        self.label_estado_viaje.config(text="viaje finalizado")
+        self.after(900, lambda: self.navegar("viaje"))
+
 
     def mostrar_aviso_seleccionar_opcion(self):
         messagebox.showwarning("Viaje pendiente", "Debo seleccionar una opcion.")

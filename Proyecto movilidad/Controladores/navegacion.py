@@ -137,6 +137,7 @@ class Navegacion:
             tipo_usuario,
             self.volver_menu,
             self.controlador_viaje,
+            self.obtener_usuario_actual(),
         )
 
     def volver_menu(self):

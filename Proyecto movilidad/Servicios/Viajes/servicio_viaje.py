@@ -5,10 +5,16 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 from Servicios.Viajes.datos_viaje import LUGARES_OSORNO, PASAJEROS_SIMULADOS
+from Servicios.Viajes.AnimacionViaje import AnimacionViaje
+from Servicios.Viajes.persistencia_usuario import PersistenciaUsuarioViajes
 from Servicios.Viajes.trayectoria import calcular_trayectoria, coordenada_real
 
 
 class ServicioViaje:
+    def __init__(self, persistencia_usuario=None):
+        self.viajes = []
+        self.persistencia_usuario = persistencia_usuario or PersistenciaUsuarioViajes()
+        self.animacion_viaje = AnimacionViaje()
 
     def buscar_pasajeros(
         self,
@@ -52,6 +58,11 @@ class ServicioViaje:
             "trayecto": f"{pasajero['ubicacion_inicial']} -> {pasajero['ubicacion_final']}",
             "ubicacion_inicial": pasajero["ubicacion_inicial"],
             "ubicacion_final": pasajero["ubicacion_final"],
+            "ubicacion_conductor": ubicacion_conductor,
+            "imagen": pasajero["imagen"],
+            "precio": float(pasajero["pago"]),
+            "distancia": distancias["km_para_llegar"] + distancias["km_transportando"],
+            "duracion": tiempos["tiempo_para_llegar"] + tiempos["tiempo_transportando"],
             **distancias,
             **tiempos,
         }
@@ -199,3 +210,17 @@ class ServicioViaje:
         moldes.crear_label(frame_pasajero, traslado, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=5, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 10))
         al_finalizar()
         return imagen_pasajero
+
+    def iniciar_viaje(self, viaje, usuario, contexto_animacion):
+        self.animacion_viaje.animacion_viaje_conductor(
+            contexto_animacion["mapa"],
+            contexto_animacion["marcadores_lugares"],
+            contexto_animacion["ruta_imagenes_usuarios"],
+            contexto_animacion["datos_pasajero"],
+            contexto_animacion["barra_progreso"],
+            contexto_animacion["label_estado"],
+            contexto_animacion["label_porcentaje"],
+            contexto_animacion["al_terminar_viaje"],
+        )
+        self.viajes.append(viaje)
+        return self.persistencia_usuario.guardar_viaje(usuario, viaje)

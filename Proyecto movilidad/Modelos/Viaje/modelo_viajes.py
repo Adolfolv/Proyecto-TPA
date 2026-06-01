@@ -12,12 +12,17 @@ class SolicitudViaje:
     ubicacion: Ubicacion
 @dataclass
 class Viaje:
-    usuario: str
+    pasajero: str
     conductor: str
     vehiculo: str
     precio: float
     distancia: float
     duracion: float
-    solicitud: SolicitudViaje
-    
+
+
+@dataclass
+class CuentaViajes:
+    id_usuario: str
+    tipo_usuario: str
+    viajes: list[Viaje]
 

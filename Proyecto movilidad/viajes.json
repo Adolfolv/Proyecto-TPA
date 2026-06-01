@@ -1,0 +1,96 @@
+[
+    {
+        "id_usuario": "USR0002",
+        "tipo_usuario": "conductor",
+        "viajes": [
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Antonia Reyes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Suzuki Swift",
+                "precio": 4100.0,
+                "distancia": 2.5700000000000003,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Felipe Castro",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Hyundai Accent",
+                "precio": 3900.0,
+                "distancia": 6.08,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Benjamin Silva",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Chevrolet Sail",
+                "precio": 3600.0,
+                "distancia": 3.48,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Nicolas Vera",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Toyota Corolla",
+                "precio": 4200.0,
+                "distancia": 2.25,
+                "duracion": 20.0
+            }
+        ]
+    }
+]

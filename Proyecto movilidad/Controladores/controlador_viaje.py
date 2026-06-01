@@ -1,3 +1,6 @@
+from Modelos.Viaje.modelo_viajes import Viaje
+
+
 class ControladorViaje:
 
     def __init__(self, servicio_viaje):
@@ -34,10 +37,14 @@ class ControladorViaje:
             ubicacion_final,
         )
 
-    def iniciar_viaje(self, ubicacion_inicial, datos_pasajero):
-        if hasattr(self.servicio_viaje, "iniciar_viaje"):
-            return self.servicio_viaje.iniciar_viaje(
-                ubicacion_inicial,
-                datos_pasajero,
-            )
-        return None
+    def iniciar_viaje(self, ubicacion_inicial, datos_pasajero, usuario, contexto_animacion):
+        conductor = f"{usuario.nombre} {usuario.apellido}"
+        viaje = Viaje(
+            pasajero=datos_pasajero["nombre_completo"],
+            conductor=conductor,
+            vehiculo=datos_pasajero["vehiculo"],
+            precio=float(datos_pasajero["precio"]),
+            distancia=float(datos_pasajero["distancia"]),
+            duracion=float(datos_pasajero["duracion"]),
+        )
+        return self.servicio_viaje.iniciar_viaje(viaje, usuario, contexto_animacion)
