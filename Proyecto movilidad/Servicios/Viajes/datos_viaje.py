@@ -1,3 +1,9 @@
+
+
+from Servicios.Viajes.trayectoria import (  # noqa: E402
+    punto_relativo_desde_coordenada as _punto_relativo_desde_coordenada,
+)
+
 OSORNO_LAT_NORTE = -40.5480
 OSORNO_LAT_SUR = -40.6050
 OSORNO_LNG_OESTE = -73.1650
@@ -28,13 +34,7 @@ IMAGENES_LUGARES_OSORNO = {
 }
 
 
-def _punto_relativo_desde_coordenada(latitud: float, longitud: float) -> tuple[float, float]:
-    x = (longitud - OSORNO_LNG_OESTE) / (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
-    y = (latitud - OSORNO_LAT_NORTE) / (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
-    return (
-        min(1.0, max(0.0, round(x, 5))),
-        min(1.0, max(0.0, round(y, 5))),
-    )
+
 
 
 LUGARES_OSORNO = {

@@ -1,13 +1,6 @@
 import json
 import urllib.request
 
-from Servicios.Viajes.datos_viaje import (
-    OSORNO_LAT_NORTE,
-    OSORNO_LAT_SUR,
-    OSORNO_LNG_ESTE,
-    OSORNO_LNG_OESTE,
-)
-
 
 Punto = tuple[float, float]
 URL_OSRM = "http://router.project-osrm.org/route/v1/driving"
@@ -15,6 +8,13 @@ TIMEOUT_OSRM = 4
 
 
 def coordenada_real(punto: Punto) -> tuple[float, float]:
+    from Servicios.Viajes.datos_viaje import (  # noqa: PLC0415
+        OSORNO_LAT_NORTE,
+        OSORNO_LAT_SUR,
+        OSORNO_LNG_ESTE,
+        OSORNO_LNG_OESTE,
+    )
+
     x = min(1.0, max(0.0, punto[0]))
     y = min(1.0, max(0.0, punto[1]))
     latitud = OSORNO_LAT_NORTE + y * (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
@@ -23,6 +23,13 @@ def coordenada_real(punto: Punto) -> tuple[float, float]:
 
 
 def punto_relativo_desde_coordenada(latitud: float, longitud: float) -> Punto:
+    from Servicios.Viajes.datos_viaje import (  # noqa: PLC0415
+        OSORNO_LAT_NORTE,
+        OSORNO_LAT_SUR,
+        OSORNO_LNG_ESTE,
+        OSORNO_LNG_OESTE,
+    )
+
     x = (longitud - OSORNO_LNG_OESTE) / (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
     y = (latitud - OSORNO_LAT_NORTE) / (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
     return (

@@ -1,11 +1,7 @@
 from math import asin, cos, radians, sin, sqrt
 from random import choice, randint
 
-import tkinter as tk
-from PIL import Image, ImageTk
-
 from Servicios.Viajes.datos_viaje import LUGARES_OSORNO, PASAJEROS_SIMULADOS
-from Servicios.Viajes.AnimacionViaje import AnimacionViaje
 from Servicios.Viajes.persistencia_usuario import PersistenciaUsuarioViajes
 from Servicios.Viajes.trayectoria import calcular_trayectoria, coordenada_real
 
@@ -14,36 +10,14 @@ class ServicioViaje:
     def __init__(self, persistencia_usuario=None):
         self.viajes = []
         self.persistencia_usuario = persistencia_usuario or PersistenciaUsuarioViajes()
-        self.animacion_viaje = AnimacionViaje()
 
     def buscar_pasajeros(
         self,
         ubicacion_inicial,
-        boton_buscar_pasajeros,
-        selector_ubicacion,
-        label_cronometro,
-        frame_pasajero,
-        ruta_imagenes_usuarios,
-        moldes,
-        tema,
-        al_finalizar,
     ):
         pasajero = choice(PASAJEROS_SIMULADOS)
         datos_pasajero = self.obtener_datos_pasajero(pasajero, ubicacion_inicial)
-        duracion_busqueda = randint(5, 10)
-        boton_buscar_pasajeros.config(state="disabled", cursor="arrow")
-        selector_ubicacion.config(state="disabled")
-        self.actualizar_cronometro(
-            label_cronometro,
-            duracion_busqueda,
-            frame_pasajero,
-            pasajero,
-            datos_pasajero,
-            ruta_imagenes_usuarios,
-            moldes,
-            tema,
-            al_finalizar,
-        )
+        datos_pasajero["duracion_busqueda"] = randint(5, 10)
         return datos_pasajero
 
     def obtener_datos_pasajero(self, pasajero, ubicacion_conductor):
@@ -133,94 +107,14 @@ class ServicioViaje:
         )
         return 2 * radio_tierra * asin(sqrt(a))
 
-    def formar_trayectoria(self, mapa, ubicacion_inicial, ubicacion_final):
+    def formar_trayectoria(self, ubicacion_inicial, ubicacion_final):
         inicio = LUGARES_OSORNO[ubicacion_inicial]
         destino = LUGARES_OSORNO[ubicacion_final]
         ruta_relativa = calcular_trayectoria(inicio, destino)
-        ruta_real = [coordenada_real(punto) for punto in ruta_relativa]
-        return mapa.set_path(ruta_real, color="#1a73e8", width=5)
+        return [coordenada_real(punto) for punto in ruta_relativa]
 
-    def actualizar_cronometro(
-        self,
-        label_cronometro,
-        duracion_busqueda,
-        frame_pasajero,
-        pasajero,
-        datos_pasajero,
-        ruta_imagenes_usuarios,
-        moldes,
-        tema,
-        al_finalizar,
-        segundos_transcurridos=0,
-    ):
-        label_cronometro.config(text=f"00:{segundos_transcurridos:02d}")
-
-        if segundos_transcurridos < duracion_busqueda:
-            label_cronometro.after(
-                1000,
-                lambda: self.actualizar_cronometro(
-                    label_cronometro,
-                    duracion_busqueda,
-                    frame_pasajero,
-                    pasajero,
-                    datos_pasajero,
-                    ruta_imagenes_usuarios,
-                    moldes,
-                    tema,
-                    al_finalizar,
-                    segundos_transcurridos + 1,
-                ),
-            )
-            return
-
-        self.mostrar_pasajeros(
-            frame_pasajero,
-            pasajero,
-            datos_pasajero,
-            ruta_imagenes_usuarios,
-            moldes,
-            tema,
-            al_finalizar,
-        )
-
-    def mostrar_pasajeros(self, frame_pasajero, pasajero, datos_pasajero, ruta_imagenes_usuarios, moldes, tema, al_finalizar):
-        for widget in frame_pasajero.winfo_children():
-            widget.destroy()
-
-        imagen = Image.open(ruta_imagenes_usuarios / pasajero["imagen"])
-        imagen.thumbnail((64, 64))
-        imagen_pasajero = ImageTk.PhotoImage(imagen)
-        frame_pasajero.imagen_pasajero = imagen_pasajero
-
-        foto = tk.Label(frame_pasajero, image=imagen_pasajero, bg=tema.PANEL_SUAVE)
-        foto.grid(row=0, column=0, rowspan=4, sticky="nw", padx=10, pady=10)
-
-        nombre_completo = f"{pasajero['nombre']} {pasajero['apellido']}"
-        vehiculo = f"{pasajero['marca_vehiculo']} {pasajero['modelo_vehiculo']}"
-        trayecto = f"{pasajero['ubicacion_inicial']} -> {pasajero['ubicacion_final']}"
-        pago = f"${pasajero['pago']}"
-        llegada = f"Llegar: {datos_pasajero['km_para_llegar']} km | {datos_pasajero['tiempo_para_llegar']} s"
-        traslado = f"Traslado: {datos_pasajero['km_transportando']} km | {datos_pasajero['tiempo_transportando']} s"
-
-        moldes.crear_label(frame_pasajero, nombre_completo, ("Arial", 12, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=1, sticky="w", margen_x=8, margen_y=(10, 2))
-        moldes.crear_label(frame_pasajero, trayecto, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, 300, "left", metodo="grid", fila=1, columna=1, sticky="w", margen_x=8)
-        moldes.crear_label(frame_pasajero, f"Vehiculo: {vehiculo}", ("Arial", 9), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=1, sticky="w", margen_x=8)
-        moldes.crear_label(frame_pasajero, f"Pago: {pago}", ("Arial", 9, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=1, sticky="w", margen_x=8, margen_y=(0, 10))
-        moldes.crear_label(frame_pasajero, llegada, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=4, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 2))
-        moldes.crear_label(frame_pasajero, traslado, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=5, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 10))
-        al_finalizar()
-        return imagen_pasajero
-
-    def iniciar_viaje(self, viaje, usuario, contexto_animacion):
-        self.animacion_viaje.animacion_viaje_conductor(
-            contexto_animacion["mapa"],
-            contexto_animacion["marcadores_lugares"],
-            contexto_animacion["ruta_imagenes_usuarios"],
-            contexto_animacion["datos_pasajero"],
-            contexto_animacion["barra_progreso"],
-            contexto_animacion["label_estado"],
-            contexto_animacion["label_porcentaje"],
-            contexto_animacion["al_terminar_viaje"],
-        )
+#Esta funcion recibe los datos del pasajero y el viaje, con unos datos se va a encargar de animar el viaje, 
+#y con otros datos se va a encargar de guardar el viaje en el historial del usuario
+    def iniciar_viaje(self, viaje, usuario):
         self.viajes.append(viaje)
         return self.persistencia_usuario.guardar_viaje(usuario, viaje)
