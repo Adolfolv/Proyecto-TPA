@@ -19,7 +19,7 @@ RUTA_IMAGENES_LUGARES = Path(__file__).resolve().parent.parent / "estilizacion" 
 RUTA_IMAGENES_CONDUCTORES = Path(__file__).resolve().parent.parent / "estilizacion" / "Imagenes" / "imagenes_conductores"
 
 
-class MapaViaje:
+class MapaViajeComun:
     def __init__(self, padre, moldes):
         self.padre = padre
         self.moldes = moldes
@@ -30,18 +30,56 @@ class MapaViaje:
         self.trayectorias = []
 
     def crear(self, pintar_lugares=True):
-        frame = self.moldes.crear_frame(self.padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=1, sticky="nsew", margen_x=(12, 0))
+        frame = self.moldes.crear_frame(
+            self.padre,
+            tema.PANEL,
+            tema.BORDE,
+            1,
+            fila=0,
+            columna=1,
+            sticky="nsew",
+            margen_x=(12, 0),
+        )
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(1, weight=1)
         self.crear_cabecera(frame)
         self.crear_mapa(frame, pintar_lugares)
 
     def crear_cabecera(self, panel):
-        cabecera = self.moldes.crear_frame(panel, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=18, margen_y=(16, 8), columnas_peso=((0, 1),))
-        self.moldes.crear_label(cabecera, "Mapa de Osorno", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
+        cabecera = self.moldes.crear_frame(
+            panel,
+            tema.PANEL,
+            fila=0,
+            columna=0,
+            sticky="ew",
+            margen_x=18,
+            margen_y=(16, 8),
+            columnas_peso=((0, 1),),
+        )
+        self.moldes.crear_label(
+            cabecera,
+            "Mapa de Osorno",
+            tema.FUENTE_TITULO,
+            tema.TEXTO,
+            tema.PANEL,
+            metodo="grid",
+            fila=0,
+            columna=0,
+            sticky="w",
+        )
 
     def crear_mapa(self, panel, pintar_lugares=True):
-        contenedor = self.moldes.crear_frame(panel, tema.FONDO, fila=1, columna=0, sticky="nsew", margen_x=18, margen_y=(0, 18), columnas_peso=((0, 1),), filas_peso=((0, 1),))
+        contenedor = self.moldes.crear_frame(
+            panel,
+            tema.FONDO,
+            fila=1,
+            columna=0,
+            sticky="nsew",
+            margen_x=18,
+            margen_y=(0, 18),
+            columnas_peso=((0, 1),),
+            filas_peso=((0, 1),),
+        )
         self.mapa = TkinterMapView(contenedor, corner_radius=0)
         self.mapa.grid(row=0, column=0, sticky="nsew")
         self.mapa.set_tile_server("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", max_zoom=16)
@@ -75,18 +113,6 @@ class MapaViaje:
         self.mapa.set_position(latitud, longitud)
         self.mapa.fading_possible = False
 
-    def pintar_mapa_real(self, lugares=None):
-        lugares = lugares or tuple(LUGARES_OSORNO)
-        for lugar in lugares:
-            latitud, longitud = COORDENADAS_REALES_OSORNO[lugar]
-            if lugar not in self.imagenes_lugares:
-                imagen = Image.open(RUTA_IMAGENES_LUGARES / IMAGENES_LUGARES_OSORNO[lugar])
-                imagen.thumbnail((42, 42))
-                self.imagenes_lugares[lugar] = ImageTk.PhotoImage(imagen)
-
-            marcador = self.mapa.set_marker(latitud, longitud, text=lugar, icon=self.imagenes_lugares[lugar], image_zoom_visibility=(0, float("inf")))
-            self.marcadores_lugares.append(marcador)
-
     def dibujar_trayectoria(self, ruta):
         self.limpiar_trayectorias()
         trayectoria = self.mapa.set_path(ruta, color="#1a73e8", width=5)
@@ -98,6 +124,26 @@ class MapaViaje:
             trayectoria.delete()
         self.trayectorias = []
 
+
+class MapaViajeConductor(MapaViajeComun):
+    def pintar_mapa_real(self, lugares=None):
+        lugares = lugares or tuple(LUGARES_OSORNO)
+        for lugar in lugares:
+            latitud, longitud = COORDENADAS_REALES_OSORNO[lugar]
+            if lugar not in self.imagenes_lugares:
+                imagen = Image.open(RUTA_IMAGENES_LUGARES / IMAGENES_LUGARES_OSORNO[lugar])
+                imagen.thumbnail((42, 42))
+                self.imagenes_lugares[lugar] = ImageTk.PhotoImage(imagen)
+
+            marcador = self.mapa.set_marker(
+                latitud,
+                longitud,
+                text=lugar,
+                icon=self.imagenes_lugares[lugar],
+                image_zoom_visibility=(0, float("inf")),
+            )
+            self.marcadores_lugares.append(marcador)
+
     def limpiar_lugares(self):
         for marcador in self.marcadores_lugares:
             marcador.delete()
@@ -107,6 +153,8 @@ class MapaViaje:
         self.limpiar_lugares()
         self.pintar_mapa_real(lugares)
 
+
+class MapaViajePasajero(MapaViajeConductor):
     def limpiar_conductores(self):
         for marcador in self.marcadores_conductores:
             marcador.delete()
@@ -118,7 +166,13 @@ class MapaViaje:
         for vehiculo in vehiculos:
             latitud, longitud = vehiculo["ubicacion_real"]
             imagen = self.obtener_imagen_conductor(vehiculo["imagen"])
-            marcador = self.mapa.set_marker(latitud, longitud, text=vehiculo["nombre_completo"], icon=imagen, image_zoom_visibility=(0, float("inf")))
+            marcador = self.mapa.set_marker(
+                latitud,
+                longitud,
+                text=vehiculo["nombre_completo"],
+                icon=imagen,
+                image_zoom_visibility=(0, float("inf")),
+            )
             self.marcadores_conductores.append(marcador)
 
     def obtener_imagen_conductor(self, nombre_imagen):
@@ -127,3 +181,7 @@ class MapaViaje:
             imagen.thumbnail((42, 42))
             self.imagenes_conductores[nombre_imagen] = ImageTk.PhotoImage(imagen)
         return self.imagenes_conductores[nombre_imagen]
+
+
+class MapaViaje(MapaViajePasajero):
+    pass

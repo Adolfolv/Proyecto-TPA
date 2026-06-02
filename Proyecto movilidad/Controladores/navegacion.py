@@ -1,13 +1,14 @@
 """Controlador simple para manejar el flujo entre pantallas."""
 
 import tkinter as tk
+from abc import ABC, abstractmethod
 
-from Vistas.billetera import VistaBilletera
-from Vistas.inicio_sesion import VistaInicioSesion
-from Vistas.menu import VistaMenu
-from Vistas.pantalla_inicial import VistaPantallaInicial
-from Vistas.registro import VistaRegistro
-from Vistas.viaje import VistaViaje
+from vistas.billetera import VistaBilletera
+from vistas.inicio_sesion import VistaInicioSesion
+from vistas.menu import VistaMenu
+from vistas.pantalla_inicial import VistaPantallaInicial
+from vistas.registro import VistaRegistro
+from vistas.viaje import VistaViaje
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
 from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.Usuario.servicio_usuario import ServicioUsuario
@@ -45,103 +46,17 @@ class Navegacion:
             self.servicio_viaje,
             self.servicio_billetera,
         )
+        self.navegador = NavegadorRutas(self)
 
     def iniciar(self):
-        self.mostrar_pantalla_inicial()
+        self.navegar("pantalla_inicial")
         self.ventana.mainloop()
 
     def limpiar_pantalla(self):
         for widget in self.ventana.winfo_children():
             widget.destroy()
-    #redirige a la pantalla correspondiente segun el destino solicitado
     def navegar(self, destino):
-        if destino == "pantalla_inicial":
-            self.mostrar_pantalla_inicial()
-        elif destino == "inicio_sesion":
-            self.mostrar_inicio_sesion()
-        elif destino == "registro":
-            self.mostrar_registro()
-        elif destino == "menu":
-            self.mostrar_menu()
-        elif destino == "billetera":
-            self.mostrar_billetera()
-        elif destino == "viaje":
-            self.mostrar_viaje()
-        elif destino == "salir":
-            self.salir()
-
-    def mostrar(self, vista, titulo):
-        self.limpiar_pantalla()
-        self.ventana.title(titulo)
-        vista(self.ventana, self.navegar)
-
-    def mostrar_pantalla_inicial(self):
-        self.mostrar(
-            VistaPantallaInicial,
-            "Movilidad",
-        )
-
-    def mostrar_inicio_sesion(self):
-        self.limpiar_pantalla()
-        self.ventana.title("Inicio de sesion")
-        VistaInicioSesion(
-            self.ventana,
-            self.navegar,
-            self.controlador_inicio_sesion,
-            self.inicio_sesion_exitoso,
-        )
-
-    def mostrar_registro(self):
-        self.limpiar_pantalla()
-        self.ventana.title("Registro")
-        VistaRegistro(
-            self.ventana,
-            self.navegar,
-            self.controlador_registro,
-            self.registro_exitoso,
-        )
-
-    def registro_exitoso(self, usuario):
-        self.usuario_actual = usuario
-        self.mostrar_menu()
-
-    def inicio_sesion_exitoso(self, usuario):
-        self.usuario_actual = usuario
-        self.mostrar_menu()
-
-    def mostrar_menu(self):
-        self.mostrar(
-            VistaMenu,
-            "Menu principal",
-        )
-
-    def mostrar_billetera(self):
-        self.limpiar_pantalla()
-        self.ventana.title("Billetera virtual")
-        vista = VistaBilletera(
-            self.ventana,
-            self.navegar,
-        )
-        self.controlador_billetera.conectar_vista(
-            vista,
-            self.obtener_usuario_actual(),
-        )
-
-    def mostrar_viaje(self):
-        tipo_usuario = self.obtener_tipo_usuario()
-        self.limpiar_pantalla()
-        self.ventana.title("Viaje")
-        VistaViaje(
-            self.ventana,
-            self.navegar,
-            tipo_usuario,
-            self.volver_menu,
-            self.controlador_viaje,
-            self.obtener_usuario_actual(),
-        )
-
-    def volver_menu(self):
-        self.mostrar_menu()
+        self.navegador.navegar(destino)
 
     def obtener_tipo_usuario(self):
         usuario = self.obtener_usuario_actual()
@@ -160,5 +75,133 @@ class Navegacion:
         return self.usuario_actual
 
 
-    def salir(self):
-        self.ventana.destroy()
+class NavegadorAbstracto(ABC):
+    @abstractmethod
+    def navegar(self, destino):
+        pass
+
+
+class RutaNavegacion(ABC):
+    rutas_registradas = []
+    destino = ""
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if cls.destino:
+            RutaNavegacion.rutas_registradas.append(cls)
+
+    def __init__(self, navegacion):
+        self.navegacion = navegacion
+
+    def mostrar(self, vista, titulo):
+        self.navegacion.limpiar_pantalla()
+        self.navegacion.ventana.title(titulo)
+        vista(self.navegacion.ventana, self.navegacion.navegar)
+
+    @abstractmethod
+    def ejecutar(self):
+        pass
+
+
+class RutaPantallaInicial(RutaNavegacion):
+    destino = "pantalla_inicial"
+
+    def ejecutar(self):
+        self.mostrar(VistaPantallaInicial, "Movilidad")
+
+
+class RutaInicioSesion(RutaNavegacion):
+    destino = "inicio_sesion"
+
+    def ejecutar(self):
+        self.navegacion.limpiar_pantalla()
+        self.navegacion.ventana.title("Inicio de sesion")
+        VistaInicioSesion(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+            self.navegacion.controlador_inicio_sesion,
+            self.inicio_sesion_exitoso,
+        )
+
+    def inicio_sesion_exitoso(self, usuario):
+        self.navegacion.usuario_actual = usuario
+        self.navegacion.navegar("menu")
+
+
+class RutaRegistro(RutaNavegacion):
+    destino = "registro"
+
+    def ejecutar(self):
+        self.navegacion.limpiar_pantalla()
+        self.navegacion.ventana.title("Registro")
+        VistaRegistro(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+            self.navegacion.controlador_registro,
+            self.registro_exitoso,
+        )
+
+    def registro_exitoso(self, usuario):
+        self.navegacion.usuario_actual = usuario
+        self.navegacion.navegar("menu")
+
+
+class RutaMenu(RutaNavegacion):
+    destino = "menu"
+
+    def ejecutar(self):
+        self.mostrar(VistaMenu, "Menu principal")
+
+
+class RutaBilletera(RutaNavegacion):
+    destino = "billetera"
+
+    def ejecutar(self):
+        self.navegacion.limpiar_pantalla()
+        self.navegacion.ventana.title("Billetera virtual")
+        vista = VistaBilletera(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+        )
+        self.navegacion.controlador_billetera.conectar_vista(
+            vista,
+            self.navegacion.obtener_usuario_actual(),
+        )
+
+
+class RutaViaje(RutaNavegacion):
+    destino = "viaje"
+
+    def ejecutar(self):
+        self.navegacion.limpiar_pantalla()
+        self.navegacion.ventana.title("Viaje")
+        VistaViaje(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+            self.navegacion.obtener_tipo_usuario(),
+            lambda: self.navegacion.navegar("menu"),
+            self.navegacion.controlador_viaje,
+            self.navegacion.obtener_usuario_actual(),
+        )
+
+
+class RutaSalir(RutaNavegacion):
+    destino = "salir"
+
+    def ejecutar(self):
+        self.navegacion.ventana.destroy()
+
+
+class NavegadorRutas(NavegadorAbstracto):
+    def __init__(self, navegacion):
+        self.rutas = {
+            ruta.destino: ruta(navegacion)
+            for ruta in RutaNavegacion.rutas_registradas
+        }
+
+    def navegar(self, destino):
+        ruta = self.rutas.get(destino)
+        if ruta is not None:
+            ruta.ejecutar()
+
+

@@ -34,8 +34,8 @@ class ControladorViaje:
             punto_final,
         )
 
-    def iniciar_viaje(self, ubicacion_inicial, datos_pasajero, usuario):
-        conductor = f"{usuario.nombre} {usuario.apellido}"
+    def iniciar_viaje(self, ubicacion_inicial, datos_pasajero, usuario, animacion_viaje=None):
+        conductor = self.nombre_usuario(usuario)
         viaje = Viaje(
             pasajero=datos_pasajero["nombre_completo"],
             conductor=conductor,
@@ -44,9 +44,26 @@ class ControladorViaje:
             distancia=float(datos_pasajero["distancia"]),
             duracion=float(datos_pasajero["duracion"]),
         )
-        self.servicio_viaje.iniciar_viaje(viaje, usuario)
+        self.servicio_viaje.iniciar_viaje(viaje, usuario, animacion_viaje)
         self.pagar_conductor(usuario, viaje.precio)
         return viaje
+
+    def iniciar_viaje_pasajero(self, datos_vehiculo, usuario, animacion_viaje=None):
+        viaje = Viaje(
+            pasajero=self.nombre_usuario(usuario),
+            conductor=datos_vehiculo["nombre_completo"],
+            vehiculo=datos_vehiculo["vehiculo"],
+            precio=float(datos_vehiculo["precio"]),
+            distancia=float(datos_vehiculo["distancia"]),
+            duracion=float(datos_vehiculo["tiempo"]),
+        )
+        self.servicio_viaje.iniciar_viaje(viaje, usuario, animacion_viaje)
+        return viaje
+
+    def nombre_usuario(self, usuario):
+        if usuario is None:
+            return ""
+        return f"{getattr(usuario, 'nombre', '')} {getattr(usuario, 'apellido', '')}".strip()
 
     def pagar_conductor(self, usuario, monto):
         if self.servicio_billetera is None:
