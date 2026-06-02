@@ -28,7 +28,7 @@ class Navegacion:
         self.servicio_usuario = ServicioUsuario()
         self.servicio_registro = ServicioRegistro(self.servicio_usuario)
         self.servicio_autenticacion = ServicioAutenticacion(self.servicio_usuario)
-        self.servicio_billetera = ServicioBilletera()
+        self.servicio_billetera = ServicioBilletera(self.servicio_usuario)
         self.servicio_viaje = ServicioViaje()
         self.usuario_actual = None
 
@@ -40,12 +40,10 @@ class Navegacion:
         )
         self.controlador_billetera = ControladorBilletera(
             self.servicio_billetera,
-            self.servicio_usuario,
         )
         self.controlador_viaje = ControladorViaje(
             self.servicio_viaje,
             self.servicio_billetera,
-            self.servicio_usuario,
         )
 
     def iniciar(self):

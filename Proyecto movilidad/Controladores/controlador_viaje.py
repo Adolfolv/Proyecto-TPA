@@ -3,10 +3,9 @@ from Modelos.Viaje.modelo_viajes import Viaje
 
 class ControladorViaje:
 
-    def __init__(self, servicio_viaje, servicio_billetera=None, servicio_usuario=None):
+    def __init__(self, servicio_viaje, servicio_billetera=None):
         self.servicio_viaje = servicio_viaje
         self.servicio_billetera = servicio_billetera
-        self.servicio_usuario = servicio_usuario
 
     def buscar_pasajeros(
         self,
@@ -37,12 +36,11 @@ class ControladorViaje:
         return viaje
 
     def pagar_conductor(self, usuario, monto):
-        if self.servicio_billetera is None or self.servicio_usuario is None:
+        if self.servicio_billetera is None:
             return False
 
         if getattr(usuario, "tipo_usuario", "") != "conductor":
             return False
 
         self.servicio_billetera.recibir_pago(usuario, monto)
-        self.servicio_usuario.guardar()
         return True
