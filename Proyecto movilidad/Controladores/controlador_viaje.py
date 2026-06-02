@@ -57,3 +57,13 @@ class ControladorViaje:
 
         self.servicio_billetera.recibir_pago(usuario, monto)
         return True
+
+    def pagar_pasajero(self, usuario, monto):
+        if self.servicio_billetera is None:
+            return False
+
+        if getattr(usuario, "tipo_usuario", "") != "pasajero":
+            return False
+
+        self.servicio_billetera.pagar(usuario, monto)
+        return True

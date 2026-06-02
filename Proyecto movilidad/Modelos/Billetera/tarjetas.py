@@ -20,8 +20,7 @@ class TarjetaVisa(TarjetaBase):
     longitud_cvv = 3
 
     def __init__(self):
-        self.validador_numero = ValidadorNumeroTarjetaVisa()
-
+        self.validador_numero = ValidadorNumeroTarjetaVisa() #validador
     def numero_valido(self, numero):
         return self.validador_numero.validar(numero)
 

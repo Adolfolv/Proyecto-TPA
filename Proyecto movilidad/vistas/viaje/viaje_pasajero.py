@@ -219,6 +219,12 @@ class VistaViajePasajero:
         if rutas_viaje is None:
             return
 
+        self.controlador_viaje.pagar_pasajero(
+                self.usuario_actual,
+                self.vehiculo_seleccionado["precio"],
+            )
+        
+
         self.viaje_en_proceso = True
         self.boton_confirmar_pago.config(state="disabled", cursor="arrow")
         self.boton_cancelar_pago.config(state="disabled", cursor="arrow")
