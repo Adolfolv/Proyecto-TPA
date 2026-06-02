@@ -1,4 +1,19 @@
-"""Vista de viaje separada por responsabilidades."""
+"""Vista de viaje separada por responsabilidades.
+
+Flujo numerado desde que se abre la pantalla viaje:
+1. Navegacion crea VistaViaje y le entrega usuario, controlador y callbacks.
+2. VistaViaje arma el contenedor principal.
+3. PanelViaje crea el panel izquierdo: formulario, busqueda, pasajero, confirmacion y progreso.
+4. MapaViaje crea el mapa derecho, bloquea zoom y pinta lugares de Osorno.
+5. Si el conductor presiona "Buscar pasajeros", FlujoConductor pide datos al controlador.
+6. Se bloquea la busqueda y empieza el cronometro.
+7. Cuando termina el cronometro, se muestra el pasajero y se dibuja su trayectoria.
+8. Mientras hay pregunta activa, Volver muestra una advertencia.
+9. Si el conductor confirma, se bloquean botones y se muestra "viaje en proceso".
+10. AnimacionViaje mueve el marcador y actualiza la barra de progreso.
+11. Cuando termina la animacion, se muestra "viaje finalizado".
+12. Volver se habilita de nuevo y aparece "Buscar otro viaje" para reiniciar la pantalla.
+"""
 
 import tkinter as tk
 from pathlib import Path
@@ -16,10 +31,12 @@ from .estilizacion.widgets import Moldes
 RUTA_IMAGENES_LUGARES = Path(__file__).resolve().parent / "estilizacion" / "Imagenes" / "imagenes_lugares"
 RUTA_IMAGENES_USUARIOS = Path(__file__).resolve().parent / "estilizacion" / "Imagenes" / "imagenes_usuarios"
 
-#Comunes
+# --- componentes comunes del panel izquierdo ---
 
 class ComponenteViaje:
     def __init__(self, panel):
+        # Cada componente recibe el panel principal para reutilizar moldes,
+        # tipo de usuario y callbacks sin repetir tantos parametros.
         self.panel = panel
         self.moldes = panel.moldes
         self.tipo_usuario = panel.tipo_usuario
@@ -27,6 +44,7 @@ class ComponenteViaje:
 
 class ProgresoViaje(ComponenteViaje):
     def crear(self):
+        # Paso 10: crea la barra que se actualiza durante la animacion del viaje.
         progreso = self.moldes.crear_frame(self.panel.frame, tema.PANEL, fila=8, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
         self.label_estado = self.moldes.crear_label(progreso, "Progreso del trayecto", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 8))
         self.barra = ttk.Progressbar(progreso, maximum=100, mode="determinate", value=0)
@@ -35,6 +53,8 @@ class ProgresoViaje(ComponenteViaje):
 
 class FormularioViaje(ComponenteViaje):
     def crear(self):
+        # Paso 3: para conductor se muestra solo el selector de ubicacion inicial.
+        # Para pasajero quedan los campos base de solicitud.
         datos = self.moldes.crear_frame(self.panel.frame, tema.PANEL, fila=3, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
         if self.tipo_usuario == "conductor":
             self.selector_ubicacion = self.moldes.crear_selector(datos, tuple(LUGARES_OSORNO), metodo="grid", fila=1, columna=0, columnas=2, sticky="ew", ipady=4)
@@ -51,9 +71,11 @@ class FormularioViaje(ComponenteViaje):
         return entrada
 
     def obtener_ubicacion_inicial(self):
+        # Paso 5: se lee cuando se presiona "Buscar pasajeros".
         return self.selector_ubicacion.get()
 
     def bloquear(self):
+        # Paso 6: evita cambiar la ubicacion mientras hay busqueda/viaje activo.
         self.selector_ubicacion.config(state="disabled")
 
 class GrupoBotonesViaje(ComponenteViaje):
@@ -61,15 +83,20 @@ class GrupoBotonesViaje(ComponenteViaje):
 
 class BotonesCabeceraViaje(GrupoBotonesViaje):
     def crear(self):
+        # Paso 3: boton Volver normal; al inicio vuelve al menu.
+        # Durante pregunta/viaje activo se cambia por avisos.
         cabecera = self.moldes.crear_frame(self.panel.frame, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=16, margen_y=(16, 12), columnas_peso=((0, 1),))
         self.moldes.crear_label(cabecera, "Solicitud de viaje", ("Arial", 18, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
         self.boton_volver = self.moldes.crear_boton(cabecera, "Volver", False, None, self.callbacks["volver_menu"], metodo="grid", fila=0, columna=1, sticky="e")
 
     def cambiar_volver(self, comando):
+        # Pasos 8 y 12: permite cambiar que hace Volver segun el estado.
         self.boton_volver.config(command=comando)
 
 class BotonesBusquedaViaje(GrupoBotonesViaje):
     def crear(self):
+        # Paso 3: en conductor crea el boton para buscar pasajeros y el cronometro.
+        # En pasajero deja preparada la parte visual de vehiculos.
         contenedor = self.moldes.crear_frame(self.panel.frame, tema.PANEL, fila=4, columna=0, sticky="nsew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
         if self.tipo_usuario == "conductor":
             self.boton_buscar_pasajeros = self.moldes.crear_boton(contenedor, "Buscar pasajeros", True, None, self.callbacks["buscar_pasajero"], metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 8))
@@ -81,10 +108,13 @@ class BotonesBusquedaViaje(GrupoBotonesViaje):
         self.moldes.crear_boton(self.panel.frame, "Iniciar Viaje", True, None, None, metodo="grid", fila=5, columna=0, sticky="ew", margen_x=16, margen_y=(0, 8))
 
     def bloquear_busqueda(self):
+        # Paso 6: al empezar la busqueda se deshabilita para no buscar dos veces.
         self.boton_buscar_pasajeros.config(state="disabled", cursor="arrow")
 
 class BotonesConfirmacionViaje(GrupoBotonesViaje):
     def crear(self):
+        # Paso 3: este frame primero pregunta si confirma el viaje.
+        # Luego se reutiliza para mostrar "viaje en proceso/finalizado".
         self.frame_confirmacion = self.moldes.crear_frame(self.panel.frame, tema.FONDO, tema.BORDE, 1, fila=7, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
         texto = "Confirmar viaje?" if self.tipo_usuario == "conductor" else "Confirmar pago del viaje seleccionado?"
         self.label_pregunta = self.moldes.crear_label(self.frame_confirmacion, texto, tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
@@ -96,10 +126,12 @@ class BotonesConfirmacionViaje(GrupoBotonesViaje):
             self.frame_confirmacion.grid_remove()
 
     def bloquear_confirmacion(self):
+        # Paso 9: protege contra dobles clicks en confirmar/cancelar.
         self.boton_confirmar.config(state="disabled", cursor="arrow")
         self.boton_cancelar.config(state="disabled", cursor="arrow")
 
     def mostrar_estado_en_proceso(self):
+        # Paso 9: reemplaza la pregunta y botones por el texto de estado.
         self.label_pregunta.grid_remove()
         self.boton_confirmar.grid_remove()
         self.boton_cancelar.grid_remove()
@@ -107,17 +139,21 @@ class BotonesConfirmacionViaje(GrupoBotonesViaje):
         self.label_estado.grid()
 
     def mostrar_estado_finalizado(self):
+        # Paso 11: la animacion avisa cuando termina y el label cambia a finalizado.
         self.label_estado.config(text="viaje finalizado")
 
 class BotonesBuscarOtroViaje(GrupoBotonesViaje):
     def crear(self):
+        # Paso 3: permanece oculto hasta que el viaje finaliza.
         self.boton_buscar_otro = self.moldes.crear_boton(self.panel.frame, "Buscar otro viaje", True, None, self.callbacks["cancelar"], metodo="grid", fila=9, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10))
         self.boton_buscar_otro.grid_remove()
 
     def mostrar_estado_finalizado(self):
+        # Paso 12: al presionarlo se navega de nuevo a viaje y se reinicia todo.
         self.boton_buscar_otro.grid()
 
 class BotonesViaje(ComponenteViaje):
+    # Agrupa todos los botones para que PanelViaje no hable con cada uno suelto.
     def crear_cabecera(self):
         self.cabecera = BotonesCabeceraViaje(self.panel)
         self.cabecera.crear()
@@ -157,12 +193,14 @@ class BotonesViaje(ComponenteViaje):
 
 class PanelViaje:
     def __init__(self, padre, moldes, tipo_usuario, callbacks):
+        # Paso 3: panel izquierdo; contiene formulario, botones, pasajero y progreso.
         self.padre = padre
         self.moldes = moldes
         self.tipo_usuario = tipo_usuario
         self.callbacks = callbacks
 
     def crear(self):
+        # Paso 3: se crean los componentes en el mismo orden visual del frame izquierdo.
         self.frame = self.moldes.crear_frame(self.padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=0, sticky="nsew", margen_x=(0, 12))
         self.frame.grid_columnconfigure(0, weight=1)
         self.formulario = FormularioViaje(self)
@@ -179,35 +217,43 @@ class PanelViaje:
         self.botones.crear_buscar_otro()
 
     def crear_servicio(self):
+        # Muestra el tipo de servicio fijo que se esta simulando.
         self.moldes.crear_label(self.frame, "Servicio", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_x=16, margen_y=(0, 4))
         self.moldes.crear_label(self.frame, "Viaje normal", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), ipady=8)
 
     def mostrar_pasajero(self, datos_pasajero):
+        # Paso 7: cuando termina el cronometro, se muestra el pasajero y la confirmacion.
         self.panel_pasajero.mostrar(datos_pasajero)
         self.botones.frame_confirmacion.grid()
 
     def bloquear_busqueda(self):
+        # Bloquea lo necesario durante la busqueda.
         self.botones.bloquear_busqueda()
         self.formulario.bloquear()
 
     def bloquear_confirmacion(self):
+        # Bloquea lo necesario cuando el viaje ya fue confirmado.
         self.botones.bloquear_confirmacion()
         self.formulario.bloquear()
 
     def mostrar_estado_en_proceso(self):
+        # Cambia el frame de confirmacion a "viaje en proceso".
         self.botones.mostrar_estado_en_proceso()
 
     def mostrar_estado_finalizado(self):
+        # Cambia el estado a finalizado y muestra "Buscar otro viaje".
         self.botones.mostrar_estado_finalizado()
 
     def cambiar_volver(self, comando):
         self.botones.cambiar_volver(comando)
 
     def obtener_ubicacion_inicial(self):
+        # El flujo conductor usa este dato para pedir pasajeros al controlador.
         return self.formulario.obtener_ubicacion_inicial()
     
 class VistaViaje(tk.Frame):
     def __init__(self, master, navegar, tipo_usuario, comando_volver_menu, controlador_viaje, usuario_actual):
+        # Paso 1: Navegacion entrega todo lo que la vista necesita para funcionar.
         self.navegar = navegar
         self.tipo_usuario = tipo_usuario
         self.comando_volver_menu = comando_volver_menu
@@ -222,9 +268,11 @@ class VistaViaje(tk.Frame):
         self.crear_widgets()
 
     def crear_widgets(self):
+        # Paso 2: VistaViaje arma dos zonas: panel izquierdo y mapa derecho.
         contenedor = self.moldes.crear_frame(self, tema.FONDO, llenar="both", expandir=True, margen_x=20, margen_y=20, columnas_peso=((0, 0), (1, 1)), filas_peso=((0, 1),))
         contenedor.grid_columnconfigure(0, minsize=420)
         contenedor.grid_columnconfigure(1, minsize=640)
+        # Paso 2: los callbacks conectan botones con metodos de esta vista.
         callbacks = {"volver_menu": self.comando_volver_menu, "buscar_pasajero": self.presionar_buscar_pasajero, "confirmar_viaje": self.presionar_confirmar_viaje, "cancelar": self.presionar_cancelar}
         self.panel = PanelViaje(contenedor, self.moldes, self.tipo_usuario, callbacks)
         self.panel.crear()
@@ -233,12 +281,15 @@ class VistaViaje(tk.Frame):
         self.flujo_conductor = FlujoConductor(self, self.panel, self.mapa_viaje)
 
     def presionar_buscar_pasajero(self):
+        # Paso 5: el boton delega la busqueda a FlujoConductor.
         self.flujo_conductor.presionar_buscar_pasajero()
 
     def presionar_confirmar_viaje(self):
+        # Paso 9: el boton confirmar delega el inicio del viaje a FlujoConductor.
         self.flujo_conductor.presionar_confirmar_viaje()
 
     def presionar_cancelar(self):
+        # Paso 12: cancelar o buscar otro viaje recrea la pantalla desde cero.
         self.navegar("viaje")
 
     def presionar_volver_pregunta_activa(self):
@@ -249,12 +300,15 @@ class VistaViaje(tk.Frame):
 
 class MapaViaje:
     def __init__(self, padre, moldes):
+        # Paso 4: mapa derecho; guarda imagenes para que Tkinter no las pierda
+        # y marcadores para poder limpiarlos cuando empieza la animacion.
         self.padre = padre
         self.moldes = moldes
         self.imagenes_lugares = {}
         self.marcadores_lugares = []
 
     def crear(self):
+        # Paso 4: crea el contenedor del mapa y luego inicializa el widget.
         frame = self.moldes.crear_frame(self.padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=1, sticky="nsew", margen_x=(12, 0))
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(1, weight=1)
@@ -262,10 +316,12 @@ class MapaViaje:
         self.crear_mapa(frame)
 
     def crear_cabecera(self, panel):
+        # Titulo del bloque derecho.
         cabecera = self.moldes.crear_frame(panel, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=18, margen_y=(16, 8), columnas_peso=((0, 1),))
         self.moldes.crear_label(cabecera, "Mapa de Osorno", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
 
     def crear_mapa(self, panel):
+        # Paso 4: configura el mapa real de Osorno y dibuja sus lugares importantes.
         contenedor = self.moldes.crear_frame(panel, tema.FONDO, fila=1, columna=0, sticky="nsew", margen_x=18, margen_y=(0, 18), columnas_peso=((0, 1),), filas_peso=((0, 1),))
         self.mapa = TkinterMapView(contenedor, corner_radius=0)
         self.mapa.grid(row=0, column=0, sticky="nsew")
@@ -277,6 +333,7 @@ class MapaViaje:
         self.pintar_mapa_real()
 
     def bloquear_zoom(self):
+        # Paso 4: el mapa queda fijo en zoom 15 para mantener una vista controlada.
         self.mapa.min_zoom = 15
         self.mapa.max_zoom = 15
         self.mapa.canvas.unbind("<MouseWheel>")
@@ -288,6 +345,7 @@ class MapaViaje:
             self.mapa.canvas.itemconfigure(boton.canvas_text, state="hidden")
 
     def restringir_mapa_osorno(self, evento=None):
+        # Paso 4: si el usuario arrastra fuera de Osorno, se corrige la posicion.
         if evento is None:
             self.mapa.canvas.bind("<ButtonRelease-1>", self.restringir_mapa_osorno)
             return
@@ -299,6 +357,7 @@ class MapaViaje:
         self.mapa.fading_possible = False
 
     def pintar_mapa_real(self):
+        # Paso 4: dibuja marcadores con imagenes para cada lugar guardado en datos_viaje.
         for lugar in LUGARES_OSORNO:
             latitud, longitud = COORDENADAS_REALES_OSORNO[lugar]
             if lugar not in self.imagenes_lugares:
@@ -309,6 +368,7 @@ class MapaViaje:
             self.marcadores_lugares.append(marcador)
 
     def dibujar_trayectoria(self, ruta):
+        # Paso 7: dibuja la ruta azul del pasajero antes de confirmar el viaje.
         return self.mapa.set_path(ruta, color="#1a73e8", width=5)
     
 
@@ -316,6 +376,7 @@ class MapaViaje:
 #CONDUCTOR
 class FlujoConductor:
     def __init__(self, vista, panel, mapa_viaje):
+        # Pasos 5 al 12: controla el orden del flujo conductor.
         self.vista = vista
         self.panel = panel
         self.mapa_viaje = mapa_viaje
@@ -323,12 +384,14 @@ class FlujoConductor:
         self.ubicacion_inicial_busqueda = None
 
     def presionar_buscar_pasajero(self):
+        # Paso 5: lee ubicacion, pide pasajero al controlador e inicia la busqueda.
         self.ubicacion_inicial_busqueda = self.panel.obtener_ubicacion_inicial()
         self.info_pasajero_busqueda = self.vista.controlador_viaje.buscar_pasajeros(self.ubicacion_inicial_busqueda)
         self.panel.bloquear_busqueda()
         self.actualizar_cronometro_busqueda()
 
     def actualizar_cronometro_busqueda(self, segundos_transcurridos=0):
+        # Paso 6: se ejecuta cada segundo con after hasta llegar a duracion_busqueda.
         duracion_busqueda = self.info_pasajero_busqueda["duracion_busqueda"]
         self.panel.cronometro.actualizar(segundos_transcurridos)
         if segundos_transcurridos < duracion_busqueda:
@@ -337,12 +400,14 @@ class FlujoConductor:
         self.mostrar_pasajero_encontrado()
 
     def mostrar_pasajero_encontrado(self):
+        # Pasos 7 y 8: muestra pasajero, dibuja trayectoria y cambia Volver a aviso.
         self.panel.mostrar_pasajero(self.info_pasajero_busqueda)
         ruta_pasajero = self.vista.controlador_viaje.formar_trayectoria(self.info_pasajero_busqueda["ubicacion_inicial"], self.info_pasajero_busqueda["ubicacion_final"])
         self.mapa_viaje.dibujar_trayectoria(ruta_pasajero)
         self.panel.cambiar_volver(self.vista.presionar_volver_pregunta_activa)
 
     def presionar_confirmar_viaje(self):
+        # Pasos 9 y 10: bloquea botones, muestra estado, anima y guarda el viaje.
         self.vista.viaje_en_proceso = True
         self.panel.bloquear_confirmacion()
         self.panel.mostrar_estado_en_proceso()
@@ -351,28 +416,35 @@ class FlujoConductor:
         self.vista.controlador_viaje.iniciar_viaje(self.ubicacion_inicial_busqueda, self.info_pasajero_busqueda, self.vista.usuario_actual)
 
     def finalizar_viaje(self):
+        # Pasos 11 y 12: callback que ejecuta AnimacionViaje al terminar el recorrido.
         self.panel.mostrar_estado_finalizado()
         self.panel.cambiar_volver(self.vista.comando_volver_menu)
 
 class CronometroViaje(ComponenteViaje):
     def crear(self, contenedor):
+        # Paso 3: se muestra junto al boton "Buscar pasajeros".
         self.moldes.crear_label(contenedor, "Cronometro", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 6))
         self.label = self.moldes.crear_label(contenedor, "00:00", ("Arial", 28, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", ipady=24)
 
     def actualizar(self, segundos):
+        # Paso 6: actualiza visualmente los segundos de busqueda.
         self.label.config(text=f"00:{segundos:02d}")
 
     def despues(self, milisegundos, accion):
+        # Paso 6: after agenda la siguiente actualizacion del cronometro.
         self.label.after(milisegundos, accion)
 
 class PanelPasajero:
     def __init__(self, padre, moldes, tipo_usuario):
+        # Paso 3: empieza oculto para conductor y aparece al encontrar pasajero.
         self.moldes = moldes
         self.frame = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, fila=6, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 0), (1, 1)))
         if tipo_usuario == "conductor":
             self.frame.grid_remove()
 
     def mostrar(self, datos_pasajero):
+        # Paso 7: carga imagen y datos del pasajero encontrado.
+        # La imagen se guarda en self para que Tkinter la mantenga visible.
         imagen = Image.open(RUTA_IMAGENES_USUARIOS / datos_pasajero["imagen"])
         imagen.thumbnail((64, 64))
         self.imagen_pasajero = ImageTk.PhotoImage(imagen)

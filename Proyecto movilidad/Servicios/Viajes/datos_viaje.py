@@ -1,13 +1,15 @@
 
 
-from Servicios.Viajes.trayectoria import (  # noqa: E402
-    punto_relativo_desde_coordenada as _punto_relativo_desde_coordenada,
-)
-
 OSORNO_LAT_NORTE = -40.5480
 OSORNO_LAT_SUR = -40.6050
 OSORNO_LNG_OESTE = -73.1650
 OSORNO_LNG_ESTE = -73.0850
+
+from Servicios.Viajes.trayectoria import Trayectoria  # noqa: E402
+
+
+_trayectoria = Trayectoria()
+_punto_relativo_desde_coordenada = _trayectoria.punto_relativo_desde_coordenada
 
 COORDENADAS_REALES_OSORNO = {
     "Plaza de Armas Osorno": (-40.57397, -73.13572),

@@ -3,13 +3,14 @@ from random import choice, randint
 
 from Servicios.Viajes.datos_viaje import LUGARES_OSORNO, PASAJEROS_SIMULADOS
 from Servicios.Viajes.persistencia_usuario import PersistenciaUsuarioViajes
-from Servicios.Viajes.trayectoria import calcular_trayectoria, coordenada_real
+from Servicios.Viajes.trayectoria import Trayectoria
 
 
 class ServicioViaje:
     def __init__(self, persistencia_usuario=None):
         self.viajes = []
         self.persistencia_usuario = persistencia_usuario or PersistenciaUsuarioViajes()
+        self.trayectoria = Trayectoria()
 
     def buscar_pasajeros(
         self,
@@ -42,11 +43,11 @@ class ServicioViaje:
         }
 
     def calcular_km_viaje(self, ubicacion_conductor, pasajero):
-        ruta_llegada = calcular_trayectoria(
+        ruta_llegada = self.trayectoria.calcular_trayectoria(
             LUGARES_OSORNO[ubicacion_conductor],
             LUGARES_OSORNO[pasajero["ubicacion_inicial"]],
         )
-        ruta_transporte = calcular_trayectoria(
+        ruta_transporte = self.trayectoria.calcular_trayectoria(
             LUGARES_OSORNO[pasajero["ubicacion_inicial"]],
             LUGARES_OSORNO[pasajero["ubicacion_final"]],
         )
@@ -88,8 +89,8 @@ class ServicioViaje:
         distancia = 0
         for inicio, destino in zip(ruta_relativa, ruta_relativa[1:]):
             distancia += self.calcular_km_entre_coordenadas(
-                coordenada_real(inicio),
-                coordenada_real(destino),
+                self.trayectoria.coordenada_real(inicio),
+                self.trayectoria.coordenada_real(destino),
             )
         return distancia
 
@@ -110,8 +111,8 @@ class ServicioViaje:
     def formar_trayectoria(self, ubicacion_inicial, ubicacion_final):
         inicio = LUGARES_OSORNO[ubicacion_inicial]
         destino = LUGARES_OSORNO[ubicacion_final]
-        ruta_relativa = calcular_trayectoria(inicio, destino)
-        return [coordenada_real(punto) for punto in ruta_relativa]
+        ruta_relativa = self.trayectoria.calcular_trayectoria(inicio, destino)
+        return [self.trayectoria.coordenada_real(punto) for punto in ruta_relativa]
 
 #Esta funcion recibe los datos del pasajero y el viaje, con unos datos se va a encargar de animar el viaje, 
 #y con otros datos se va a encargar de guardar el viaje en el historial del usuario

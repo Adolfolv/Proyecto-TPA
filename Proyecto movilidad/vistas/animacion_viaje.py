@@ -1,10 +1,12 @@
 from PIL import Image, ImageTk
 
 from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
-from Servicios.Viajes.trayectoria import calcular_trayectoria, coordenada_real
+from Servicios.Viajes.trayectoria import Trayectoria
 
 
 class AnimacionViaje:
+    def __init__(self):
+        self.trayectoria = Trayectoria()
 
     def animacion_viaje_conductor(
         self,
@@ -81,11 +83,11 @@ class AnimacionViaje:
         marcadores_lugares.clear()
 
     def _ruta_real(self, ubicacion_inicial, ubicacion_final):
-        ruta_relativa = calcular_trayectoria(
+        ruta_relativa = self.trayectoria.calcular_trayectoria(
             LUGARES_OSORNO[ubicacion_inicial],
             LUGARES_OSORNO[ubicacion_final],
         )
-        return [coordenada_real(punto) for punto in ruta_relativa]
+        return [self.trayectoria.coordenada_real(punto) for punto in ruta_relativa]
 
     def _ocultar_simbolo_marcador(self, mapa, marcador):
         def ocultar():

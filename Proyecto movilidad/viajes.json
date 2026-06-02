@@ -170,6 +170,22 @@
                 "precio": 4200.0,
                 "distancia": 2.25,
                 "duracion": 20.0
+            },
+            {
+                "pasajero": "Benjamin Silva",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Chevrolet Sail",
+                "precio": 3600.0,
+                "distancia": 3.48,
+                "duracion": 20.0
+            },
+            {
+                "pasajero": "Benjamin Silva",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Chevrolet Sail",
+                "precio": 3600.0,
+                "distancia": 3.48,
+                "duracion": 20.0
             }
         ]
     }
