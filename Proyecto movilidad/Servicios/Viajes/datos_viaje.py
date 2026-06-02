@@ -157,16 +157,16 @@ PUENTES_OSORNO = (
 )
 
 CONDUCTORES_SIMULADOS = (
-    {"nombre": "Martin Rojas", "imagen": "hombre1.png"},
-    {"nombre": "Matias Soto", "imagen": "hombre2.png"},
-    {"nombre": "Diego Perez", "imagen": "hombre3.png"},
-    {"nombre": "Felipe Munoz", "imagen": "hombre4.png"},
-    {"nombre": "Sebastian Vidal", "imagen": "hombre5.png"},
-    {"nombre": "Cristobal Arias", "imagen": "hombre6.png"},
-    {"nombre": "Nicolas Munoz", "imagen": "hombre7.png"},
-    {"nombre": "Benjamin Torres", "imagen": "hombre8.png"},
-    {"nombre": "Pablo Lagos", "imagen": "hombre9.png"},
-    {"nombre": "Agustin Cardenas", "imagen": "hombre10.png"},
+    {"nombre": "Martin", "apellido": "Rojas", "imagen": "hombre1.png", "marca_vehiculo": "Toyota", "modelo_vehiculo": "Yaris", "patente": "ABCD-12", "precio": 3800, "distancia": 1.2},
+    {"nombre": "Matias", "apellido": "Soto", "imagen": "hombre2.png", "marca_vehiculo": "Hyundai", "modelo_vehiculo": "Accent", "patente": "WXYZ-98", "precio": 4200, "distancia": 1.8},
+    {"nombre": "Diego", "apellido": "Perez", "imagen": "hombre3.png", "marca_vehiculo": "Chevrolet", "modelo_vehiculo": "Sail", "patente": "JKLM-34", "precio": 3600, "distancia": 0.9},
+    {"nombre": "Felipe", "apellido": "Munoz", "imagen": "hombre4.png", "marca_vehiculo": "Kia", "modelo_vehiculo": "Rio", "patente": "PQRS-56", "precio": 4500, "distancia": 2.3},
+    {"nombre": "Sebastian", "apellido": "Vidal", "imagen": "hombre5.png", "marca_vehiculo": "Suzuki", "modelo_vehiculo": "Swift", "patente": "TUVW-78", "precio": 4100, "distancia": 1.5},
+    {"nombre": "Cristobal", "apellido": "Arias", "imagen": "hombre6.png", "marca_vehiculo": "Nissan", "modelo_vehiculo": "Versa", "patente": "EFGH-90", "precio": 4700, "distancia": 2.6},
+    {"nombre": "Nicolas", "apellido": "Munoz", "imagen": "hombre7.png", "marca_vehiculo": "Renault", "modelo_vehiculo": "Logan", "patente": "IJKL-11", "precio": 3900, "distancia": 1.1},
+    {"nombre": "Benjamin", "apellido": "Torres", "imagen": "hombre8.png", "marca_vehiculo": "Mazda", "modelo_vehiculo": "2", "patente": "MNOP-22", "precio": 4300, "distancia": 1.9},
+    {"nombre": "Pablo", "apellido": "Lagos", "imagen": "hombre9.png", "marca_vehiculo": "Volkswagen", "modelo_vehiculo": "Gol", "patente": "QRST-33", "precio": 4000, "distancia": 1.4},
+    {"nombre": "Agustin", "apellido": "Cardenas", "imagen": "hombre10.png", "marca_vehiculo": "Ford", "modelo_vehiculo": "Fiesta", "patente": "UVWX-44", "precio": 4400, "distancia": 2.1},
 )
 
 USUARIOS_SOLICITANTES_SIMULADOS = (

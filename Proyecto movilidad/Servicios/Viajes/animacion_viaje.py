@@ -74,6 +74,74 @@ class AnimacionViaje:
         mapa.marcador_inicio_viaje = marcador_inicio
         mapa.marcador_destino_viaje = marcador_destino
 
+    def animacion_viaje_pasajero(
+        self,
+        mapa,
+        marcadores_conductores,
+        ruta_imagenes_conductores,
+        datos_vehiculo,
+        ubicacion_inicial,
+        ubicacion_final,
+        barra_progreso,
+        label_estado,
+        label_porcentaje,
+        al_terminar_viaje,
+        ruta_llegada=None,
+        ruta_viaje=None,
+    ):
+        self._limpiar_marcadores_lugares(marcadores_conductores)
+
+        if ruta_llegada is None:
+            ruta_llegada = self._ruta_relativa_real(
+                datos_vehiculo["ubicacion_relativa"],
+                LUGARES_OSORNO[ubicacion_inicial],
+            )
+        if ruta_viaje is None:
+            ruta_viaje = self._ruta_real(ubicacion_inicial, ubicacion_final)
+
+        imagen = Image.open(ruta_imagenes_conductores / datos_vehiculo["imagen"])
+        imagen.thumbnail((46, 46))
+        foto_conductor = ImageTk.PhotoImage(imagen)
+        mapa.imagen_conductor_viaje = foto_conductor
+
+        mapa.set_path(ruta_llegada, color="#f59e0b", width=5)
+        mapa.set_path(ruta_viaje, color="#1a73e8", width=5)
+
+        marcador_inicio = mapa.set_marker(*ruta_llegada[-1], text="Ubicacion inicial")
+        self._ocultar_simbolo_marcador(mapa, marcador_inicio)
+        marcador_destino = mapa.set_marker(*ruta_viaje[-1], text="Ubicacion final")
+        self._ocultar_simbolo_marcador(mapa, marcador_destino)
+        marcador_conductor = mapa.set_marker(
+            *ruta_llegada[0],
+            text=datos_vehiculo["nombre_completo"],
+            icon=foto_conductor,
+            image_zoom_visibility=(0, float("inf")),
+        )
+
+        self._animar_ruta(
+            mapa,
+            marcador_conductor,
+            ruta_llegada,
+            max(1, datos_vehiculo["tiempo"]),
+            barra_progreso,
+            label_estado,
+            label_porcentaje,
+            "Conductor en camino",
+            lambda: self._animar_ruta(
+                mapa,
+                marcador_conductor,
+                ruta_viaje,
+                max(1, datos_vehiculo["tiempo"]),
+                barra_progreso,
+                label_estado,
+                label_porcentaje,
+                "Viajando al destino",
+                al_terminar_viaje,
+            ),
+        )
+        mapa.marcador_inicio_viaje = marcador_inicio
+        mapa.marcador_destino_viaje = marcador_destino
+
     def _limpiar_marcadores_lugares(self, marcadores_lugares):
         for marcador in marcadores_lugares:
             try:
@@ -89,6 +157,10 @@ class AnimacionViaje:
         )
         return [self.trayectoria.coordenada_real(punto) for punto in ruta_relativa]
 
+    def _ruta_relativa_real(self, inicio, destino):
+        ruta_relativa = self.trayectoria.calcular_trayectoria(inicio, destino)
+        return [self.trayectoria.coordenada_real(punto) for punto in ruta_relativa]
+
     def _ocultar_simbolo_marcador(self, mapa, marcador):
         def ocultar():
             for atributo in ("polygon", "big_circle", "canvas_icon", "canvas_image", "canvas_marker", "canvas_circle"):
@@ -100,6 +172,37 @@ class AnimacionViaje:
         mapa.after(100, ocultar)
 
     def _animar_ruta(
+        self,
+        mapa,
+        marcador,
+        ruta,
+        duracion,
+        barra_progreso,
+        label_estado,
+        label_porcentaje,
+        estado,
+        al_finalizar,
+        indice=0,
+    ):
+        try:
+            self._animar_ruta_segura(
+                mapa,
+                marcador,
+                ruta,
+                duracion,
+                barra_progreso,
+                label_estado,
+                label_porcentaje,
+                estado,
+                al_finalizar,
+                indice,
+            )
+        except Exception:
+            label_estado.config(text="No se pudo continuar la animacion")
+            if al_finalizar:
+                barra_progreso.after(600, al_finalizar)
+
+    def _animar_ruta_segura(
         self,
         mapa,
         marcador,

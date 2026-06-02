@@ -15,10 +15,23 @@ class ControladorViaje:
             ubicacion_inicial,
         )
 
+    def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
+        return self.servicio_viaje.buscar_vehiculos(
+            cantidad_usuarios,
+            ubicacion_inicial,
+            ubicacion_final,
+        )
+
     def formar_trayectoria(self, ubicacion_inicial, ubicacion_final):
         return self.servicio_viaje.formar_trayectoria(
             ubicacion_inicial,
             ubicacion_final,
+        )
+
+    def formar_trayectoria_por_puntos(self, punto_inicial, punto_final):
+        return self.servicio_viaje.formar_trayectoria_por_puntos(
+            punto_inicial,
+            punto_final,
         )
 
     def iniciar_viaje(self, ubicacion_inicial, datos_pasajero, usuario):

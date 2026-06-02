@@ -224,9 +224,11 @@ class Moldes:
 
     def crear_tabla(self, padre, columnas, alto=5, metodo=None, margen_x=0, margen_y=0, **ubicacion):
         estilo = ttk.Style(padre)
-        estilo.configure("Tabla.Treeview", background=tema.SECUNDARIO, fieldbackground=tema.SECUNDARIO, foreground=tema.TEXTO, rowheight=28, bordercolor=tema.BORDE)
-        estilo.configure("Tabla.Treeview.Heading", background=tema.PANEL_SUAVE, foreground=tema.TEXTO, font=("Arial", 9, "bold"))
-        estilo.map("Tabla.Treeview", background=[("selected", tema.PRIMARIO)], foreground=[("selected", tema.PRIMARIO_TEXTO)])
+        estilo.theme_use("clam")
+        estilo.configure("Tabla.Treeview", background=tema.SECUNDARIO, fieldbackground=tema.SECUNDARIO, foreground=tema.TEXTO, rowheight=28, bordercolor=tema.BORDE, lightcolor=tema.BORDE, darkcolor=tema.BORDE, relief="flat")
+        estilo.configure("Tabla.Treeview.Heading", background=tema.PANEL_SUAVE, foreground=tema.TEXTO, bordercolor=tema.BORDE, lightcolor=tema.BORDE, darkcolor=tema.BORDE, font=("Arial", 9, "bold"), relief="flat")
+        estilo.map("Tabla.Treeview", background=[("selected", tema.PRIMARIO), ("!selected", tema.SECUNDARIO)], fieldbackground=[("!selected", tema.SECUNDARIO)], foreground=[("selected", tema.PRIMARIO_TEXTO), ("!selected", tema.TEXTO)])
+        estilo.map("Tabla.Treeview.Heading", background=[("active", tema.PANEL_SUAVE), ("!active", tema.PANEL_SUAVE)], foreground=[("active", tema.TEXTO), ("!active", tema.TEXTO)])
         tabla = ttk.Treeview(padre, columns=tuple(columna[0] for columna in columnas), show="headings", style="Tabla.Treeview", height=alto)
         for clave, texto, ancho in columnas:
             tabla.heading(clave, text=texto)
