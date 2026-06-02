@@ -1,51 +1,41 @@
 from PIL import Image, ImageTk
 
-from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
-from Servicios.Viajes.trayectoria import Trayectoria
-
 
 class AnimacionViaje:
-    def __init__(self):
-        self.trayectoria = Trayectoria()
+    """Animaciones visuales del mapa de viaje.
+
+    La clase recibe rutas ya calculadas por el controlador/servicio. Asi la UI
+    solo dibuja y anima, sin decidir reglas de negocio ni consultar la red.
+    """
 
     def animacion_viaje_conductor(
         self,
         mapa,
         marcadores_lugares,
         ruta_imagenes_usuarios,
-        datos_pasajero,
+        pasajero,
+        rutas_viaje,
         barra_progreso,
         label_estado,
         label_porcentaje,
         al_terminar_viaje,
     ):
-        self._limpiar_marcadores_lugares(marcadores_lugares)
+        self._validar_rutas(rutas_viaje)
+        self._limpiar_marcadores(marcadores_lugares)
 
-        ruta_llegada = self._ruta_real(
-            datos_pasajero["ubicacion_conductor"],
-            datos_pasajero["ubicacion_inicial"],
-        )
-        ruta_viaje = self._ruta_real(
-            datos_pasajero["ubicacion_inicial"],
-            datos_pasajero["ubicacion_final"],
-        )
-
-        imagen = Image.open(ruta_imagenes_usuarios / datos_pasajero["imagen"])
-        imagen.thumbnail((46, 46))
-        foto_pasajero = ImageTk.PhotoImage(imagen)
+        ruta_llegada = rutas_viaje.llegada
+        ruta_viaje = rutas_viaje.viaje
+        foto_pasajero = self._foto(ruta_imagenes_usuarios / pasajero.imagen)
         mapa.imagen_pasajero_viaje = foto_pasajero
 
-        marcador_inicio = mapa.set_marker(
-            *ruta_llegada[-1],
-            text="Ubicacion inicial",
-        )
+        marcador_inicio = mapa.set_marker(*ruta_llegada[-1], text="Ubicacion inicial")
         self._ocultar_simbolo_marcador(mapa, marcador_inicio)
         marcador_destino = mapa.set_marker(*ruta_viaje[-1], text="Ubicacion deseada")
         self._ocultar_simbolo_marcador(mapa, marcador_destino)
 
         marcador_pasajero = mapa.set_marker(
             *ruta_llegada[-1],
-            text=datos_pasajero["nombre_completo"],
+            text=pasajero.nombre_completo,
             icon=foto_pasajero,
             image_zoom_visibility=(0, float("inf")),
         )
@@ -54,7 +44,7 @@ class AnimacionViaje:
             mapa,
             None,
             ruta_llegada,
-            max(1, datos_pasajero["tiempo_para_llegar"]),
+            max(1, pasajero.tiempo_para_llegar),
             barra_progreso,
             label_estado,
             label_porcentaje,
@@ -63,7 +53,7 @@ class AnimacionViaje:
                 mapa,
                 marcador_pasajero,
                 ruta_viaje,
-                max(1, datos_pasajero["tiempo_transportando"]),
+                max(1, pasajero.tiempo_transportando),
                 barra_progreso,
                 label_estado,
                 label_porcentaje,
@@ -79,29 +69,19 @@ class AnimacionViaje:
         mapa,
         marcadores_conductores,
         ruta_imagenes_conductores,
-        datos_vehiculo,
-        ubicacion_inicial,
-        ubicacion_final,
+        vehiculo,
+        rutas_viaje,
         barra_progreso,
         label_estado,
         label_porcentaje,
         al_terminar_viaje,
-        ruta_llegada=None,
-        ruta_viaje=None,
     ):
-        self._limpiar_marcadores_lugares(marcadores_conductores)
+        self._validar_rutas(rutas_viaje)
+        self._limpiar_marcadores(marcadores_conductores)
 
-        if ruta_llegada is None:
-            ruta_llegada = self._ruta_relativa_real(
-                datos_vehiculo["ubicacion_relativa"],
-                LUGARES_OSORNO[ubicacion_inicial],
-            )
-        if ruta_viaje is None:
-            ruta_viaje = self._ruta_real(ubicacion_inicial, ubicacion_final)
-
-        imagen = Image.open(ruta_imagenes_conductores / datos_vehiculo["imagen"])
-        imagen.thumbnail((46, 46))
-        foto_conductor = ImageTk.PhotoImage(imagen)
+        ruta_llegada = rutas_viaje.llegada
+        ruta_viaje = rutas_viaje.viaje
+        foto_conductor = self._foto(ruta_imagenes_conductores / vehiculo.imagen)
         mapa.imagen_conductor_viaje = foto_conductor
 
         mapa.set_path(ruta_llegada, color="#f59e0b", width=5)
@@ -113,16 +93,17 @@ class AnimacionViaje:
         self._ocultar_simbolo_marcador(mapa, marcador_destino)
         marcador_conductor = mapa.set_marker(
             *ruta_llegada[0],
-            text=datos_vehiculo["nombre_completo"],
+            text=vehiculo.nombre_completo,
             icon=foto_conductor,
             image_zoom_visibility=(0, float("inf")),
         )
 
+        duracion = max(1, vehiculo.tiempo)
         self._animar_ruta(
             mapa,
             marcador_conductor,
             ruta_llegada,
-            max(1, datos_vehiculo["tiempo"]),
+            duracion,
             barra_progreso,
             label_estado,
             label_porcentaje,
@@ -131,7 +112,7 @@ class AnimacionViaje:
                 mapa,
                 marcador_conductor,
                 ruta_viaje,
-                max(1, datos_vehiculo["tiempo"]),
+                duracion,
                 barra_progreso,
                 label_estado,
                 label_porcentaje,
@@ -142,28 +123,33 @@ class AnimacionViaje:
         mapa.marcador_inicio_viaje = marcador_inicio
         mapa.marcador_destino_viaje = marcador_destino
 
-    def _limpiar_marcadores_lugares(self, marcadores_lugares):
-        for marcador in marcadores_lugares:
+    def _foto(self, ruta_imagen):
+        imagen = Image.open(ruta_imagen)
+        imagen.thumbnail((46, 46))
+        return ImageTk.PhotoImage(imagen)
+
+    def _validar_rutas(self, rutas_viaje):
+        if rutas_viaje is None or not rutas_viaje.llegada or not rutas_viaje.viaje:
+            raise ValueError("No hay rutas disponibles para animar el viaje.")
+
+    def _limpiar_marcadores(self, marcadores):
+        for marcador in marcadores:
             try:
                 marcador.delete()
             except AttributeError:
                 pass
-        marcadores_lugares.clear()
-
-    def _ruta_real(self, ubicacion_inicial, ubicacion_final):
-        ruta_relativa = self.trayectoria.calcular_trayectoria(
-            LUGARES_OSORNO[ubicacion_inicial],
-            LUGARES_OSORNO[ubicacion_final],
-        )
-        return [self.trayectoria.coordenada_real(punto) for punto in ruta_relativa]
-
-    def _ruta_relativa_real(self, inicio, destino):
-        ruta_relativa = self.trayectoria.calcular_trayectoria(inicio, destino)
-        return [self.trayectoria.coordenada_real(punto) for punto in ruta_relativa]
+        marcadores.clear()
 
     def _ocultar_simbolo_marcador(self, mapa, marcador):
         def ocultar():
-            for atributo in ("polygon", "big_circle", "canvas_icon", "canvas_image", "canvas_marker", "canvas_circle"):
+            for atributo in (
+                "polygon",
+                "big_circle",
+                "canvas_icon",
+                "canvas_image",
+                "canvas_marker",
+                "canvas_circle",
+            ):
                 item = getattr(marcador, atributo, None)
                 if item is not None:
                     mapa.canvas.itemconfigure(item, state="hidden")
@@ -254,4 +240,3 @@ class AnimacionViaje:
                 indice + 1,
             ),
         )
-        #.

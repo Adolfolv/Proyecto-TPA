@@ -1,17 +1,106 @@
 from dataclasses import dataclass
 
 
-@dataclass
-class Ubicacion:
-    origen: str
-    destino: str
-@dataclass
-class SolicitudViaje:
-    cant_pasajeros:int
-    fecha_hora: str
-    ubicacion: Ubicacion
+# Alias simples para que las firmas de viaje comuniquen si una ruta usa puntos
+# relativos del mapa interno o coordenadas reales para TkinterMapView.
+PuntoRelativo = tuple[float, float]
+CoordenadaReal = tuple[float, float]
+RutaReal = list[CoordenadaReal]
+
+
+@dataclass(frozen=True)
+class CalleOsorno:
+    """Tramo simulado usado para ubicar conductores alrededor de Osorno."""
+
+    nombre: str
+    puntos: tuple[PuntoRelativo, ...]
+
+
+@dataclass(frozen=True)
+class ConductorSimulado:
+    """Datos base de un conductor disponible para el flujo de pasajero."""
+
+    nombre: str
+    apellido: str
+    imagen: str
+    marca_vehiculo: str
+    modelo_vehiculo: str
+    patente: str
+    precio: float
+
+
+@dataclass(frozen=True)
+class PasajeroSimulado:
+    """Datos base de un pasajero disponible para el flujo de conductor."""
+
+    nombre: str
+    apellido: str
+    imagen: str
+    marca_vehiculo: str
+    modelo_vehiculo: str
+    pago: float
+    ubicacion_inicial: str
+    ubicacion_final: str
+
+
+@dataclass(frozen=True)
+class VehiculoDisponible:
+    """Resultado tipado que el pasajero puede seleccionar para viajar."""
+
+    nombre_completo: str
+    vehiculo: str
+    patente: str
+    imagen: str
+    precio: float
+    distancia: float
+    tiempo: int
+    ubicacion_relativa: PuntoRelativo
+    ubicacion_real: CoordenadaReal
+
+
+@dataclass(frozen=True)
+class PasajeroEncontrado:
+    """Resultado tipado que el conductor puede aceptar para iniciar viaje."""
+
+    nombre_completo: str
+    vehiculo: str
+    trayecto: str
+    ubicacion_inicial: str
+    ubicacion_final: str
+    ubicacion_conductor: str
+    imagen: str
+    precio: float
+    distancia: float
+    duracion: int
+    km_para_llegar: float
+    km_transportando: float
+    tiempo_para_llegar: int
+    tiempo_transportando: int
+    duracion_busqueda: int
+
+
+@dataclass(frozen=True)
+class RutasViaje:
+    """Rutas reales que la vista necesita para animar llegada y traslado."""
+
+    llegada: RutaReal
+    viaje: RutaReal
+
+
+@dataclass(frozen=True)
+class ResultadoBusquedaVehiculos:
+    """Respuesta del caso de uso de busqueda del pasajero."""
+
+    exitoso: bool
+    error: str = ""
+    vehiculos: tuple[VehiculoDisponible, ...] = ()
+    ruta_busqueda: RutaReal | None = None
+
+
 @dataclass
 class Viaje:
+    """Registro persistible de un viaje terminado o iniciado."""
+
     pasajero: str
     conductor: str
     vehiculo: str
@@ -22,7 +111,8 @@ class Viaje:
 
 @dataclass
 class CuentaViajes:
+    """Historial de viajes asociado a un usuario de la aplicacion."""
+
     id_usuario: str
     tipo_usuario: str
     viajes: list[Viaje]
-

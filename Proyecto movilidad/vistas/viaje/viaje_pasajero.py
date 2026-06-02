@@ -2,16 +2,17 @@ from pathlib import Path
 from tkinter import messagebox
 from tkinter import ttk
 
-from Servicios.Viajes.animacion_viaje import AnimacionViaje
-from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
 from ..estilizacion import tema
 from ..estilizacion.widgets import Moldes
+from .animacion_viaje import AnimacionViaje
 from .mapa_viaje import MapaViaje
 
 
 RUTA_IMAGENES_CONDUCTORES = Path(__file__).resolve().parent.parent / "estilizacion" / "Imagenes" / "imagenes_conductores"
 
 class VistaViajePasajero:
+    """Vista principal del flujo de pasajero."""
+
     def __init__(self, padre, navegar, comando_volver_menu, controlador_viaje, usuario_actual):
         self.padre = padre
         self.navegar = navegar
@@ -75,7 +76,8 @@ class FrameIzquierdoPasajero:
     def crear_selector_ubicacion(self, padre, titulo, fila, columna, margen_x):
         apartado = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, fila=fila, columna=columna, sticky="ew", margen_x=margen_x, margen_y=(0, 8), columnas_peso=((0, 1),))
         self.moldes.crear_label(apartado, titulo, ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w", margen_x=10, margen_y=(8, 4))
-        return self.moldes.crear_selector(apartado, tuple(LUGARES_OSORNO), metodo="grid", fila=1, columna=0, sticky="ew", margen_x=10, margen_y=(0, 10), ipady=4)
+        lugares = self.vista.controlador_viaje.obtener_lugares_disponibles()
+        return self.moldes.crear_selector(apartado, lugares, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=10, margen_y=(0, 10), ipady=4)
 
     def crear_campo(self, padre, titulo, valor_inicial, fila, columna, columnas=1):
         campo = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, fila=fila, columna=columna, columnas=columnas, sticky="ew", margen_y=(0, 0), columnas_peso=((0, 1),))
@@ -134,35 +136,35 @@ class FrameDerechoPasajero:
 
 
 class AccionesBotonesPasajero:
+    """Acciones de botones del pasajero, separadas de la construccion visual."""
+
     def __init__(self, vista):
         self.vista = vista
 
     def presionar_boton_buscar_vehiculos(self):
         vista = self.vista
+        # La vista solo lee los campos; la validacion y la ruta quedan en el controlador.
         cantidad_usuarios = vista.entrada_usuarios.get()
         ubicacion_inicial = vista.selector_ubicacion_inicial.get()
         ubicacion_final = vista.selector_ubicacion_final.get()
-        resultado = vista.controlador_viaje.buscar_vehiculos(cantidad_usuarios, ubicacion_inicial, ubicacion_final)
+        busqueda_exitosa = vista.controlador_viaje.buscar_vehiculos_pasajero(
+            cantidad_usuarios,
+            ubicacion_inicial,
+            ubicacion_final,
+        )
 
-        if not resultado["ok"]:
-            vista.label_error_busqueda.config(text=resultado["error"])
-            vista.frame_confirmacion.grid_remove()
-            vista.boton_pagar.grid_remove()
-            self.limpiar_tabla_vehiculos()
-            self.limpiar_mapa_busqueda()
+        if busqueda_exitosa is False:
+            self.mostrar_error_busqueda(
+                vista.controlador_viaje.obtener_error_busqueda_vehiculos()
+            )
             return
 
-        vista.info_vehiculos_busqueda = resultado["vehiculos"]
-        vista.ubicacion_inicial_busqueda = ubicacion_inicial
-        vista.ubicacion_final_busqueda = ubicacion_final
-        vista.vehiculo_seleccionado = None
-        vista.label_error_busqueda.config(text="")
-        vista.frame_confirmacion.grid_remove()
-        vista.boton_pagar.grid_remove()
-        ruta = self.formar_trayecto_busqueda()
+        self.preparar_busqueda_exitosa(ubicacion_inicial, ubicacion_final)
+        ruta = vista.controlador_viaje.obtener_ruta_busqueda_pasajero()
         if ruta is None:
-            self.limpiar_tabla_vehiculos()
-            self.limpiar_mapa_busqueda()
+            self.mostrar_error_busqueda(
+                "No se pudo obtener la ruta profesional. Intenta nuevamente."
+            )
             return
 
         self.mostrar_vehiculos()
@@ -171,6 +173,26 @@ class AccionesBotonesPasajero:
             self.mostrar_conductores_en_mapa()
         except Exception as error:
             vista.label_error_busqueda.config(text=f"No se pudo mostrar el viaje en el mapa: {error}")
+
+    def preparar_busqueda_exitosa(self, ubicacion_inicial, ubicacion_final):
+        vista = self.vista
+        # La vista conserva solo el estado visual que necesita para pintar tabla y mapa.
+        vista.info_vehiculos_busqueda = vista.controlador_viaje.obtener_vehiculos_encontrados()
+        vista.ubicacion_inicial_busqueda = ubicacion_inicial
+        vista.ubicacion_final_busqueda = ubicacion_final
+        vista.vehiculo_seleccionado = None
+        vista.label_error_busqueda.config(text="")
+        vista.frame_confirmacion.grid_remove()
+        vista.boton_pagar.grid_remove()
+
+    def mostrar_error_busqueda(self, mensaje):
+        vista = self.vista
+        # Limpia la interfaz de resultados cuando el controlador rechaza la busqueda.
+        vista.label_error_busqueda.config(text=mensaje)
+        vista.frame_confirmacion.grid_remove()
+        vista.boton_pagar.grid_remove()
+        self.limpiar_tabla_vehiculos()
+        self.limpiar_mapa_busqueda()
 
     def presionar_boton_seleccionar_vehiculo(self, _evento=None):
         vista = self.vista
@@ -197,29 +219,32 @@ class AccionesBotonesPasajero:
             return
 
         vista.label_error_busqueda.config(text="")
-        rutas_viaje = self.formar_rutas_inicio_viaje()
-        if rutas_viaje is None:
-            return
-
-        try:
-            pago_realizado = vista.controlador_viaje.pagar_pasajero(vista.usuario_actual, vista.vehiculo_seleccionado["precio"])
-        except ValueError as error:
-            vista.label_error_busqueda.config(text=str(error))
-            return
-        except AttributeError:
-            vista.label_error_busqueda.config(text="No se pudo obtener la billetera del usuario.")
-            return
-
-        if not pago_realizado:
-            vista.label_error_busqueda.config(text="No se pudo realizar el pago del viaje.")
+        # El controlador prepara rutas y cobra; la vista solo muestra el resultado.
+        pago_confirmado = vista.controlador_viaje.confirmar_pago_pasajero(
+            vista.usuario_actual,
+            vista.vehiculo_seleccionado,
+            vista.ubicacion_inicial_busqueda,
+            vista.ubicacion_final_busqueda,
+        )
+        if pago_confirmado is False:
+            self.mostrar_error_viaje(vista.controlador_viaje.obtener_error_viaje())
             return
 
         self.bloquear_formulario_en_viaje()
         try:
-            vista.controlador_viaje.iniciar_viaje_pasajero(vista.vehiculo_seleccionado, vista.usuario_actual, lambda: self.iniciar_animacion_viaje(rutas_viaje))
+            vista.controlador_viaje.iniciar_viaje_pasajero_confirmado(
+                vista.vehiculo_seleccionado,
+                vista.usuario_actual,
+            )
+            self.iniciar_animacion_viaje(
+                vista.controlador_viaje.obtener_rutas_viaje_pasajero(),
+            )
         except Exception as error:
             vista.label_estado_viaje.config(text="No se pudo iniciar el viaje")
             vista.label_error_busqueda.config(text=f"No se pudo iniciar la animacion del viaje: {error}")
+
+    def mostrar_error_viaje(self, mensaje):
+        self.vista.label_error_busqueda.config(text=mensaje)
 
     def presionar_boton_cancelar(self):
         self.vista.navegar("viaje")
@@ -242,7 +267,7 @@ class AccionesBotonesPasajero:
         vista = self.vista
         self.limpiar_tabla_vehiculos()
         for vehiculo in vista.info_vehiculos_busqueda:
-            item = vista.tabla_vehiculos.insert("", "end", values=(vehiculo["nombre_completo"], f"{vehiculo['vehiculo']} | {vehiculo['patente']} | {vehiculo['distancia']} km", f"${vehiculo['precio']}", f"{vehiculo['tiempo']} s"), tags=("fila",))
+            item = vista.tabla_vehiculos.insert("", "end", values=(vehiculo.nombre_completo, f"{vehiculo.vehiculo} | {vehiculo.patente} | {vehiculo.distancia} km", f"${vehiculo.precio}", f"{vehiculo.tiempo} s"), tags=("fila",))
             vista.vehiculos_por_item[item] = vehiculo
 
     def mostrar_conductores_en_mapa(self):
@@ -256,27 +281,6 @@ class AccionesBotonesPasajero:
         if self.vista.mapa_viaje is None:
             return
         self.vista.mapa_viaje.dibujar_trayectoria(ruta)
-
-    def formar_trayecto_busqueda(self):
-        vista = self.vista
-        try:
-            return vista.controlador_viaje.formar_trayectoria(vista.ubicacion_inicial_busqueda, vista.ubicacion_final_busqueda)
-        except Exception:
-            vista.label_error_busqueda.config(text="No se pudo obtener la ruta profesional. Intenta nuevamente.")
-            return None
-
-    def formar_rutas_inicio_viaje(self):
-        vista = self.vista
-        try:
-            ruta_llegada = vista.controlador_viaje.formar_trayectoria_por_puntos(vista.vehiculo_seleccionado["ubicacion_relativa"], LUGARES_OSORNO[vista.ubicacion_inicial_busqueda])
-            ruta_viaje = vista.controlador_viaje.formar_trayectoria(vista.ubicacion_inicial_busqueda, vista.ubicacion_final_busqueda)
-            return {
-                "llegada": ruta_llegada,
-                "viaje": ruta_viaje,
-            }
-        except Exception:
-            vista.label_error_busqueda.config(text="No se pudo iniciar la ruta profesional. Intenta nuevamente.")
-            return None
 
     def bloquear_formulario_en_viaje(self):
         vista = self.vista
@@ -304,4 +308,4 @@ class AccionesBotonesPasajero:
 
         vista.mapa_viaje.limpiar_lugares()
         vista.mapa_viaje.limpiar_trayectorias()
-        vista.animacion_viaje.animacion_viaje_pasajero(vista.mapa_viaje.mapa, vista.mapa_viaje.marcadores_conductores, RUTA_IMAGENES_CONDUCTORES, vista.vehiculo_seleccionado, vista.ubicacion_inicial_busqueda, vista.ubicacion_final_busqueda, vista.barra_progreso, vista.label_estado_progreso, vista.label_porcentaje_progreso, vista.finalizar_viaje, rutas_viaje["llegada"], rutas_viaje["viaje"])
+        vista.animacion_viaje.animacion_viaje_pasajero(vista.mapa_viaje.mapa, vista.mapa_viaje.marcadores_conductores, RUTA_IMAGENES_CONDUCTORES, vista.vehiculo_seleccionado, rutas_viaje, vista.barra_progreso, vista.label_estado_progreso, vista.label_porcentaje_progreso, vista.finalizar_viaje)

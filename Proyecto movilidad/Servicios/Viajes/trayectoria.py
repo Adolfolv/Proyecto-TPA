@@ -1,4 +1,5 @@
 import json
+import urllib.error
 import urllib.request
 
 from Servicios.Viajes.datos_viaje import (
@@ -7,13 +8,18 @@ from Servicios.Viajes.datos_viaje import (
     OSORNO_LNG_ESTE,
     OSORNO_LNG_OESTE,
 )
-#.
+
+
 URL_OSRM = "http://router.project-osrm.org/route/v1/driving"
 TIMEOUT_OSRM = 4
 
 
 class Trayectoria:
+    """Proveedor de rutas entre puntos relativos del mapa de Osorno."""
+
     def coordenada_real(self, punto):
+        """Convierte un punto relativo normalizado a latitud/longitud real."""
+
         x = min(1.0, max(0.0, punto[0]))
         y = min(1.0, max(0.0, punto[1]))
         latitud = OSORNO_LAT_NORTE + y * (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
@@ -21,6 +27,8 @@ class Trayectoria:
         return latitud, longitud
 
     def punto_relativo_desde_coordenada(self, latitud, longitud):
+        """Convierte latitud/longitud real a un punto relativo del mapa."""
+
         x = (longitud - OSORNO_LNG_OESTE) / (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
         y = (latitud - OSORNO_LAT_NORTE) / (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
         return (
@@ -29,6 +37,8 @@ class Trayectoria:
         )
 
     def limpiar_puntos(self, puntos, umbral=0.001):
+        """Reduce puntos casi repetidos para que la animacion sea estable."""
+
         limpios = []
         for punto in puntos:
             if not limpios:
@@ -36,19 +46,33 @@ class Trayectoria:
                 continue
 
             ultimo_punto = limpios[-1]
-
             distancia_x = ultimo_punto[0] - punto[0]
             distancia_y = ultimo_punto[1] - punto[1]
-            
+
             if (distancia_x * distancia_x + distancia_y * distancia_y) ** 0.5 > umbral:
                 limpios.append(punto)
         return limpios
 
     def calcular_trayectoria(self, inicio, destino):
+        """Calcula una ruta por OSRM y usa una ruta local si la red falla."""
+
+        try:
+            return self._calcular_trayectoria_osrm(inicio, destino)
+        except (
+            TimeoutError,
+            urllib.error.URLError,
+            json.JSONDecodeError,
+            KeyError,
+            IndexError,
+        ):
+            return self._calcular_trayectoria_local(inicio, destino)
+
+    def _calcular_trayectoria_osrm(self, inicio, destino):
         latitud_inicio, longitud_inicio = self.coordenada_real(inicio)
         latitud_destino, longitud_destino = self.coordenada_real(destino)
         url = (
-            f"{URL_OSRM}/{longitud_inicio},{latitud_inicio};{longitud_destino},{latitud_destino}"
+            f"{URL_OSRM}/{longitud_inicio},{latitud_inicio};"
+            f"{longitud_destino},{latitud_destino}"
             "?overview=full&geometries=geojson&steps=false"
         )
 
@@ -61,3 +85,17 @@ class Trayectoria:
             for longitud, latitud in coordenadas
         ]
         return self.limpiar_puntos(puntos)
+
+    def _calcular_trayectoria_local(self, inicio, destino, pasos=16):
+        """Genera una linea interpolada para mantener funcionando la UI offline."""
+
+        if inicio == destino:
+            return [inicio]
+
+        puntos = []
+        for indice in range(pasos + 1):
+            proporcion = indice / pasos
+            x = inicio[0] + (destino[0] - inicio[0]) * proporcion
+            y = inicio[1] + (destino[1] - inicio[1]) * proporcion
+            puntos.append((round(x, 5), round(y, 5)))
+        return self.limpiar_puntos(puntos, umbral=0.00001)

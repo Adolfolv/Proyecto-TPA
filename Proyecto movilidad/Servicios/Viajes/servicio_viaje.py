@@ -1,6 +1,13 @@
 from math import asin, cos, radians, sin, sqrt
-from random import choice, randint, sample
+from random import Random
 
+from Modelos.Viaje.modelo_viajes import (
+    PasajeroEncontrado,
+    PasajeroSimulado,
+    ResultadoBusquedaVehiculos,
+    RutasViaje,
+    VehiculoDisponible,
+)
 from Servicios.Viajes.datos_viaje import (
     CALLES_OSORNO,
     CONDUCTORES_SIMULADOS,
@@ -11,16 +18,26 @@ from Servicios.Viajes.persistencia_usuario import PersistenciaUsuarioViajes
 from Servicios.Viajes.trayectoria import Trayectoria
 from Validaciones.validaciones_viaje import ValidacionesViaje
 
+
 class ServicioViaje:
-    def __init__(self, persistencia_usuario=None):
-        self.comun = ServicioViajeComun(persistencia_usuario)
-        self.pasajero = ServicioViajePasajero(self.comun)
-        self.conductor = ServicioViajeConductor(self.comun)
-        self.inicio_viaje = IniciarViaje(self.comun)
+    """Fachada del modulo de viajes.
+
+    Expone los casos de uso que necesita el controlador y delega los detalles
+    a servicios especializados para pasajero, conductor y operaciones comunes.
+    """
+
+    def __init__(self, persistencia_usuario=None, trayectoria=None, randomizador=None):
+        randomizador = randomizador or Random()
+        self.comun = ServicioViajeComun(persistencia_usuario, trayectoria)
+        self.pasajero = ServicioViajePasajero(self.comun, randomizador=randomizador)
+        self.conductor = ServicioViajeConductor(self.comun, randomizador=randomizador)
 
     @property
     def viajes(self):
         return self.comun.viajes
+
+    def obtener_lugares_disponibles(self):
+        return tuple(LUGARES_OSORNO)
 
     def buscar_pasajeros(self, ubicacion_inicial):
         return self.conductor.buscar_pasajeros(ubicacion_inicial)
@@ -32,14 +49,33 @@ class ServicioViaje:
             ubicacion_final,
         )
 
+    def obtener_error_busqueda_vehiculos(self):
+        return self.pasajero.obtener_error_busqueda_vehiculos()
+
+    def obtener_vehiculos_encontrados(self):
+        return self.pasajero.obtener_vehiculos_encontrados()
+
+    def formar_ruta_busqueda_pasajero(self, ubicacion_inicial, ubicacion_final):
+        return self.pasajero.formar_ruta_busqueda(ubicacion_inicial, ubicacion_final)
+
+    def formar_rutas_viaje_pasajero(self, vehiculo, ubicacion_inicial, ubicacion_final):
+        return self.pasajero.formar_rutas_inicio_viaje(
+            vehiculo,
+            ubicacion_inicial,
+            ubicacion_final,
+        )
+
+    def formar_rutas_viaje_conductor(self, pasajero):
+        return self.conductor.formar_rutas_inicio_viaje(pasajero)
+
     def formar_trayectoria(self, ubicacion_inicial, ubicacion_final):
         return self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)
 
     def formar_trayectoria_por_puntos(self, inicio, destino):
         return self.comun.formar_trayectoria_por_puntos(inicio, destino)
 
-    def iniciar_viaje(self, viaje, usuario, animacion_viaje=None):
-        return self.inicio_viaje.iniciar(viaje, usuario, animacion_viaje)
+    def iniciar_viaje(self, viaje, usuario):
+        return self.comun.iniciar_viaje(viaje, usuario)
 
     def calcular_tiempo_por_km(self, distancia):
         return self.comun.calcular_tiempo_por_km(distancia)
@@ -53,11 +89,20 @@ class ServicioViaje:
     def calcular_tiempos_viaje(self, km_para_llegar, km_transportando):
         return self.comun.calcular_tiempos_viaje(km_para_llegar, km_transportando)
 
+
 class ServicioViajeComun:
+    """Operaciones compartidas: rutas, tiempos, distancias y persistencia."""
+
     def __init__(self, persistencia_usuario=None, trayectoria=None):
         self.viajes = []
         self.persistencia_usuario = persistencia_usuario or PersistenciaUsuarioViajes()
         self.trayectoria = trayectoria or Trayectoria()
+
+    def obtener_punto_lugar(self, nombre_lugar):
+        try:
+            return LUGARES_OSORNO[nombre_lugar]
+        except KeyError as error:
+            raise ValueError(f"Ubicacion no registrada: {nombre_lugar}") from error
 
     def calcular_tiempo_por_km(self, distancia):
         if distancia <= 0:
@@ -124,8 +169,8 @@ class ServicioViajeComun:
         }
 
     def formar_trayectoria(self, ubicacion_inicial, ubicacion_final):
-        inicio = LUGARES_OSORNO[ubicacion_inicial]
-        destino = LUGARES_OSORNO[ubicacion_final]
+        inicio = self.obtener_punto_lugar(ubicacion_inicial)
+        destino = self.obtener_punto_lugar(ubicacion_final)
         return self.formar_trayectoria_por_puntos(inicio, destino)
 
     def formar_trayectoria_por_puntos(self, inicio, destino):
@@ -137,20 +182,15 @@ class ServicioViajeComun:
         return self.persistencia_usuario.guardar_viaje(usuario, viaje)
 
 
-class IniciarViaje:
-    def __init__(self, servicio_comun):
-        self.comun = servicio_comun
-
-    def iniciar(self, viaje, usuario, animacion_viaje=None):
-        if animacion_viaje is not None:
-            animacion_viaje()
-        return self.comun.iniciar_viaje(viaje, usuario)
-
-
 class ServicioViajePasajero:
-    def __init__(self, servicio_comun, validaciones=None):
+    """Caso de uso donde un pasajero busca, elige y paga un vehiculo."""
+
+    def __init__(self, servicio_comun, validaciones=None, randomizador=None):
         self.comun = servicio_comun
         self.validaciones = validaciones or ValidacionesViaje()
+        self.randomizador = randomizador or Random()
+        self.error_busqueda_vehiculos = ""
+        self.vehiculos_encontrados = []
 
     def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
         valido, error = self.validaciones.validar_busqueda_vehiculos(
@@ -158,24 +198,49 @@ class ServicioViajePasajero:
             ubicacion_inicial,
             ubicacion_final,
         )
-        if not valido:
-            return {
-                "ok": False,
-                "error": error,
-                "vehiculos": [],
-            }
+        self.error_busqueda_vehiculos = error
+        self.vehiculos_encontrados = []
 
-        return {
-            "ok": True,
-            "error": "",
-            "vehiculos": self.obtener_vehiculos_disponibles(ubicacion_inicial),
-        }
+        if not valido:
+            return ResultadoBusquedaVehiculos(False, error=error)
+
+        try:
+            vehiculos = tuple(self.obtener_vehiculos_disponibles(ubicacion_inicial))
+            ruta_busqueda = self.formar_ruta_busqueda(ubicacion_inicial, ubicacion_final)
+        except (KeyError, TypeError, ValueError) as error:
+            mensaje = f"No se pudo preparar la busqueda de viaje: {error}"
+            self.error_busqueda_vehiculos = mensaje
+            return ResultadoBusquedaVehiculos(False, error=mensaje)
+
+        self.vehiculos_encontrados = list(vehiculos)
+        return ResultadoBusquedaVehiculos(
+            True,
+            vehiculos=vehiculos,
+            ruta_busqueda=ruta_busqueda,
+        )
+
+    def obtener_error_busqueda_vehiculos(self):
+        return self.error_busqueda_vehiculos
+
+    def obtener_vehiculos_encontrados(self):
+        return self.vehiculos_encontrados
+
+    def formar_ruta_busqueda(self, ubicacion_inicial, ubicacion_final):
+        return self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)
+
+    def formar_rutas_inicio_viaje(self, vehiculo, ubicacion_inicial, ubicacion_final):
+        ruta_llegada = self.comun.formar_trayectoria_por_puntos(
+            vehiculo.ubicacion_relativa,
+            self.comun.obtener_punto_lugar(ubicacion_inicial),
+        )
+        ruta_viaje = self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)
+        return RutasViaje(llegada=ruta_llegada, viaje=ruta_viaje)
 
     def obtener_vehiculos_disponibles(self, ubicacion_inicial):
         vehiculos = []
         cantidad_vehiculos = min(5, len(CONDUCTORES_SIMULADOS))
-        conductores = sample(CONDUCTORES_SIMULADOS, cantidad_vehiculos)
-        ubicacion_pasajero = LUGARES_OSORNO[ubicacion_inicial]
+        conductores = self.randomizador.sample(CONDUCTORES_SIMULADOS, cantidad_vehiculos)
+        ubicacion_pasajero = self.comun.obtener_punto_lugar(ubicacion_inicial)
 
         for conductor in conductores:
             punto_conductor = self.obtener_punto_conductor_random()
@@ -187,67 +252,90 @@ class ServicioViajePasajero:
         return vehiculos
 
     def obtener_punto_conductor_random(self):
-        calle = choice(CALLES_OSORNO)
-        puntos_calle = calle[1]
-        return choice(puntos_calle)
+        calle = self.randomizador.choice(CALLES_OSORNO)
+        return self.randomizador.choice(calle.puntos)
 
     def obtener_datos_vehiculo(self, conductor, punto_conductor, distancia):
-        return {
-            "nombre_completo": f"{conductor['nombre']} {conductor['apellido']}",
-            "vehiculo": f"{conductor['marca_vehiculo']} {conductor['modelo_vehiculo']}",
-            "patente": conductor["patente"],
-            "imagen": conductor["imagen"],
-            "precio": float(conductor["precio"]),
-            "distancia": distancia,
-            "tiempo": self.comun.calcular_tiempo_por_km(distancia),
-            "ubicacion_relativa": punto_conductor,
-            "ubicacion_real": self.comun.trayectoria.coordenada_real(punto_conductor),
-        }
+        return VehiculoDisponible(
+            nombre_completo=f"{conductor.nombre} {conductor.apellido}",
+            vehiculo=f"{conductor.marca_vehiculo} {conductor.modelo_vehiculo}",
+            patente=conductor.patente,
+            imagen=conductor.imagen,
+            precio=float(conductor.precio),
+            distancia=distancia,
+            tiempo=self.comun.calcular_tiempo_por_km(distancia),
+            ubicacion_relativa=punto_conductor,
+            ubicacion_real=self.comun.trayectoria.coordenada_real(punto_conductor),
+        )
 
 
 class ServicioViajeConductor:
-    def __init__(self, servicio_comun):
+    """Caso de uso donde un conductor busca y acepta un pasajero."""
+
+    def __init__(self, servicio_comun, randomizador=None):
         self.comun = servicio_comun
+        self.randomizador = randomizador or Random()
 
     def buscar_pasajeros(self, ubicacion_inicial):
-        pasajero = choice(PASAJEROS_SIMULADOS)
-        datos_pasajero = self.obtener_datos_pasajero(pasajero, ubicacion_inicial)
-        datos_pasajero["duracion_busqueda"] = randint(5, 10)
-        return datos_pasajero
+        pasajero = self.randomizador.choice(PASAJEROS_SIMULADOS)
+        duracion_busqueda = self.randomizador.randint(5, 10)
+        return self.obtener_datos_pasajero(
+            pasajero,
+            ubicacion_inicial,
+            duracion_busqueda,
+        )
 
-    def obtener_datos_pasajero(self, pasajero, ubicacion_conductor):
+    def obtener_datos_pasajero(
+        self,
+        pasajero: PasajeroSimulado,
+        ubicacion_conductor,
+        duracion_busqueda,
+    ):
         distancias = self.calcular_km_viaje(ubicacion_conductor, pasajero)
         tiempos = self.comun.calcular_tiempos_viaje(
             distancias["km_para_llegar"],
             distancias["km_transportando"],
         )
-        return {
-            "nombre_completo": f"{pasajero['nombre']} {pasajero['apellido']}",
-            "vehiculo": f"{pasajero['marca_vehiculo']} {pasajero['modelo_vehiculo']}",
-            "trayecto": f"{pasajero['ubicacion_inicial']} -> {pasajero['ubicacion_final']}",
-            "ubicacion_inicial": pasajero["ubicacion_inicial"],
-            "ubicacion_final": pasajero["ubicacion_final"],
-            "ubicacion_conductor": ubicacion_conductor,
-            "imagen": pasajero["imagen"],
-            "precio": float(pasajero["pago"]),
-            "distancia": distancias["km_para_llegar"] + distancias["km_transportando"],
-            "duracion": tiempos["tiempo_para_llegar"] + tiempos["tiempo_transportando"],
-            **distancias,
-            **tiempos,
-        }
+        return PasajeroEncontrado(
+            nombre_completo=f"{pasajero.nombre} {pasajero.apellido}",
+            vehiculo=f"{pasajero.marca_vehiculo} {pasajero.modelo_vehiculo}",
+            trayecto=f"{pasajero.ubicacion_inicial} -> {pasajero.ubicacion_final}",
+            ubicacion_inicial=pasajero.ubicacion_inicial,
+            ubicacion_final=pasajero.ubicacion_final,
+            ubicacion_conductor=ubicacion_conductor,
+            imagen=pasajero.imagen,
+            precio=float(pasajero.pago),
+            distancia=distancias["km_para_llegar"] + distancias["km_transportando"],
+            duracion=tiempos["tiempo_para_llegar"] + tiempos["tiempo_transportando"],
+            km_para_llegar=distancias["km_para_llegar"],
+            km_transportando=distancias["km_transportando"],
+            tiempo_para_llegar=tiempos["tiempo_para_llegar"],
+            tiempo_transportando=tiempos["tiempo_transportando"],
+            duracion_busqueda=duracion_busqueda,
+        )
+
+    def formar_rutas_inicio_viaje(self, pasajero):
+        return RutasViaje(
+            llegada=self.comun.formar_trayectoria(
+                pasajero.ubicacion_conductor,
+                pasajero.ubicacion_inicial,
+            ),
+            viaje=self.comun.formar_trayectoria(
+                pasajero.ubicacion_inicial,
+                pasajero.ubicacion_final,
+            ),
+        )
 
     def calcular_km_viaje(self, ubicacion_conductor, pasajero):
         ruta_llegada = self.comun.trayectoria.calcular_trayectoria(
-            LUGARES_OSORNO[ubicacion_conductor],
-            LUGARES_OSORNO[pasajero["ubicacion_inicial"]],
+            self.comun.obtener_punto_lugar(ubicacion_conductor),
+            self.comun.obtener_punto_lugar(pasajero.ubicacion_inicial),
         )
         ruta_transporte = self.comun.trayectoria.calcular_trayectoria(
-            LUGARES_OSORNO[pasajero["ubicacion_inicial"]],
-            LUGARES_OSORNO[pasajero["ubicacion_final"]],
+            self.comun.obtener_punto_lugar(pasajero.ubicacion_inicial),
+            self.comun.obtener_punto_lugar(pasajero.ubicacion_final),
         )
         return {
             "km_para_llegar": round(self.comun.calcular_km_trayectoria(ruta_llegada), 2),
             "km_transportando": round(self.comun.calcular_km_trayectoria(ruta_transporte), 2),
         }
-
-

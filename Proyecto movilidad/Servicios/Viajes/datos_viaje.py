@@ -1,15 +1,29 @@
+from Modelos.Viaje.modelo_viajes import (
+    CalleOsorno,
+    ConductorSimulado,
+    PasajeroSimulado,
+    PuntoRelativo,
+)
 
 
+# Limites geograficos usados para convertir entre el mapa relativo de la
+# aplicacion y coordenadas reales de Osorno.
 OSORNO_LAT_NORTE = -40.5480
 OSORNO_LAT_SUR = -40.6050
 OSORNO_LNG_OESTE = -73.1650
 OSORNO_LNG_ESTE = -73.0850
 
-from Servicios.Viajes.trayectoria import Trayectoria  # noqa: E402
 
+def punto_relativo_desde_coordenada(latitud: float, longitud: float) -> PuntoRelativo:
+    """Convierte una coordenada real a un punto normalizado entre 0 y 1."""
 
-_trayectoria = Trayectoria()
-_punto_relativo_desde_coordenada = _trayectoria.punto_relativo_desde_coordenada
+    x = (longitud - OSORNO_LNG_OESTE) / (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
+    y = (latitud - OSORNO_LAT_NORTE) / (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
+    return (
+        min(1.0, max(0.0, round(x, 5))),
+        min(1.0, max(0.0, round(y, 5))),
+    )
+
 
 COORDENADAS_REALES_OSORNO = {
     "Plaza de Armas Osorno": (-40.57397, -73.13572),
@@ -35,202 +49,168 @@ IMAGENES_LUGARES_OSORNO = {
     "Casino Marina del Sol Osorno": "casino.png",
 }
 
-
-
-
-
 LUGARES_OSORNO = {
-    nombre: _punto_relativo_desde_coordenada(latitud, longitud)
+    nombre: punto_relativo_desde_coordenada(latitud, longitud)
     for nombre, (latitud, longitud) in COORDENADAS_REALES_OSORNO.items()
 }
 
+# Calles usadas solo para sembrar puntos plausibles de conductores simulados.
 CALLES_OSORNO = (
-    (
+    CalleOsorno(
         "Av. Republica - eje centro oriente",
         (
-            _punto_relativo_desde_coordenada(-40.57450, -73.13630),
-            _punto_relativo_desde_coordenada(-40.57397, -73.13572),
-            _punto_relativo_desde_coordenada(-40.57408, -73.13048),
-            _punto_relativo_desde_coordenada(-40.57296, -73.12880),
-            _punto_relativo_desde_coordenada(-40.57293, -73.12563),
-            _punto_relativo_desde_coordenada(-40.57380, -73.11800),
-            _punto_relativo_desde_coordenada(-40.57500, -73.103889),
+            punto_relativo_desde_coordenada(-40.57450, -73.13630),
+            punto_relativo_desde_coordenada(-40.57397, -73.13572),
+            punto_relativo_desde_coordenada(-40.57408, -73.13048),
+            punto_relativo_desde_coordenada(-40.57296, -73.12880),
+            punto_relativo_desde_coordenada(-40.57293, -73.12563),
+            punto_relativo_desde_coordenada(-40.57380, -73.11800),
+            punto_relativo_desde_coordenada(-40.57500, -73.103889),
         ),
-        8,
     ),
-    (
+    CalleOsorno(
         "Juan Mackenna - Manuel Rodriguez",
         (
-            _punto_relativo_desde_coordenada(-40.57296, -73.12880),
-            _punto_relativo_desde_coordenada(-40.57920, -73.13020),
-            _punto_relativo_desde_coordenada(-40.58333, -73.13167),
-            _punto_relativo_desde_coordenada(-40.58794, -73.12787),
+            punto_relativo_desde_coordenada(-40.57296, -73.12880),
+            punto_relativo_desde_coordenada(-40.57920, -73.13020),
+            punto_relativo_desde_coordenada(-40.58333, -73.13167),
+            punto_relativo_desde_coordenada(-40.58794, -73.12787),
         ),
-        7,
     ),
-    (
+    CalleOsorno(
         "Los Carrera - acceso sur centro",
         (
-            _punto_relativo_desde_coordenada(-40.57408, -73.13048),
-            _punto_relativo_desde_coordenada(-40.57920, -73.13020),
-            _punto_relativo_desde_coordenada(-40.58333, -73.13167),
+            punto_relativo_desde_coordenada(-40.57408, -73.13048),
+            punto_relativo_desde_coordenada(-40.57920, -73.13020),
+            punto_relativo_desde_coordenada(-40.58333, -73.13167),
         ),
-        6,
     ),
-    (
+    CalleOsorno(
         "Rene Soriano - Chuyaca - ULagos",
         (
-            _punto_relativo_desde_coordenada(-40.57500, -73.103889),
-            _punto_relativo_desde_coordenada(-40.57980, -73.10100),
-            _punto_relativo_desde_coordenada(-40.58420, -73.09500),
-            _punto_relativo_desde_coordenada(-40.587167, -73.089164),
+            punto_relativo_desde_coordenada(-40.57500, -73.103889),
+            punto_relativo_desde_coordenada(-40.57980, -73.10100),
+            punto_relativo_desde_coordenada(-40.58420, -73.09500),
+            punto_relativo_desde_coordenada(-40.587167, -73.089164),
         ),
-        8,
     ),
-    (
+    CalleOsorno(
         "Ruta 5 Sur - enlace oriente",
         (
-            _punto_relativo_desde_coordenada(-40.56000, -73.10650),
-            _punto_relativo_desde_coordenada(-40.57500, -73.103889),
-            _punto_relativo_desde_coordenada(-40.58420, -73.09500),
-            _punto_relativo_desde_coordenada(-40.59600, -73.09200),
+            punto_relativo_desde_coordenada(-40.56000, -73.10650),
+            punto_relativo_desde_coordenada(-40.57500, -73.103889),
+            punto_relativo_desde_coordenada(-40.58420, -73.09500),
+            punto_relativo_desde_coordenada(-40.59600, -73.09200),
         ),
-        9,
     ),
-    (
+    CalleOsorno(
         "Rahue Centro",
         (
-            _punto_relativo_desde_coordenada(-40.57539, -73.14577),
-            _punto_relativo_desde_coordenada(-40.57520, -73.14420),
+            punto_relativo_desde_coordenada(-40.57539, -73.14577),
+            punto_relativo_desde_coordenada(-40.57520, -73.14420),
         ),
-        6,
     ),
-    (
+    CalleOsorno(
         "Costanera centro",
         (
-            _punto_relativo_desde_coordenada(-40.57520, -73.14420),
-            _punto_relativo_desde_coordenada(-40.57450, -73.13630),
-            _punto_relativo_desde_coordenada(-40.57397, -73.13572),
+            punto_relativo_desde_coordenada(-40.57520, -73.14420),
+            punto_relativo_desde_coordenada(-40.57450, -73.13630),
+            punto_relativo_desde_coordenada(-40.57397, -73.13572),
         ),
-        5,
     ),
-    (
+    CalleOsorno(
         "Calle Burchard - acceso directo Hospital",
         (
-            _punto_relativo_desde_coordenada(-40.57293, -73.12563),
-            _punto_relativo_desde_coordenada(-40.57600, -73.12580),
-            _punto_relativo_desde_coordenada(-40.57900, -73.12640),
-            _punto_relativo_desde_coordenada(-40.58300, -73.12700),
-            _punto_relativo_desde_coordenada(-40.58794, -73.12787),
+            punto_relativo_desde_coordenada(-40.57293, -73.12563),
+            punto_relativo_desde_coordenada(-40.57600, -73.12580),
+            punto_relativo_desde_coordenada(-40.57900, -73.12640),
+            punto_relativo_desde_coordenada(-40.58300, -73.12700),
+            punto_relativo_desde_coordenada(-40.58794, -73.12787),
         ),
-        6,
     ),
-    (
+    CalleOsorno(
         "Av. Errazuriz - eje sur transversal",
         (
-            _punto_relativo_desde_coordenada(-40.58333, -73.13167),
-            _punto_relativo_desde_coordenada(-40.58300, -73.12700),
-            _punto_relativo_desde_coordenada(-40.58200, -73.12000),
-            _punto_relativo_desde_coordenada(-40.58100, -73.10500),
-            _punto_relativo_desde_coordenada(-40.57980, -73.10100),
+            punto_relativo_desde_coordenada(-40.58333, -73.13167),
+            punto_relativo_desde_coordenada(-40.58300, -73.12700),
+            punto_relativo_desde_coordenada(-40.58200, -73.12000),
+            punto_relativo_desde_coordenada(-40.58100, -73.10500),
+            punto_relativo_desde_coordenada(-40.57980, -73.10100),
         ),
-        7,
     ),
-    (
+    CalleOsorno(
         "Calle Arturo Prat - eje norte sur oriente",
         (
-            _punto_relativo_desde_coordenada(-40.57380, -73.11800),
-            _punto_relativo_desde_coordenada(-40.57600, -73.11780),
-            _punto_relativo_desde_coordenada(-40.57900, -73.11600),
-            _punto_relativo_desde_coordenada(-40.58100, -73.10500),
+            punto_relativo_desde_coordenada(-40.57380, -73.11800),
+            punto_relativo_desde_coordenada(-40.57600, -73.11780),
+            punto_relativo_desde_coordenada(-40.57900, -73.11600),
+            punto_relativo_desde_coordenada(-40.58100, -73.10500),
         ),
-        6,
-    ),
-)
-
-PUENTES_OSORNO = (
-    (
-        "Puente San Pedro",
-        _punto_relativo_desde_coordenada(-40.57520, -73.14420),
-        _punto_relativo_desde_coordenada(-40.57450, -73.13630),
     ),
 )
 
 CONDUCTORES_SIMULADOS = (
-    {"nombre": "Martin", "apellido": "Rojas", "imagen": "hombre1.png", "marca_vehiculo": "Toyota", "modelo_vehiculo": "Yaris", "patente": "ABCD-12", "precio": 3800, "distancia": 1.2},
-    {"nombre": "Matias", "apellido": "Soto", "imagen": "hombre2.png", "marca_vehiculo": "Hyundai", "modelo_vehiculo": "Accent", "patente": "WXYZ-98", "precio": 4200, "distancia": 1.8},
-    {"nombre": "Diego", "apellido": "Perez", "imagen": "hombre3.png", "marca_vehiculo": "Chevrolet", "modelo_vehiculo": "Sail", "patente": "JKLM-34", "precio": 3600, "distancia": 0.9},
-    {"nombre": "Felipe", "apellido": "Munoz", "imagen": "hombre4.png", "marca_vehiculo": "Kia", "modelo_vehiculo": "Rio", "patente": "PQRS-56", "precio": 4500, "distancia": 2.3},
-    {"nombre": "Sebastian", "apellido": "Vidal", "imagen": "hombre5.png", "marca_vehiculo": "Suzuki", "modelo_vehiculo": "Swift", "patente": "TUVW-78", "precio": 4100, "distancia": 1.5},
-    {"nombre": "Cristobal", "apellido": "Arias", "imagen": "hombre6.png", "marca_vehiculo": "Nissan", "modelo_vehiculo": "Versa", "patente": "EFGH-90", "precio": 4700, "distancia": 2.6},
-    {"nombre": "Nicolas", "apellido": "Munoz", "imagen": "hombre7.png", "marca_vehiculo": "Renault", "modelo_vehiculo": "Logan", "patente": "IJKL-11", "precio": 3900, "distancia": 1.1},
-    {"nombre": "Benjamin", "apellido": "Torres", "imagen": "hombre8.png", "marca_vehiculo": "Mazda", "modelo_vehiculo": "2", "patente": "MNOP-22", "precio": 4300, "distancia": 1.9},
-    {"nombre": "Pablo", "apellido": "Lagos", "imagen": "hombre9.png", "marca_vehiculo": "Volkswagen", "modelo_vehiculo": "Gol", "patente": "QRST-33", "precio": 4000, "distancia": 1.4},
-    {"nombre": "Agustin", "apellido": "Cardenas", "imagen": "hombre10.png", "marca_vehiculo": "Ford", "modelo_vehiculo": "Fiesta", "patente": "UVWX-44", "precio": 4400, "distancia": 2.1},
-)
-
-USUARIOS_SOLICITANTES_SIMULADOS = (
-    {"nombre": "Nicolas Vera", "imagen": "hombre11.png"},
-    {"nombre": "Felipe Castro", "imagen": "hombre12.png"},
-    {"nombre": "Benjamin Silva", "imagen": "hombre13.png"},
-    {"nombre": "Tomas Paredes", "imagen": "hombre14.png"},
-    {"nombre": "Agustin Navarro", "imagen": "hombre15.png"},
-    {"nombre": "Martin Fuentes", "imagen": "hombre16.png"},
-    {"nombre": "Antonia Reyes", "imagen": "mujer1.png"},
-    {"nombre": "Catalina Morales", "imagen": "mujer2.png"},
-    {"nombre": "Isidora Fuentes", "imagen": "mujer3.png"},
-    {"nombre": "Martina Alvarez", "imagen": "mujer4.png"},
+    ConductorSimulado("Martin", "Rojas", "hombre1.png", "Toyota", "Yaris", "ABCD-12", 3800),
+    ConductorSimulado("Matias", "Soto", "hombre2.png", "Hyundai", "Accent", "WXYZ-98", 4200),
+    ConductorSimulado("Diego", "Perez", "hombre3.png", "Chevrolet", "Sail", "JKLM-34", 3600),
+    ConductorSimulado("Felipe", "Munoz", "hombre4.png", "Kia", "Rio", "PQRS-56", 4500),
+    ConductorSimulado("Sebastian", "Vidal", "hombre5.png", "Suzuki", "Swift", "TUVW-78", 4100),
+    ConductorSimulado("Cristobal", "Arias", "hombre6.png", "Nissan", "Versa", "EFGH-90", 4700),
+    ConductorSimulado("Nicolas", "Munoz", "hombre7.png", "Renault", "Logan", "IJKL-11", 3900),
+    ConductorSimulado("Benjamin", "Torres", "hombre8.png", "Mazda", "2", "MNOP-22", 4300),
+    ConductorSimulado("Pablo", "Lagos", "hombre9.png", "Volkswagen", "Gol", "QRST-33", 4000),
+    ConductorSimulado("Agustin", "Cardenas", "hombre10.png", "Ford", "Fiesta", "UVWX-44", 4400),
 )
 
 PASAJEROS_SIMULADOS = (
-    {
-        "nombre": "Nicolas",
-        "apellido": "Vera",
-        "imagen": "hombre11.png",
-        "marca_vehiculo": "Toyota",
-        "modelo_vehiculo": "Corolla",
-        "pago": 4200,
-        "ubicacion_inicial": "Plaza de Armas Osorno",
-        "ubicacion_final": "Hospital Base San Jose",
-    },
-    {
-        "nombre": "Felipe",
-        "apellido": "Castro",
-        "imagen": "hombre12.png",
-        "marca_vehiculo": "Hyundai",
-        "modelo_vehiculo": "Accent",
-        "pago": 3900,
-        "ubicacion_inicial": "Terminal de Buses Osorno",
-        "ubicacion_final": "Universidad de Los Lagos",
-    },
-    {
-        "nombre": "Benjamin",
-        "apellido": "Silva",
-        "imagen": "hombre13.png",
-        "marca_vehiculo": "Chevrolet",
-        "modelo_vehiculo": "Sail",
-        "pago": 3600,
-        "ubicacion_inicial": "Portal Osorno",
-        "ubicacion_final": "Parque Chuyaca",
-    },
-    {
-        "nombre": "Tomas",
-        "apellido": "Paredes",
-        "imagen": "hombre14.png",
-        "marca_vehiculo": "Kia",
-        "modelo_vehiculo": "Rio",
-        "pago": 4500,
-        "ubicacion_inicial": "Mercado Municipal Osorno",
-        "ubicacion_final": "Casino Marina del Sol Osorno",
-    },
-    {
-        "nombre": "Antonia",
-        "apellido": "Reyes",
-        "imagen": "mujer1.png",
-        "marca_vehiculo": "Suzuki",
-        "modelo_vehiculo": "Swift",
-        "pago": 4100,
-        "ubicacion_inicial": "Estadio Ruben Marcos Peralta",
-        "ubicacion_final": "Plaza de Armas Osorno",
-    },
+    PasajeroSimulado(
+        "Nicolas",
+        "Vera",
+        "hombre11.png",
+        "Toyota",
+        "Corolla",
+        4200,
+        "Plaza de Armas Osorno",
+        "Hospital Base San Jose",
+    ),
+    PasajeroSimulado(
+        "Felipe",
+        "Castro",
+        "hombre12.png",
+        "Hyundai",
+        "Accent",
+        3900,
+        "Terminal de Buses Osorno",
+        "Universidad de Los Lagos",
+    ),
+    PasajeroSimulado(
+        "Benjamin",
+        "Silva",
+        "hombre13.png",
+        "Chevrolet",
+        "Sail",
+        3600,
+        "Portal Osorno",
+        "Parque Chuyaca",
+    ),
+    PasajeroSimulado(
+        "Tomas",
+        "Paredes",
+        "hombre14.png",
+        "Kia",
+        "Rio",
+        4500,
+        "Mercado Municipal Osorno",
+        "Casino Marina del Sol Osorno",
+    ),
+    PasajeroSimulado(
+        "Antonia",
+        "Reyes",
+        "mujer1.png",
+        "Suzuki",
+        "Swift",
+        4100,
+        "Estadio Ruben Marcos Peralta",
+        "Plaza de Armas Osorno",
+    ),
 )

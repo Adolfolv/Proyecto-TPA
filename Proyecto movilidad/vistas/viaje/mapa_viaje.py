@@ -20,6 +20,8 @@ RUTA_IMAGENES_CONDUCTORES = Path(__file__).resolve().parent.parent / "estilizaci
 
 
 class MapaViajeComun:
+    """Componente visual reutilizable para pintar rutas y marcadores."""
+
     def __init__(self, padre, moldes):
         self.padre = padre
         self.moldes = moldes
@@ -126,6 +128,8 @@ class MapaViajeComun:
 
 
 class MapaViajeConductor(MapaViajeComun):
+    """Mapa base del conductor: lugares de Osorno y trayecto del pasajero."""
+
     def pintar_mapa_real(self, lugares=None):
         lugares = lugares or tuple(LUGARES_OSORNO)
         for lugar in lugares:
@@ -155,6 +159,8 @@ class MapaViajeConductor(MapaViajeComun):
 
 
 class MapaViajePasajero(MapaViajeConductor):
+    """Extension del mapa que tambien muestra conductores disponibles."""
+
     def limpiar_conductores(self):
         for marcador in self.marcadores_conductores:
             marcador.delete()
@@ -164,12 +170,12 @@ class MapaViajePasajero(MapaViajeConductor):
         self.limpiar_lugares()
         self.limpiar_conductores()
         for vehiculo in vehiculos:
-            latitud, longitud = vehiculo["ubicacion_real"]
-            imagen = self.obtener_imagen_conductor(vehiculo["imagen"])
+            latitud, longitud = vehiculo.ubicacion_real
+            imagen = self.obtener_imagen_conductor(vehiculo.imagen)
             marcador = self.mapa.set_marker(
                 latitud,
                 longitud,
-                text=vehiculo["nombre_completo"],
+                text=vehiculo.nombre_completo,
                 icon=imagen,
                 image_zoom_visibility=(0, float("inf")),
             )

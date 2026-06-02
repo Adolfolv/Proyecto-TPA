@@ -35,6 +35,7 @@ class ServicioUsuario:
         )
 
         self.usuarios = self._cargar()
+        self.usuario_actual = None
 
     def _cargar(self):
         usuarios = [
@@ -128,6 +129,29 @@ class ServicioUsuario:
 
     def listar_usuarios(self):
         return self.usuarios
+
+    def establecer_usuario_actual(self, usuario):
+        self.usuario_actual = usuario
+        return self.usuario_actual
+
+    def obtener_usuario_actual(self, usar_primer_usuario=True):
+        if self.usuario_actual is not None:
+            return self.usuario_actual
+
+        if not usar_primer_usuario:
+            return None
+
+        usuarios = self.listar_usuarios()
+        self.usuario_actual = usuarios[0] if usuarios else None
+        return self.usuario_actual
+
+    def obtener_tipo_usuario(self):
+        usuario = self.obtener_usuario_actual()
+
+        if usuario is None:
+            return "pasajero"
+
+        return getattr(usuario, "tipo_usuario", "pasajero")
 
     def guardar(self):
         self.repo.guardar_json(

@@ -4,10 +4,9 @@ from tkinter import messagebox, ttk
 
 from PIL import Image, ImageTk
 
-from Servicios.Viajes.animacion_viaje import AnimacionViaje
-from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
 from ..estilizacion import tema
 from ..estilizacion.widgets import Moldes
+from .animacion_viaje import AnimacionViaje
 from .mapa_viaje import MapaViaje
 
 
@@ -15,6 +14,8 @@ RUTA_IMAGENES_USUARIOS = Path(__file__).resolve().parent.parent / "estilizacion"
 
 
 class FrameIzquierdoConductor:
+    """Panel lateral del flujo de conductor."""
+
     def __init__(self, vista):
         self.vista = vista
         self.moldes = vista.moldes
@@ -42,7 +43,8 @@ class FrameIzquierdoConductor:
 
     def crear_formulario(self):
         datos = self.moldes.crear_frame(self.vista.frame, tema.PANEL, fila=3, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
-        self.vista.selector_ubicacion = self.moldes.crear_selector(datos, tuple(LUGARES_OSORNO), metodo="grid", fila=1, columna=0, columnas=2, sticky="ew", ipady=4)
+        lugares = self.vista.controlador_viaje.obtener_lugares_disponibles()
+        self.vista.selector_ubicacion = self.moldes.crear_selector(datos, lugares, metodo="grid", fila=1, columna=0, columnas=2, sticky="ew", ipady=4)
 
     def crear_busqueda(self):
         contenedor = self.moldes.crear_frame(self.vista.frame, tema.PANEL, fila=4, columna=0, sticky="nsew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
@@ -90,14 +92,17 @@ class FrameDerechoConductor:
 
 
 class AccionesBotonesConductor:
+    """Acciones de botones del conductor, separadas del armado de widgets."""
+
     def __init__(self, vista):
         self.vista = vista
 
     def presionar_boton_buscar_pasajero(self):
         vista = self.vista
         try:
+            # La vista captura la ubicacion; el controlador busca el pasajero.
             vista.ubicacion_inicial_busqueda = vista.selector_ubicacion.get()
-            vista.info_pasajero_busqueda = vista.controlador_viaje.buscar_pasajeros(vista.ubicacion_inicial_busqueda)
+            vista.info_pasajero_busqueda = vista.controlador_viaje.buscar_pasajero_conductor(vista.ubicacion_inicial_busqueda)
             vista.boton_buscar_pasajeros.config(state="disabled", cursor="arrow")
             vista.selector_ubicacion.config(state="disabled")
             self.actualizar_cronometro_busqueda()
@@ -111,7 +116,13 @@ class AccionesBotonesConductor:
 
         self.bloquear_formulario_en_viaje()
         try:
-            vista.controlador_viaje.iniciar_viaje(vista.ubicacion_inicial_busqueda, vista.info_pasajero_busqueda, vista.usuario_actual, self.iniciar_animacion_viaje)
+            vista.controlador_viaje.iniciar_viaje_conductor(
+                vista.info_pasajero_busqueda,
+                vista.usuario_actual,
+            )
+            self.iniciar_animacion_viaje(
+                vista.controlador_viaje.obtener_rutas_viaje_conductor(),
+            )
         except Exception as error:
             vista.label_estado_viaje.config(text="No se pudo iniciar el viaje")
             messagebox.showerror("No se pudo iniciar el viaje", str(error))
@@ -127,7 +138,7 @@ class AccionesBotonesConductor:
 
     def actualizar_cronometro_busqueda(self, segundos_transcurridos=0):
         vista = self.vista
-        duracion_busqueda = vista.info_pasajero_busqueda["duracion_busqueda"]
+        duracion_busqueda = vista.info_pasajero_busqueda.duracion_busqueda
         vista.label_cronometro.config(text=f"00:{segundos_transcurridos:02d}")
         if segundos_transcurridos < duracion_busqueda:
             vista.label_cronometro.after(1000, lambda: self.actualizar_cronometro_busqueda(segundos_transcurridos + 1))
@@ -140,21 +151,23 @@ class AccionesBotonesConductor:
             if vista.mapa_viaje is None:
                 raise ValueError("El mapa no esta disponible.")
 
-            imagen = Image.open(RUTA_IMAGENES_USUARIOS / vista.info_pasajero_busqueda["imagen"])
+            pasajero = vista.info_pasajero_busqueda
+            imagen = Image.open(RUTA_IMAGENES_USUARIOS / pasajero.imagen)
             imagen.thumbnail((64, 64))
             vista.imagen_pasajero = ImageTk.PhotoImage(imagen)
             tk.Label(vista.frame_pasajero, image=vista.imagen_pasajero, bg=tema.PANEL_SUAVE).grid(row=0, column=0, rowspan=4, sticky="nw", padx=10, pady=10)
 
-            llegada = f"Llegar: {vista.info_pasajero_busqueda['km_para_llegar']} km | {vista.info_pasajero_busqueda['tiempo_para_llegar']} s"
-            traslado = f"Traslado: {vista.info_pasajero_busqueda['km_transportando']} km | {vista.info_pasajero_busqueda['tiempo_transportando']} s"
-            vista.moldes.crear_label(vista.frame_pasajero, vista.info_pasajero_busqueda["nombre_completo"], ("Arial", 12, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=1, sticky="w", margen_x=8, margen_y=(10, 2))
-            vista.moldes.crear_label(vista.frame_pasajero, vista.info_pasajero_busqueda["trayecto"], ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, 300, "left", metodo="grid", fila=1, columna=1, sticky="w", margen_x=8)
-            vista.moldes.crear_label(vista.frame_pasajero, f"Vehiculo: {vista.info_pasajero_busqueda['vehiculo']}", ("Arial", 9), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=1, sticky="w", margen_x=8)
-            vista.moldes.crear_label(vista.frame_pasajero, f"Pago: ${vista.info_pasajero_busqueda['precio']}", ("Arial", 9, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=1, sticky="w", margen_x=8, margen_y=(0, 10))
+            llegada = f"Llegar: {pasajero.km_para_llegar} km | {pasajero.tiempo_para_llegar} s"
+            traslado = f"Traslado: {pasajero.km_transportando} km | {pasajero.tiempo_transportando} s"
+            vista.moldes.crear_label(vista.frame_pasajero, pasajero.nombre_completo, ("Arial", 12, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=1, sticky="w", margen_x=8, margen_y=(10, 2))
+            vista.moldes.crear_label(vista.frame_pasajero, pasajero.trayecto, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, 300, "left", metodo="grid", fila=1, columna=1, sticky="w", margen_x=8)
+            vista.moldes.crear_label(vista.frame_pasajero, f"Vehiculo: {pasajero.vehiculo}", ("Arial", 9), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=1, sticky="w", margen_x=8)
+            vista.moldes.crear_label(vista.frame_pasajero, f"Pago: ${pasajero.precio}", ("Arial", 9, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=1, sticky="w", margen_x=8, margen_y=(0, 10))
             vista.moldes.crear_label(vista.frame_pasajero, llegada, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=4, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 2))
             vista.moldes.crear_label(vista.frame_pasajero, traslado, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=5, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 10))
 
-            ruta_pasajero = vista.controlador_viaje.formar_trayectoria(vista.info_pasajero_busqueda["ubicacion_inicial"], vista.info_pasajero_busqueda["ubicacion_final"])
+            # El controlador entrega la ruta; la vista solo la dibuja.
+            ruta_pasajero = vista.controlador_viaje.formar_ruta_pasajero_conductor(pasajero)
             vista.mapa_viaje.dibujar_trayectoria(ruta_pasajero)
             vista.frame_pasajero.grid()
             vista.frame_confirmacion.grid()
@@ -176,15 +189,17 @@ class AccionesBotonesConductor:
         vista.label_estado_viaje.config(text="viaje en proceso")
         vista.label_estado_viaje.grid()
 
-    def iniciar_animacion_viaje(self):
+    def iniciar_animacion_viaje(self, rutas_viaje):
         vista = self.vista
         if vista.mapa_viaje is None:
             raise ValueError("El mapa no esta disponible.")
 
-        vista.animacion_viaje.animacion_viaje_conductor(vista.mapa_viaje.mapa, vista.mapa_viaje.marcadores_lugares, RUTA_IMAGENES_USUARIOS, vista.info_pasajero_busqueda, vista.barra_progreso, vista.label_estado_progreso, vista.label_porcentaje_progreso, vista.finalizar_viaje)
+        vista.animacion_viaje.animacion_viaje_conductor(vista.mapa_viaje.mapa, vista.mapa_viaje.marcadores_lugares, RUTA_IMAGENES_USUARIOS, vista.info_pasajero_busqueda, rutas_viaje, vista.barra_progreso, vista.label_estado_progreso, vista.label_porcentaje_progreso, vista.finalizar_viaje)
 
 
 class VistaViajeConductor:
+    """Vista principal del flujo de conductor."""
+
     def __init__(self, padre, navegar, comando_volver_menu, controlador_viaje, usuario_actual):
         self.padre = padre
         self.navegar = navegar
