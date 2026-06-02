@@ -3,7 +3,7 @@ from datetime import datetime, date
 
 from abstracciones import Validador
 from Validaciones.comunes import es_numero
-
+#-
 
 class ValidadorNombre(Validador):
     def validar(self, valor):

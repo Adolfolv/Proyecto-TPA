@@ -1,4 +1,4 @@
-"""Moldes de widgets comunes para las vistas."""
+"""Moldes de widgets comunes para las vistas.."""
 
 import tkinter as tk
 from tkinter import ttk

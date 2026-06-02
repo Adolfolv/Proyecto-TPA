@@ -376,7 +376,7 @@ class MapaViaje:
 #CONDUCTOR
 class FlujoConductor:
     def __init__(self, vista, panel, mapa_viaje):
-        # Pasos 5 al 12: controla el orden del flujo conductor.
+        # Pasos 5 al 12: controla el orden del flujo conductor..
         self.vista = vista
         self.panel = panel
         self.mapa_viaje = mapa_viaje

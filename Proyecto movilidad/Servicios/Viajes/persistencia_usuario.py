@@ -3,7 +3,7 @@ from pathlib import Path
 from Modelos.Viaje.modelo_viajes import CuentaViajes, Viaje
 from Repositorios.repositorio_json import RepositorioJSONGenerico
 
-
+#.
 class PersistenciaUsuarioViajes:
 
     def __init__(self, archivo=None):

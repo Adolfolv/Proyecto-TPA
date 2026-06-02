@@ -17,7 +17,7 @@ from Validaciones.registro import (
     ValidadorTelefono,
 )
 
-
+#.
 class ServicioRegistro:
 
     def __init__(self, servicio_usuario):

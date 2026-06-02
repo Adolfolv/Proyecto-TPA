@@ -5,7 +5,7 @@ from Servicios.Viajes.datos_viaje import LUGARES_OSORNO, PASAJEROS_SIMULADOS
 from Servicios.Viajes.persistencia_usuario import PersistenciaUsuarioViajes
 from Servicios.Viajes.trayectoria import Trayectoria
 
-
+#.
 class ServicioViaje:
     def __init__(self, persistencia_usuario=None):
         self.viajes = []

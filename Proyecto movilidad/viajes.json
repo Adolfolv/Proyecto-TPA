@@ -186,6 +186,14 @@
                 "precio": 3600.0,
                 "distancia": 3.48,
                 "duracion": 20.0
+            },
+            {
+                "pasajero": "Tomas Paredes",
+                "conductor": "Hardy Aguila",
+                "vehiculo": "Kia Rio",
+                "precio": 4500.0,
+                "distancia": 3.4499999999999997,
+                "duracion": 20.0
             }
         ]
     }

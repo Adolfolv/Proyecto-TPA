@@ -24,12 +24,20 @@
         "telefono": "+56 930364232",
         "contrasena": "123456",
         "billetera": {
-            "saldo": 0.0,
+            "saldo": 4500.0,
             "tarjetas": [],
-            "transacciones": []
+            "transacciones": [
+                {
+                    "id_transaccion": "TRX0001",
+                    "tipo": "Pago recibido",
+                    "monto": 4500.0,
+                    "fecha": "01-06-2026 20:04"
+                }
+            ]
         },
         "tipo_licencia": "Categoria A2",
         "licencia_conducir": "22224358-0",
+        "selfie": "",
         "auto": {
             "marca": "Toyota",
             "modelo": "Yaris",

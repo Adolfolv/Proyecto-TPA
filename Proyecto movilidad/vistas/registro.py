@@ -159,7 +159,7 @@ class VistaRegistro(tk.Frame):
         self.mostrar_mensaje_registro = crear_panel_mensaje_registro(contenido)
 
         # --- DECORACIONES PASAJERO ---
-        #lucete jorge deidad
+        #lucete jorge deidad.
 
     def crear_formulario_conductor(self):
         self.limpiar_formulario()

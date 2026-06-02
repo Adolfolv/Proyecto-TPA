@@ -1,4 +1,4 @@
-"""Pantalla inicial visual sin navegacion."""
+"""Pantalla inicial visual sin navegacion.."""
 
 import tkinter as tk
 
