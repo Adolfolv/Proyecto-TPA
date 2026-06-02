@@ -3,8 +3,10 @@ from Modelos.Viaje.modelo_viajes import Viaje
 
 class ControladorViaje:
 
-    def __init__(self, servicio_viaje):
+    def __init__(self, servicio_viaje, servicio_billetera=None, servicio_usuario=None):
         self.servicio_viaje = servicio_viaje
+        self.servicio_billetera = servicio_billetera
+        self.servicio_usuario = servicio_usuario
 
     def buscar_pasajeros(
         self,
@@ -30,4 +32,17 @@ class ControladorViaje:
             distancia=float(datos_pasajero["distancia"]),
             duracion=float(datos_pasajero["duracion"]),
         )
-        return self.servicio_viaje.iniciar_viaje(viaje, usuario)
+        self.servicio_viaje.iniciar_viaje(viaje, usuario)
+        self.pagar_conductor(usuario, viaje.precio)
+        return viaje
+
+    def pagar_conductor(self, usuario, monto):
+        if self.servicio_billetera is None or self.servicio_usuario is None:
+            return False
+
+        if getattr(usuario, "tipo_usuario", "") != "conductor":
+            return False
+
+        self.servicio_billetera.recibir_pago(usuario, monto)
+        self.servicio_usuario.guardar()
+        return True

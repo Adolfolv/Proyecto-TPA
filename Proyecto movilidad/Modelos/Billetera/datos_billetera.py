@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 # Archivo para manejar los datos relacionados con la billetera del usuario, incluyendo las clases para representar
 @dataclass
 class Tarjetas:
+    titular: str
     numero_tarjeta: str
     vencimiento: str
     cvv: str
