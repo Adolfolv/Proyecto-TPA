@@ -1,5 +1,4 @@
 import json
-import urllib.error
 import urllib.request
 
 from Servicios.Viajes.datos_viaje import (
@@ -54,18 +53,9 @@ class Trayectoria:
         return limpios
 
     def calcular_trayectoria(self, inicio, destino):
-        """Calcula una ruta por OSRM y usa una ruta local si la red falla."""
+        """Calcula una ruta por OSRM."""
 
-        try:
-            return self._calcular_trayectoria_osrm(inicio, destino)
-        except (
-            TimeoutError,
-            urllib.error.URLError,
-            json.JSONDecodeError,
-            KeyError,
-            IndexError,
-        ):
-            return self._calcular_trayectoria_local(inicio, destino)
+        return self._calcular_trayectoria_osrm(inicio, destino)
 
     def _calcular_trayectoria_osrm(self, inicio, destino):
         latitud_inicio, longitud_inicio = self.coordenada_real(inicio)
@@ -86,16 +76,3 @@ class Trayectoria:
         ]
         return self.limpiar_puntos(puntos)
 
-    def _calcular_trayectoria_local(self, inicio, destino, pasos=16):
-        """Genera una linea interpolada para mantener funcionando la UI offline."""
-
-        if inicio == destino:
-            return [inicio]
-
-        puntos = []
-        for indice in range(pasos + 1):
-            proporcion = indice / pasos
-            x = inicio[0] + (destino[0] - inicio[0]) * proporcion
-            y = inicio[1] + (destino[1] - inicio[1]) * proporcion
-            puntos.append((round(x, 5), round(y, 5)))
-        return self.limpiar_puntos(puntos, umbral=0.00001)

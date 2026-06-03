@@ -134,10 +134,7 @@ class AnimacionViaje:
 
     def _limpiar_marcadores(self, marcadores):
         for marcador in marcadores:
-            try:
-                marcador.delete()
-            except AttributeError:
-                pass
+            marcador.delete()
         marcadores.clear()
 
     def _ocultar_simbolo_marcador(self, mapa, marcador):
@@ -170,37 +167,6 @@ class AnimacionViaje:
         al_finalizar,
         indice=0,
     ):
-        try:
-            self._animar_ruta_segura(
-                mapa,
-                marcador,
-                ruta,
-                duracion,
-                barra_progreso,
-                label_estado,
-                label_porcentaje,
-                estado,
-                al_finalizar,
-                indice,
-            )
-        except Exception:
-            label_estado.config(text="No se pudo continuar la animacion")
-            if al_finalizar:
-                barra_progreso.after(600, al_finalizar)
-
-    def _animar_ruta_segura(
-        self,
-        mapa,
-        marcador,
-        ruta,
-        duracion,
-        barra_progreso,
-        label_estado,
-        label_porcentaje,
-        estado,
-        al_finalizar,
-        indice=0,
-    ):
         if not ruta:
             return
 
@@ -211,11 +177,7 @@ class AnimacionViaje:
 
         if marcador is not None:
             latitud, longitud = ruta[indice]
-            try:
-                marcador.set_position(latitud, longitud)
-            except AttributeError:
-                marcador.delete()
-                marcador = mapa.set_marker(latitud, longitud)
+            marcador.set_position(latitud, longitud)
 
         if indice >= len(ruta) - 1:
             barra_progreso["value"] = 100

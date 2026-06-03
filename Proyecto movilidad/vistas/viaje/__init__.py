@@ -6,7 +6,16 @@ from .viaje_pasajero import VistaViajePasajero
 
 
 class VistaViaje(tk.Frame):
-    def __init__(self, master, navegar, tipo_usuario, comando_volver_menu, controlador_viaje, usuario_actual):
+    def __init__(
+        self,
+        master,
+        navegar,
+        tipo_usuario,
+        comando_volver_menu,
+        controlador_pasajero,
+        controlador_conductor,
+        usuario_actual,
+    ):
         super().__init__(master, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
 
@@ -15,7 +24,7 @@ class VistaViaje(tk.Frame):
                 self,
                 navegar,
                 comando_volver_menu,
-                controlador_viaje,
+                controlador_conductor,
                 usuario_actual,
             )
             return
@@ -24,6 +33,6 @@ class VistaViaje(tk.Frame):
             self,
             navegar,
             comando_volver_menu,
-            controlador_viaje,
+            controlador_pasajero,
             usuario_actual,
         )

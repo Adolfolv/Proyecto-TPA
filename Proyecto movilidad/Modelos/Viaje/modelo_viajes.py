@@ -109,6 +109,16 @@ class Viaje:
     duracion: float
 
 
+@dataclass(frozen=True)
+class ResultadoViaje:
+    """Respuesta tipada de un caso de uso que inicia o confirma un viaje."""
+
+    exitoso: bool
+    error: str = ""
+    rutas_viaje: RutasViaje | None = None
+    viaje: Viaje | None = None
+
+
 @dataclass
 class CuentaViajes:
     """Historial de viajes asociado a un usuario de la aplicacion."""

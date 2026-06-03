@@ -5,8 +5,10 @@ from Modelos.Viaje.modelo_viajes import (
     PasajeroEncontrado,
     PasajeroSimulado,
     ResultadoBusquedaVehiculos,
+    ResultadoViaje,
     RutasViaje,
     VehiculoDisponible,
+    Viaje,
 )
 from Servicios.Viajes.datos_viaje import (
     CALLES_OSORNO,
@@ -21,16 +23,30 @@ from Validaciones.validaciones_viaje import ValidacionesViaje
 
 class ServicioViaje:
     """Fachada del modulo de viajes.
-
     Expone los casos de uso que necesita el controlador y delega los detalles
     a servicios especializados para pasajero, conductor y operaciones comunes.
     """
 
-    def __init__(self, persistencia_usuario=None, trayectoria=None, randomizador=None):
+    def __init__(
+        self,
+        persistencia_usuario=None,
+        trayectoria=None,
+        randomizador=None,
+        servicio_billetera=None,
+    ):
         randomizador = randomizador or Random()
         self.comun = ServicioViajeComun(persistencia_usuario, trayectoria)
-        self.pasajero = ServicioViajePasajero(self.comun, randomizador=randomizador)
-        self.conductor = ServicioViajeConductor(self.comun, randomizador=randomizador)
+        self.pagos = ServicioPagoViaje(servicio_billetera)
+        self.pasajero = ServicioViajePasajero(
+            self.comun,
+            randomizador=randomizador,
+            servicio_pagos=self.pagos,
+        )
+        self.conductor = ServicioViajeConductor(
+            self.comun,
+            randomizador=randomizador,
+            servicio_pagos=self.pagos,
+        )
 
     @property
     def viajes(self):
@@ -68,6 +84,20 @@ class ServicioViaje:
     def formar_rutas_viaje_conductor(self, pasajero):
         return self.conductor.formar_rutas_inicio_viaje(pasajero)
 
+    def formar_ruta_pasajero_conductor(self, pasajero):
+        return self.conductor.formar_ruta_pasajero(pasajero)
+
+    def confirmar_viaje_pasajero(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final):
+        return self.pasajero.confirmar_viaje(
+            usuario,
+            vehiculo,
+            ubicacion_inicial,
+            ubicacion_final,
+        )
+
+    def iniciar_viaje_conductor(self, pasajero, conductor):
+        return self.conductor.iniciar_viaje(pasajero, conductor)
+
     def formar_trayectoria(self, ubicacion_inicial, ubicacion_final):
         return self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)
 
@@ -99,10 +129,7 @@ class ServicioViajeComun:
         self.trayectoria = trayectoria or Trayectoria()
 
     def obtener_punto_lugar(self, nombre_lugar):
-        try:
-            return LUGARES_OSORNO[nombre_lugar]
-        except KeyError as error:
-            raise ValueError(f"Ubicacion no registrada: {nombre_lugar}") from error
+        return LUGARES_OSORNO[nombre_lugar]
 
     def calcular_tiempo_por_km(self, distancia):
         if distancia <= 0:
@@ -181,14 +208,53 @@ class ServicioViajeComun:
         self.viajes.append(viaje)
         return self.persistencia_usuario.guardar_viaje(usuario, viaje)
 
+    def nombre_usuario(self, usuario):
+        if usuario is None:
+            return ""
+        return f"{getattr(usuario, 'nombre', '')} {getattr(usuario, 'apellido', '')}".strip()
+
+
+class ServicioPagoViaje:
+    """Reglas de pago propias del flujo de viajes."""
+
+    def __init__(self, servicio_billetera=None):
+        self.servicio_billetera = servicio_billetera
+
+    def cobrar_pasajero(self, usuario, monto):
+        if self.servicio_billetera is None:
+            raise ValueError("No se pudo realizar el pago del viaje.")
+
+        if getattr(usuario, "tipo_usuario", "") != "pasajero":
+            raise ValueError("No se pudo realizar el pago del viaje.")
+
+        self.servicio_billetera.pagar(usuario, monto)
+        return True
+
+    def abonar_conductor(self, usuario, monto):
+        if self.servicio_billetera is None:
+            raise ValueError("No se pudo abonar el pago al conductor.")
+
+        if getattr(usuario, "tipo_usuario", "") != "conductor":
+            raise ValueError("No se pudo abonar el pago al conductor.")
+
+        self.servicio_billetera.recibir_pago(usuario, monto)
+        return True
+
 
 class ServicioViajePasajero:
     """Caso de uso donde un pasajero busca, elige y paga un vehiculo."""
 
-    def __init__(self, servicio_comun, validaciones=None, randomizador=None):
+    def __init__(
+        self,
+        servicio_comun,
+        validaciones=None,
+        randomizador=None,
+        servicio_pagos=None,
+    ):
         self.comun = servicio_comun
         self.validaciones = validaciones or ValidacionesViaje()
         self.randomizador = randomizador or Random()
+        self.servicio_pagos = servicio_pagos or ServicioPagoViaje()
         self.error_busqueda_vehiculos = ""
         self.vehiculos_encontrados = []
 
@@ -204,13 +270,8 @@ class ServicioViajePasajero:
         if not valido:
             return ResultadoBusquedaVehiculos(False, error=error)
 
-        try:
-            vehiculos = tuple(self.obtener_vehiculos_disponibles(ubicacion_inicial))
-            ruta_busqueda = self.formar_ruta_busqueda(ubicacion_inicial, ubicacion_final)
-        except (KeyError, TypeError, ValueError) as error:
-            mensaje = f"No se pudo preparar la busqueda de viaje: {error}"
-            self.error_busqueda_vehiculos = mensaje
-            return ResultadoBusquedaVehiculos(False, error=mensaje)
+        vehiculos = tuple(self.obtener_vehiculos_disponibles(ubicacion_inicial))
+        ruta_busqueda = self.formar_ruta_busqueda(ubicacion_inicial, ubicacion_final)
 
         self.vehiculos_encontrados = list(vehiculos)
         return ResultadoBusquedaVehiculos(
@@ -235,6 +296,27 @@ class ServicioViajePasajero:
         )
         ruta_viaje = self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)
         return RutasViaje(llegada=ruta_llegada, viaje=ruta_viaje)
+
+    def confirmar_viaje(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final):
+        rutas_viaje = self.formar_rutas_inicio_viaje(
+            vehiculo,
+            ubicacion_inicial,
+            ubicacion_final,
+        )
+        self.servicio_pagos.cobrar_pasajero(usuario, vehiculo.precio)
+        viaje = self.crear_viaje(vehiculo, usuario)
+        self.comun.iniciar_viaje(viaje, usuario)
+        return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)
+
+    def crear_viaje(self, vehiculo, usuario):
+        return Viaje(
+            pasajero=self.comun.nombre_usuario(usuario),
+            conductor=vehiculo.nombre_completo,
+            vehiculo=vehiculo.vehiculo,
+            precio=float(vehiculo.precio),
+            distancia=float(vehiculo.distancia),
+            duracion=float(vehiculo.tiempo),
+        )
 
     def obtener_vehiculos_disponibles(self, ubicacion_inicial):
         vehiculos = []
@@ -272,9 +354,10 @@ class ServicioViajePasajero:
 class ServicioViajeConductor:
     """Caso de uso donde un conductor busca y acepta un pasajero."""
 
-    def __init__(self, servicio_comun, randomizador=None):
+    def __init__(self, servicio_comun, randomizador=None, servicio_pagos=None):
         self.comun = servicio_comun
         self.randomizador = randomizador or Random()
+        self.servicio_pagos = servicio_pagos or ServicioPagoViaje()
 
     def buscar_pasajeros(self, ubicacion_inicial):
         pasajero = self.randomizador.choice(PASAJEROS_SIMULADOS)
@@ -324,6 +407,29 @@ class ServicioViajeConductor:
                 pasajero.ubicacion_inicial,
                 pasajero.ubicacion_final,
             ),
+        )
+
+    def formar_ruta_pasajero(self, pasajero):
+        return self.comun.formar_trayectoria(
+            pasajero.ubicacion_inicial,
+            pasajero.ubicacion_final,
+        )
+
+    def iniciar_viaje(self, pasajero, conductor):
+        rutas_viaje = self.formar_rutas_inicio_viaje(pasajero)
+        viaje = self.crear_viaje(pasajero, conductor)
+        self.servicio_pagos.abonar_conductor(conductor, viaje.precio)
+        self.comun.iniciar_viaje(viaje, conductor)
+        return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)
+
+    def crear_viaje(self, pasajero, conductor):
+        return Viaje(
+            pasajero=pasajero.nombre_completo,
+            conductor=self.comun.nombre_usuario(conductor),
+            vehiculo=pasajero.vehiculo,
+            precio=float(pasajero.precio),
+            distancia=float(pasajero.distancia),
+            duracion=float(pasajero.duracion),
         )
 
     def calcular_km_viaje(self, ubicacion_conductor, pasajero):

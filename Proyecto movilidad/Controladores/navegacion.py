@@ -17,7 +17,10 @@ from Servicios.Viajes.servicio_viaje import ServicioViaje
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_registro import ControladorRegistro
 from Controladores.controlador_billetera import ControladorBilletera
-from Controladores.controlador_viaje import ControladorViaje
+from Controladores.controlador_viaje import (
+    ControladorViajeConductor,
+    ControladorViajePasajero,
+)
 from abstracciones import NavegadorAbstracto, RutaNavegacion
 
 class Navegacion:
@@ -31,7 +34,9 @@ class Navegacion:
         self.servicio_registro = ServicioRegistro(self.servicio_usuario)
         self.servicio_autenticacion = ServicioAutenticacion(self.servicio_usuario)
         self.servicio_billetera = ServicioBilletera(self.servicio_usuario)
-        self.servicio_viaje = ServicioViaje()
+        self.servicio_viaje = ServicioViaje(
+            servicio_billetera=self.servicio_billetera,
+        )
 
         self.controlador_inicio_sesion = ControladorInicioSesion(
             self.servicio_autenticacion,
@@ -42,9 +47,11 @@ class Navegacion:
         self.controlador_billetera = ControladorBilletera(
             self.servicio_billetera,
         )
-        self.controlador_viaje = ControladorViaje(
+        self.controlador_viaje_pasajero = ControladorViajePasajero(
             self.servicio_viaje,
-            self.servicio_billetera,
+        )
+        self.controlador_viaje_conductor = ControladorViajeConductor(
+            self.servicio_viaje,
         )
         self.navegador = NavegadorRutas(self)
 
@@ -132,7 +139,8 @@ class RutaViaje(RutaNavegacion):
             self.navegacion.navegar,
             self.navegacion.servicio_usuario.obtener_tipo_usuario(),
             lambda: self.navegacion.navegar("menu"),
-            self.navegacion.controlador_viaje,
+            self.navegacion.controlador_viaje_pasajero,
+            self.navegacion.controlador_viaje_conductor,
             self.navegacion.servicio_usuario.obtener_usuario_actual(),
         )
 
