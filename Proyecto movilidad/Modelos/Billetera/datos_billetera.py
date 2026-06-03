@@ -17,6 +17,7 @@ class Transaccion:
 
 @dataclass
 class Billetera:
+    id_usuario: str = None
     saldo: float = 0.0
     tarjetas: list[Tarjetas] = field(default_factory=list)
     transacciones: list[Transaccion] = field(default_factory=list)

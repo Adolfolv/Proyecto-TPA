@@ -1,17 +1,19 @@
 """Controlador simple para manejar el flujo entre pantallas."""
 
 import tkinter as tk
-from abc import ABC, abstractmethod
 
-from vistas.billetera import VistaBilletera
-from vistas.inicio_sesion import VistaInicioSesion
-from vistas.menu import VistaMenu
-from vistas.pantalla_inicial import VistaPantallaInicial
-from vistas.registro import VistaRegistro
-from vistas.viaje import VistaViaje
+from Vistas.billetera import VistaBilletera
+from Vistas.inicio_sesion import VistaInicioSesion
+from Vistas.menu import VistaMenu
+from Vistas.pantalla_inicial import VistaPantallaInicial
+from Vistas.registro import VistaRegistro
+from Vistas.viaje import VistaViaje
+from Repositorios.repositorio_billetera import RepositorioBilletera
+from Repositorios.repositorio_usuario import RepositorioUsuario
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
+from Servicios.Usuario.buscador import BuscadorUsuario
 from Servicios.Usuario.registro import ServicioRegistro
-from Servicios.Usuario.servicio_usuario import ServicioUsuario
+from Modelos.Billetera.tarjetas import ServicioTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
@@ -30,10 +32,23 @@ class Navegacion:
         self.ventana.geometry("1000x720")
         self.ventana.minsize(760, 620)
         self.ventana.attributes("-fullscreen", True)
-        self.servicio_usuario = ServicioUsuario()
-        self.servicio_registro = ServicioRegistro(self.servicio_usuario)
-        self.servicio_autenticacion = ServicioAutenticacion(self.servicio_usuario)
-        self.servicio_billetera = ServicioBilletera(self.servicio_usuario)
+        self.usuario_actual = None
+        self.repositorio_usuario = RepositorioUsuario()
+        self.repositorio_billetera = RepositorioBilletera()
+        self.buscador_usuario = BuscadorUsuario(self.repositorio_usuario)
+        self.servicio_autenticacion = ServicioAutenticacion(
+            self.repositorio_usuario,
+            self.buscador_usuario,
+        )
+        self.servicio_registro = ServicioRegistro(
+            self.repositorio_usuario,
+            self.buscador_usuario,
+        )
+        self.servicio_tarjeta = ServicioTarjeta(self.repositorio_billetera)
+        self.servicio_billetera = ServicioBilletera(
+            self.repositorio_billetera,
+            self.servicio_tarjeta,
+        )
         self.servicio_viaje = ServicioViaje(
             servicio_billetera=self.servicio_billetera,
         )
@@ -46,6 +61,7 @@ class Navegacion:
         )
         self.controlador_billetera = ControladorBilletera(
             self.servicio_billetera,
+            self.servicio_tarjeta,
         )
         self.controlador_viaje_pasajero = ControladorViajePasajero(
             self.servicio_viaje,
@@ -61,6 +77,20 @@ class Navegacion:
 
     def navegar(self, destino):
         self.navegador.navegar(destino)
+
+    def establecer_usuario_actual(self, usuario):
+        self.servicio_billetera.obtener_billetera(usuario)
+        self.usuario_actual = usuario
+        return self.usuario_actual
+
+    def obtener_usuario_actual(self):
+        return self.usuario_actual
+
+    def obtener_tipo_usuario(self):
+        if self.usuario_actual is None:
+            return "pasajero"
+
+        return getattr(self.usuario_actual, "tipo_usuario", "pasajero")
 
 class RutaPantallaInicial(RutaNavegacion):
     destino = "pantalla_inicial"
@@ -83,7 +113,7 @@ class RutaInicioSesion(RutaNavegacion):
         )
 
     def inicio_sesion_exitoso(self, usuario):
-        self.navegacion.servicio_usuario.establecer_usuario_actual(usuario)
+        self.navegacion.establecer_usuario_actual(usuario)
         self.navegacion.navegar("menu")
 
 
@@ -101,7 +131,7 @@ class RutaRegistro(RutaNavegacion):
         )
 
     def registro_exitoso(self, usuario):
-        self.navegacion.servicio_usuario.establecer_usuario_actual(usuario)
+        self.navegacion.establecer_usuario_actual(usuario)
         self.navegacion.navegar("menu")
 
 
@@ -124,7 +154,7 @@ class RutaBilletera(RutaNavegacion):
         )
         self.navegacion.controlador_billetera.conectar_vista(
             vista,
-            self.navegacion.servicio_usuario.obtener_usuario_actual(),
+            self.navegacion.obtener_usuario_actual(),
         )
 
 
@@ -137,11 +167,11 @@ class RutaViaje(RutaNavegacion):
         VistaViaje(
             self.navegacion.ventana,
             self.navegacion.navegar,
-            self.navegacion.servicio_usuario.obtener_tipo_usuario(),
+            self.navegacion.obtener_tipo_usuario(),
             lambda: self.navegacion.navegar("menu"),
             self.navegacion.controlador_viaje_pasajero,
             self.navegacion.controlador_viaje_conductor,
-            self.navegacion.servicio_usuario.obtener_usuario_actual(),
+            self.navegacion.obtener_usuario_actual(),
         )
 
 

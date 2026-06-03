@@ -12,6 +12,12 @@ class Validador(ABC):
     def validar(self, datos):
         pass
 
+
+class Buscador(ABC):
+    @abstractmethod
+    def buscar(self, *datos):
+        pass
+
 class NavegadorAbstracto(ABC):
     @abstractmethod
     def navegar(self, destino):

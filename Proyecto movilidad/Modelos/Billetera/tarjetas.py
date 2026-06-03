@@ -7,9 +7,12 @@ from Validaciones.billetera import (
     ValidadorNumeroTarjetaMastercard,
     ValidadorNumeroTarjetaVisa,
     ValidadorSaldoDefinido,
+    ValidadorTarjetaEncontrada,
     ValidadorTarjetaNoDuplicada,
 )
 from Modelos.Billetera.datos_billetera import Tarjetas
+from Repositorios.repositorio_billetera import RepositorioBilletera
+from Servicios.Usuario.buscador import BuscadorTarjeta
 
 # Archivo para manejar las clases relacionadas con las tarjetas de crédito o débito que los usuarios pueden agregar a su billetera, 
 # incluyendo la validación de números de tarjeta, el formato del CVV, y la gestión de las tarjetas asociadas a la billetera del usuario. 
@@ -53,7 +56,9 @@ class ServicioTarjeta:
         "American Express": TarjetaAmericanExpress,
     }
 
-    def __init__(self):
+    def __init__(self, repositorio_billetera=None, buscador_tarjeta=None):
+        self.repositorio_billetera = repositorio_billetera or RepositorioBilletera()
+        self.buscador_tarjeta = buscador_tarjeta or BuscadorTarjeta()
         self.validador_tarjeta_no_duplicada = (
             ValidadorTarjetaNoDuplicada()
         )
@@ -65,23 +70,33 @@ class ServicioTarjeta:
         self.validador_fecha_vencimiento = (
             ValidadorFechaVencimientoTarjeta()
         )
+        self.validador_tarjeta_encontrada = ValidadorTarjetaEncontrada()
+
+    def obtener_tarjetas(self, usuario):
+        self.repositorio_billetera.obtener(usuario)
+        return usuario.billetera.tarjetas
+
+    def obtener_tarjeta(self, usuario, numero_tarjeta):
+        self.repositorio_billetera.obtener(usuario)
+        tarjeta = self.buscador_tarjeta.buscar(usuario, numero_tarjeta)
+        self.validador_tarjeta_encontrada.validar(tarjeta)
+        return tarjeta
 
     def agregar_tarjeta( self, usuario, tipo, titular, numero, vencimiento, cvv):
+        self.repositorio_billetera.obtener(usuario)
         clase_tarjeta = self.TIPOS_TARJETA.get(tipo)
 
         if clase_tarjeta is None:
-            return False
+            raise ValueError("Tipo de tarjeta invalido.")
 
         tarjeta_validadora = clase_tarjeta()
 
-        if not tarjeta_validadora.numero_valido(numero):
-            return False
+        tarjeta_validadora.numero_valido(numero)
 
         if len(str(cvv)) != tarjeta_validadora.longitud_cvv:
-            return False
+            raise ValueError("CVV invalido para el tipo de tarjeta seleccionado.")
 
-        if not self.validador_fecha_vencimiento.validar(vencimiento):
-            return False
+        self.validador_fecha_vencimiento.validar(vencimiento)
 
         tarjeta = Tarjetas(
             titular=titular,
@@ -91,10 +106,7 @@ class ServicioTarjeta:
             saldo=None,
         )
 
-        if not self.validador_tarjeta_no_duplicada.validar(
-            (usuario, tarjeta)
-        ):
-            return False
+        self.validador_tarjeta_no_duplicada.validar((usuario, tarjeta))
 
         if not self.validador_saldo_definido.validar(
             tarjeta
@@ -107,16 +119,12 @@ class ServicioTarjeta:
         usuario.billetera.tarjetas.append(
             tarjeta
         )
+        self.repositorio_billetera.guardar_usuario(usuario)
 
         return True
 
     def eliminar_tarjeta(self, usuario, numero_tarjeta):
-        for tarjeta in usuario.billetera.tarjetas:
-
-            if (tarjeta.numero_tarjeta== numero_tarjeta):
-                usuario.billetera.tarjetas.remove(
-                    tarjeta
-                )
-                return True
-
-        return False
+        tarjeta = self.obtener_tarjeta(usuario, numero_tarjeta)
+        usuario.billetera.tarjetas.remove(tarjeta)
+        self.repositorio_billetera.guardar_usuario(usuario)
+        return True

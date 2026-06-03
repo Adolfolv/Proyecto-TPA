@@ -2,6 +2,7 @@ from Servicios.Viajes.calculadora_viaje import CalculadoraViaje
 from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
 from Servicios.Viajes.fabrica_viaje import FabricaViaje
 from Servicios.Viajes.trayectoria import Trayectoria
+from Validaciones.validaciones_viaje import ValidacionesViaje
 
 
 class ServicioViajeComun:
@@ -50,23 +51,14 @@ class ServicioPagoViaje:
 
     def __init__(self, servicio_billetera=None):
         self.servicio_billetera = servicio_billetera
+        self.validaciones = ValidacionesViaje()
 
     def cobrar_pasajero(self, usuario, monto):
-        if self.servicio_billetera is None:
-            raise ValueError("No se pudo realizar el pago del viaje.")
-
-        if getattr(usuario, "tipo_usuario", "") != "pasajero":
-            raise ValueError("No se pudo realizar el pago del viaje.")
-
+        self.validaciones.validar_pago_pasajero(self.servicio_billetera, usuario)
         self.servicio_billetera.pagar(usuario, monto)
         return True
 
     def abonar_conductor(self, usuario, monto):
-        if self.servicio_billetera is None:
-            raise ValueError("No se pudo abonar el pago al conductor.")
-
-        if getattr(usuario, "tipo_usuario", "") != "conductor":
-            raise ValueError("No se pudo abonar el pago al conductor.")
-
+        self.validaciones.validar_abono_conductor(self.servicio_billetera, usuario)
         self.servicio_billetera.recibir_pago(usuario, monto)
         return True

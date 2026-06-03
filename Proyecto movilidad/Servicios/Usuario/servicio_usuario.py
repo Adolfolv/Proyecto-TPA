@@ -1,37 +1,25 @@
 from pathlib import Path
+from dataclasses import asdict
 
-from Repositorios.repositorio_json import RepositorioJSONGenerico
+from Repositorios.repositorio_json import cargar_json, guardar_json
 from Servicios.Usuario.generador_id import GeneradorID
 from Modelos.Usuario.usuario_datos import Usuario, Pasajero, Conductor, Auto
-from Modelos.Billetera.datos_billetera import Billetera, Tarjetas, Transaccion
 
-#Esta es la unica responsable de manejar los datos de los usuarios, cargar, guardar, buscar, etc. Solo esta interactua con el repositorio JSON, 
-# el resto de la app interactua con esta clase para obtener o modificar datos de los usuarios. 
-# Es la unica que conoce la estructura del JSON y como convertirlo a objetos Usuario, Pasajero o Conductor.
-#Si necesitas guardar algo llama la funcion desde aqui
-
-#IMPORTANTE: ESTAS CLASE SE BASO EN LA IMPLEMENTACION DE DATACLASSES, SI SE HACE ALGUNA MODIFICACION EN LAS CLASES DE USUARIOS, BILLETERA, TARJETAS O TRANSACCIONES, 
-# HAY QUE MODIFICAR ESTA CLASE PARA QUE PUEDA CARGAR Y GUARDAR LOS DATOS CORRECTAMENTE.
 
 class ServicioUsuario:
     """
-    Responsable de la persistencia de usuarios.
+    Responsable de usuarios.
 
     - Cargar usuarios.
     - Guardar usuarios.
     - Buscar usuarios.
-    - Reconstruir objetos desde JSON.
+    - Reconstruir datos de usuario desde JSON.
     """
 
     def __init__(self, archivo=None):
-        archivo = (
+        self.archivo = (
             archivo
             or Path(__file__).resolve().parents[2] / "usuarios.json"
-        )
-
-        self.repo = RepositorioJSONGenerico(
-            archivo,
-            Usuario,
         )
 
         self.usuarios = self._cargar()
@@ -40,7 +28,7 @@ class ServicioUsuario:
     def _cargar(self):
         usuarios = [
             self._crear_usuario(datos)
-            for datos in self.repo.cargar_json()
+            for datos in cargar_json(self.archivo)
         ]
 
         GeneradorID.sincronizar_desde_usuarios(
@@ -50,10 +38,6 @@ class ServicioUsuario:
         return usuarios
 
     def _crear_usuario(self, datos):
-        billetera = self._crear_billetera(
-            datos.get("billetera", {})
-        )
-
         tipo = datos.get("tipo_usuario", "usuario")
 
         datos_usuario = {
@@ -80,30 +64,7 @@ class ServicioUsuario:
 
         else:
             usuario = Usuario(**datos_usuario)
-        usuario.billetera = billetera
         return usuario
-
-    def _crear_billetera(self, datos):
-        tarjetas = [
-            Tarjetas(**tarjeta)
-            for tarjeta in datos.get(
-                "tarjetas",
-                [],
-            )
-        ]
-
-        transacciones = [
-            Transaccion(**transaccion)
-            for transaccion in datos.get(
-                "transacciones",
-                [],
-            )
-        ]
-
-        return Billetera(saldo=datos.get("saldo", 0.0),
-            tarjetas=tarjetas,
-            transacciones=transacciones,
-        )
 
     def buscar_usuario(self, id_usuario):
         for usuario in self.usuarios:
@@ -154,7 +115,5 @@ class ServicioUsuario:
         return getattr(usuario, "tipo_usuario", "pasajero")
 
     def guardar(self):
-        self.repo.guardar_json(
-            self.usuarios
-        )
+        guardar_json(self.archivo, [asdict(usuario) for usuario in self.usuarios])
     

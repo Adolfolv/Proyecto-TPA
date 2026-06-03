@@ -1,24 +1,29 @@
-import json
-from dataclasses import asdict
+
 #archivo para manejar la lectura y escritura de datos en formato JSON, con métodos genéricos para cargar y guardar listas de objetos de cualquier clase.
 
 
-class RepositorioJSONGenerico:
+import json
+from dataclasses import asdict
 
-    def __init__(self, archivo, clase):
-        self.archivo = archivo
-        self.clase = clase
 
-    def cargar_json(self):
-        try:
-            with open(self.archivo, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return []
+def cargar_json(archivo):
+    try:
+        with open(
+            archivo,
+            "r",
+            encoding="utf-8",
+        ) as f:
+            return json.load(f)
 
-    def guardar_json(self, lista_objetos):
-        datos = [asdict(obj) for obj in lista_objetos]
+    except FileNotFoundError:
+        return []
 
-        with open(self.archivo, "w", encoding="utf-8") as f:
-            json.dump(datos, f, indent=4, ensure_ascii=False)
+
+def guardar_json(archivo, datos):
+    with open(archivo, "w", encoding="utf-8") as f:
+        json.dump([asdict(dato) for dato in datos],
+            f,
+            indent=4,
+            ensure_ascii=False,
+        )
 
