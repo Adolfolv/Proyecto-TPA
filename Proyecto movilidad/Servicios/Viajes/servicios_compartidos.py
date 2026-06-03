@@ -1,16 +1,14 @@
 from Servicios.Viajes.calculadora_viaje import CalculadoraViaje
 from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
 from Servicios.Viajes.fabrica_viaje import FabricaViaje
-from Servicios.Viajes.persistencia_usuario import PersistenciaUsuarioViajes
 from Servicios.Viajes.trayectoria import Trayectoria
 
 
 class ServicioViajeComun:
     """Operaciones compartidas por pasajero y conductor."""
 
-    def __init__(self, persistencia_usuario=None, trayectoria=None):
+    def __init__(self, trayectoria=None):
         self.viajes = []
-        self.persistencia_usuario = persistencia_usuario or PersistenciaUsuarioViajes()
         self.trayectoria = trayectoria or Trayectoria()
         self.calculadora = CalculadoraViaje(self.trayectoria)
         self.fabrica = FabricaViaje(self.trayectoria, self.calculadora)
@@ -27,9 +25,9 @@ class ServicioViajeComun:
         ruta_relativa = self.trayectoria.calcular_trayectoria(inicio, destino)
         return [self.trayectoria.coordenada_real(punto) for punto in ruta_relativa]
 
-    def iniciar_viaje(self, viaje, usuario):
+    def iniciar_viaje(self, viaje):
         self.viajes.append(viaje)
-        return self.persistencia_usuario.guardar_viaje(usuario, viaje)
+        return viaje
 
     def calcular_tiempo_por_km(self, distancia):
         return self.calculadora.calcular_tiempo_por_km(distancia)

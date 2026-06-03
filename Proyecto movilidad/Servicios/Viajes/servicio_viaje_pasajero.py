@@ -70,7 +70,7 @@ class ServicioViajePasajero:
         )
         self.servicio_pagos.cobrar_pasajero(usuario, vehiculo.precio)
         viaje = self.comun.fabrica.crear_viaje_pasajero(vehiculo, usuario)
-        self.comun.iniciar_viaje(viaje, usuario)
+        self.comun.iniciar_viaje(viaje)
         return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)
 
     def obtener_vehiculos_disponibles(self, ubicacion_inicial):

@@ -63,7 +63,7 @@ class ServicioViajeConductor:
         rutas_viaje = self.formar_rutas_inicio_viaje(pasajero)
         viaje = self.comun.fabrica.crear_viaje_conductor(pasajero, conductor)
         self.servicio_pagos.abonar_conductor(conductor, viaje.precio)
-        self.comun.iniciar_viaje(viaje, conductor)
+        self.comun.iniciar_viaje(viaje)
         return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)
 
     def calcular_km_viaje(self, ubicacion_conductor, pasajero):
