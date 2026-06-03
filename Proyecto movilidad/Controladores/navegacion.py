@@ -39,12 +39,6 @@ class Navegacion:
     def obtener_usuario_actual(self):
         return self.usuario_actual
 
-    def obtener_tipo_usuario(self):
-        if self.usuario_actual is None:
-            return "pasajero"
-
-        return getattr(self.usuario_actual, "tipo_usuario", "pasajero")
-
 class RutaPantallaInicial(RutaNavegacion):
     destino = "pantalla_inicial"
 
@@ -117,14 +111,15 @@ class RutaViaje(RutaNavegacion):
     def ejecutar(self):
         self.limpiar_pantalla()
         self.navegacion.ventana.title("Viaje")
+        usuario_actual = self.navegacion.obtener_usuario_actual()
         VistaViaje(
             self.navegacion.ventana,
             self.navegacion.navegar,
-            self.navegacion.obtener_tipo_usuario(),
+            usuario_actual.tipo_usuario,
             lambda: self.navegacion.navegar("menu"),
             self.navegacion.dependencias.controlador_viaje_pasajero,
             self.navegacion.dependencias.controlador_viaje_conductor,
-            self.navegacion.obtener_usuario_actual(),
+            usuario_actual,
         )
 
 
