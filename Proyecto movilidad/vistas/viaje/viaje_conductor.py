@@ -1,13 +1,12 @@
-import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, ttk
-
-from PIL import Image, ImageTk
 
 from ..estilizacion import tema
 from ..estilizacion.widgets import Moldes
 from .animacion_viaje import AnimacionViaje
+from .estado_visual_conductor import EstadoVisualConductor
 from .mapa_viaje import MapaViaje
+from .renderizador_conductor import RenderizadorConductor
 
 
 RUTA_IMAGENES_USUARIOS = Path(__file__).resolve().parent.parent / "estilizacion" / "Imagenes" / "imagenes_usuarios"
@@ -97,16 +96,15 @@ class AccionesBotonesConductor:
         # La vista captura la ubicacion; el controlador busca el pasajero.
         vista.ubicacion_inicial_busqueda = vista.selector_ubicacion.get()
         vista.info_pasajero_busqueda = vista.controlador_conductor.buscar_pasajero_conductor(vista.ubicacion_inicial_busqueda)
-        vista.boton_buscar_pasajeros.config(state="disabled", cursor="arrow")
-        vista.selector_ubicacion.config(state="disabled")
-        self.actualizar_cronometro_busqueda()
+        vista.estado_visual.buscando_pasajero()
+        vista.renderizador.actualizar_cronometro_busqueda()
 
     def presionar_boton_confirmar_viaje(self):
         vista = self.vista
         if vista.viaje_en_proceso:
             return
 
-        self.bloquear_formulario_en_viaje()
+        vista.estado_visual.viaje_en_proceso()
         vista.controlador_conductor.iniciar_viaje_conductor(
             vista.info_pasajero_busqueda,
             vista.usuario_actual,
@@ -123,53 +121,6 @@ class AccionesBotonesConductor:
 
     def presionar_boton_volver_flujo_activo(self):
         messagebox.showwarning("Viaje en proceso", "No se puede volver ya que hay un viaje en proceso.")
-
-    def actualizar_cronometro_busqueda(self, segundos_transcurridos=0):
-        vista = self.vista
-        duracion_busqueda = vista.info_pasajero_busqueda.duracion_busqueda
-        vista.label_cronometro.config(text=f"00:{segundos_transcurridos:02d}")
-        if segundos_transcurridos < duracion_busqueda:
-            vista.label_cronometro.after(1000, lambda: self.actualizar_cronometro_busqueda(segundos_transcurridos + 1))
-            return
-        self.mostrar_pasajero_encontrado()
-
-    def mostrar_pasajero_encontrado(self):
-        vista = self.vista
-        pasajero = vista.info_pasajero_busqueda
-        imagen = Image.open(RUTA_IMAGENES_USUARIOS / pasajero.imagen)
-        imagen.thumbnail((64, 64))
-        vista.imagen_pasajero = ImageTk.PhotoImage(imagen)
-        tk.Label(vista.frame_pasajero, image=vista.imagen_pasajero, bg=tema.PANEL_SUAVE).grid(row=0, column=0, rowspan=4, sticky="nw", padx=10, pady=10)
-
-        llegada = f"Llegar: {pasajero.km_para_llegar} km | {pasajero.tiempo_para_llegar} s"
-        traslado = f"Traslado: {pasajero.km_transportando} km | {pasajero.tiempo_transportando} s"
-        vista.moldes.crear_label(vista.frame_pasajero, pasajero.nombre_completo, ("Arial", 12, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=1, sticky="w", margen_x=8, margen_y=(10, 2))
-        vista.moldes.crear_label(vista.frame_pasajero, pasajero.trayecto, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, 300, "left", metodo="grid", fila=1, columna=1, sticky="w", margen_x=8)
-        vista.moldes.crear_label(vista.frame_pasajero, f"Vehiculo: {pasajero.vehiculo}", ("Arial", 9), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=1, sticky="w", margen_x=8)
-        vista.moldes.crear_label(vista.frame_pasajero, f"Pago: ${pasajero.precio}", ("Arial", 9, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=1, sticky="w", margen_x=8, margen_y=(0, 10))
-        vista.moldes.crear_label(vista.frame_pasajero, llegada, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=4, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 2))
-        vista.moldes.crear_label(vista.frame_pasajero, traslado, ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=5, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 10))
-
-        # El controlador entrega la ruta; la vista solo la dibuja.
-        ruta_pasajero = vista.controlador_conductor.formar_ruta_pasajero_conductor(pasajero)
-        vista.mapa_viaje.dibujar_trayectoria(ruta_pasajero)
-        vista.frame_pasajero.grid()
-        vista.frame_confirmacion.grid()
-        vista.boton_volver.config(command=self.presionar_boton_volver_pregunta_activa)
-
-    def bloquear_formulario_en_viaje(self):
-        vista = self.vista
-        vista.viaje_en_proceso = True
-        vista.boton_confirmar_viaje.config(state="disabled", cursor="arrow")
-        vista.boton_cancelar_viaje.config(state="disabled", cursor="arrow")
-        vista.boton_buscar_pasajeros.config(state="disabled", cursor="arrow")
-        vista.selector_ubicacion.config(state="disabled")
-        vista.boton_volver.config(command=self.presionar_boton_volver_flujo_activo)
-        vista.label_pregunta_confirmacion.grid_remove()
-        vista.boton_confirmar_viaje.grid_remove()
-        vista.boton_cancelar_viaje.grid_remove()
-        vista.label_estado_viaje.config(text="viaje en proceso")
-        vista.label_estado_viaje.grid()
 
     def iniciar_animacion_viaje(self, rutas_viaje):
         vista = self.vista
@@ -189,6 +140,11 @@ class VistaViajeConductor:
         self.moldes = Moldes()
         self.viaje_en_proceso = False
         self.mapa_viaje = None
+        self.ruta_imagenes_usuarios = RUTA_IMAGENES_USUARIOS
+        # State visual: controla botones/paneles durante busqueda, confirmacion y viaje.
+        self.estado_visual = EstadoVisualConductor(self)
+        # Renderizador: pinta cronometro, pasajero encontrado y ruta en el mapa.
+        self.renderizador = RenderizadorConductor(self)
         self.acciones = AccionesBotonesConductor(self)
         self.crear_widgets()
 
@@ -200,6 +156,4 @@ class VistaViajeConductor:
         FrameDerechoConductor(self).crear(contenedor)
 
     def finalizar_viaje(self):
-        self.label_estado_viaje.config(text="viaje finalizado")
-        self.boton_volver.config(command=self.comando_volver_menu)
-        self.boton_buscar_otro_viaje.grid()
+        self.estado_visual.viaje_finalizado()
