@@ -1,4 +1,6 @@
 from dataclasses import dataclass, field
+from typing import Optional
+
 from Modelos.Billetera.datos_billetera import Billetera
 
 #clases para representar a los usuarios, tanto pasajeros como conductores, con sus respectivos atributos y métodos.
@@ -24,11 +26,7 @@ class Usuario:
     edad: int
     telefono: str
     contrasena: str
-    billetera: Billetera = field(default=None, init=False)
-
-    def __post_init__(self):
-        if self.billetera is None:
-            self.billetera = Billetera()
+    billetera: Optional[Billetera] = field(default=None, init=False)
 
 @dataclass
 class Pasajero(Usuario):

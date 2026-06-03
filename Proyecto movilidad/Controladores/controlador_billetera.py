@@ -29,4 +29,12 @@ class ControladorBilletera:
         return self.servicio_tarjeta.obtener_tarjetas(usuario)
 
     def saldo_billetera(self, usuario):
-        return usuario.billetera.saldo
+        return self.servicio_billetera.obtener_billetera(usuario).saldo
+
+    def obtener_resumen(self, usuario):
+        billetera = self.servicio_billetera.obtener_billetera(usuario)
+        return {
+            "saldo_billetera": billetera.saldo,
+            "tarjetas": billetera.tarjetas,
+            "transacciones": billetera.transacciones,
+        }

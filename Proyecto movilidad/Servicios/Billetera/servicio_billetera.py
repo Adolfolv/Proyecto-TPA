@@ -13,41 +13,44 @@ class ServicioBilletera:
         self.historial = HistorialTransacciones()
 
     def obtener_billetera(self, usuario):
-        return self.repositorio_billetera.obtener(usuario)
+        billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
+        usuario.billetera = billetera
+        return billetera
 
     def pagar(self, usuario, monto):
-        self.obtener_billetera(usuario)
-        self.pago.pagar(usuario.billetera, monto)
-        self.historial.crear_transaccion(usuario.billetera, "Pago", monto)
-        self.guardar(usuario)
+        billetera = self.obtener_billetera(usuario)
+        self.pago.pagar(billetera, monto)
+        self.historial.crear_transaccion(billetera, "Pago", monto)
+        self.guardar(usuario, billetera)
         return True
 
     def recibir_pago(self, usuario, monto):
-        self.obtener_billetera(usuario)
-        self.pago.recibir_pago(usuario.billetera, monto)
-        self.historial.crear_transaccion(usuario.billetera, "Pago recibido", monto)
-        self.guardar(usuario)
+        billetera = self.obtener_billetera(usuario)
+        self.pago.recibir_pago(billetera, monto)
+        self.historial.crear_transaccion(billetera, "Pago recibido", monto)
+        self.guardar(usuario, billetera)
         return True
 
     def cargar_desde_tarjeta(self, usuario, numero_tarjeta, monto):
-        self.obtener_billetera(usuario)
+        billetera = self.obtener_billetera(usuario)
         tarjeta = self.servicio_tarjeta.obtener_tarjeta(usuario, numero_tarjeta)
-        self.mover.mover_saldo(tarjeta, usuario.billetera, monto)
-        self.historial.crear_transaccion(usuario.billetera, "Carga desde tarjeta", monto)
-        self.guardar(usuario)
+        self.mover.mover_saldo(tarjeta, billetera, monto)
+        self.historial.crear_transaccion(billetera, "Carga desde tarjeta", monto)
+        self.guardar(usuario, billetera)
         return True
 
     def retirar_a_tarjeta(self, usuario, numero_tarjeta, monto):
-        self.obtener_billetera(usuario)
+        billetera = self.obtener_billetera(usuario)
         tarjeta = self.servicio_tarjeta.obtener_tarjeta(usuario, numero_tarjeta)
-        self.mover.mover_saldo(usuario.billetera, tarjeta, monto)
-        self.historial.crear_transaccion(usuario.billetera, "Retiro a tarjeta", monto)
-        self.guardar(usuario)
+        self.mover.mover_saldo(billetera, tarjeta, monto)
+        self.historial.crear_transaccion(billetera, "Retiro a tarjeta", monto)
+        self.guardar(usuario, billetera)
         return True
 
-    def guardar(self, usuario=None):
+    def guardar(self, usuario=None, billetera=None):
         if usuario is None:
             self.repositorio_billetera.guardar()
             return
 
-        self.repositorio_billetera.guardar_usuario(usuario)
+        billetera = billetera or self.obtener_billetera(usuario)
+        self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)

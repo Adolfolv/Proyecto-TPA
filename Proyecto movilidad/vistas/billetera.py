@@ -233,7 +233,9 @@ class VistaBilletera(tk.Frame):
     def actualizar_vista(self):
         if self.usuario is None or self.controlador is None:
             return
-        tarjetas = self.controlador.listar_tarjetas(self.usuario)
-        saldo_billetera = self.controlador.saldo_billetera(self.usuario)
-        transacciones = self.usuario.billetera.transacciones
-        self.panel.actualizar(saldo_billetera, tarjetas, transacciones)
+        resumen = self.controlador.obtener_resumen(self.usuario)
+        self.panel.actualizar(
+            resumen["saldo_billetera"],
+            resumen["tarjetas"],
+            resumen["transacciones"],
+        )

@@ -1,5 +1,6 @@
 from abstracciones import Validador
 from datetime import date
+from Validaciones.registro import ValidadorNombre
 
 
 class ValidadorMontoPositivo(Validador):
@@ -40,9 +41,10 @@ class ValidadorTarjetaEncontrada(Validador):
 
 class ValidadorTarjetaNoDuplicada(Validador):
     def validar(self, datos):
-        usuario, tarjeta = datos
+        origen, tarjeta = datos
+        billetera = getattr(origen, "billetera", origen)
 
-        for tarjeta_guardada in usuario.billetera.tarjetas:
+        for tarjeta_guardada in billetera.tarjetas:
             if tarjeta_guardada.numero_tarjeta == tarjeta.numero_tarjeta:
                 raise ValueError("La tarjeta ya se encuentra agregada.")
 
@@ -119,17 +121,18 @@ class ValidacionesTarjeta:
 
     def __init__(self, tipos_tarjeta):
         self.tipos_tarjeta = tipos_tarjeta
+        self.validador_titular = ValidadorNombre()
         self.validador_fecha_vencimiento = ValidadorFechaVencimientoTarjeta()
         self.validador_tarjeta_no_duplicada = ValidadorTarjetaNoDuplicada()
 
-    def validar(self, usuario, tarjeta, tipo, numero, vencimiento, cvv):
+    def validar(self,titular, billetera, tarjeta, tipo, numero, vencimiento, cvv):
         clase_tarjeta = self._obtener_clase_tarjeta(tipo)
         tarjeta_validadora = clase_tarjeta()
-
+        self.validador_titular.validar(titular)
         tarjeta_validadora.numero_valido(numero)
         self._validar_cvv(tarjeta_validadora, cvv)
         self.validador_fecha_vencimiento.validar(vencimiento)
-        self.validador_tarjeta_no_duplicada.validar((usuario, tarjeta))
+        self.validador_tarjeta_no_duplicada.validar((billetera, tarjeta))
 
     def _obtener_clase_tarjeta(self, tipo):
         clase_tarjeta = self.tipos_tarjeta.get(tipo)

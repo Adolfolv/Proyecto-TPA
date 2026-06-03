@@ -29,10 +29,11 @@ class BuscadorUsuarioPorCorreo(Buscador):
     
 class BuscadorTarjeta(Buscador):
 
-    def buscar(self, usuario, numero_tarjeta):
-        for tarjeta in usuario.billetera.tarjetas:
+    def buscar(self, origen, numero_tarjeta):
+        billetera = getattr(origen, "billetera", origen)
+
+        for tarjeta in billetera.tarjetas:
             if tarjeta.numero_tarjeta == numero_tarjeta:
                 return tarjeta
 
         return None
-
