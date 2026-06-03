@@ -16,7 +16,6 @@ from Servicios.Viajes.datos_viaje import (
     LUGARES_OSORNO,
     PASAJEROS_SIMULADOS,
 )
-from Servicios.Viajes.persistencia_usuario import PersistenciaUsuarioViajes
 from Servicios.Viajes.trayectoria import Trayectoria
 from Validaciones.validaciones_viaje import ValidacionesViaje
 
@@ -29,13 +28,12 @@ class ServicioViaje:
 
     def __init__(
         self,
-        persistencia_usuario=None,
         trayectoria=None,
         randomizador=None,
         servicio_billetera=None,
     ):
         randomizador = randomizador or Random()
-        self.comun = ServicioViajeComun(persistencia_usuario, trayectoria)
+        self.comun = ServicioViajeComun(trayectoria)
         self.pagos = ServicioPagoViaje(servicio_billetera)
         self.pasajero = ServicioViajePasajero(
             self.comun,
@@ -121,11 +119,10 @@ class ServicioViaje:
 
 
 class ServicioViajeComun:
-    """Operaciones compartidas: rutas, tiempos, distancias y persistencia."""
+    """Operaciones compartidas: rutas, tiempos y distancias."""
 
-    def __init__(self, persistencia_usuario=None, trayectoria=None):
+    def __init__(self, trayectoria=None):
         self.viajes = []
-        self.persistencia_usuario = persistencia_usuario or PersistenciaUsuarioViajes()
         self.trayectoria = trayectoria or Trayectoria()
 
     def obtener_punto_lugar(self, nombre_lugar):
@@ -206,7 +203,7 @@ class ServicioViajeComun:
 
     def iniciar_viaje(self, viaje, usuario):
         self.viajes.append(viaje)
-        return self.persistencia_usuario.guardar_viaje(usuario, viaje)
+        return viaje
 
     def nombre_usuario(self, usuario):
         if usuario is None:

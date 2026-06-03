@@ -99,7 +99,7 @@ class ResultadoBusquedaVehiculos:
 
 @dataclass
 class Viaje:
-    """Registro persistible de un viaje terminado o iniciado."""
+    """Registro de un viaje creado durante el flujo actual."""
 
     pasajero: str
     conductor: str
@@ -118,11 +118,3 @@ class ResultadoViaje:
     rutas_viaje: RutasViaje | None = None
     viaje: Viaje | None = None
 
-
-@dataclass
-class CuentaViajes:
-    """Historial de viajes asociado a un usuario de la aplicacion."""
-
-    id_usuario: str
-    tipo_usuario: str
-    viajes: list[Viaje]
