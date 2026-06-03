@@ -1,16 +1,13 @@
 from Modelos.Billetera.movimiento import HistorialTransacciones, Pago, MoverSaldo
-from Modelos.Billetera.tarjetas import ServicioTarjeta
-from Repositorios.repositorio_billetera import RepositorioBilletera
 
 #archivo para manejar la lógica de negocio relacionada con la billetera, 
-# incluyendo la gestión de tarjetas, movimientos de saldo, pagos y recepciones. ,
-# Este servicio se encarga de realizar las operaciones necesarias para agregar o eliminar tarjetas, 
-# realizar pagos, recibir pagos, cargar o retirar fondos, y consultar el saldo y las tarjetas asociadas a la billetera del usuario.
+# incluyendo la gestión de tarjetas, movimientos de saldo, pagos y recepciones.  
+# realizar pagos, recibir pagos, cargar o retirar fondos, y consultar el saldo a la billetera del usuario.
 class ServicioBilletera:
 
-    def __init__(self, repositorio_billetera=None, servicio_tarjeta=None):
-        self.repositorio_billetera = repositorio_billetera or RepositorioBilletera()
-        self.servicio_tarjeta = servicio_tarjeta or ServicioTarjeta(self.repositorio_billetera)
+    def __init__(self, repositorio_billetera, servicio_tarjeta):
+        self.repositorio_billetera = repositorio_billetera
+        self.servicio_tarjeta = servicio_tarjeta
         self.mover = MoverSaldo()
         self.pago = Pago()
         self.historial = HistorialTransacciones()

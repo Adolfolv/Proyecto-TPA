@@ -2,17 +2,14 @@ import abstracciones
 TarjetaBase = abstracciones.TarjetaBase
 import random
 from Validaciones.billetera import (
-    ValidadorFechaVencimientoTarjeta,
     ValidadorNumeroTarjetaAmericanExpress,
     ValidadorNumeroTarjetaMastercard,
     ValidadorNumeroTarjetaVisa,
     ValidadorSaldoDefinido,
     ValidadorTarjetaEncontrada,
-    ValidadorTarjetaNoDuplicada,
+    ValidacionesTarjeta,
 )
 from Modelos.Billetera.datos_billetera import Tarjetas
-from Repositorios.repositorio_billetera import RepositorioBilletera
-from Servicios.Usuario.buscador import BuscadorTarjeta
 
 # Archivo para manejar las clases relacionadas con las tarjetas de crédito o débito que los usuarios pueden agregar a su billetera, 
 # incluyendo la validación de números de tarjeta, el formato del CVV, y la gestión de las tarjetas asociadas a la billetera del usuario. 
@@ -46,6 +43,15 @@ class TarjetaAmericanExpress(TarjetaBase):
 
     def numero_valido(self, numero):
         return self.validador_numero.validar(numero)
+
+
+class GeneradorSaldoTarjeta:
+
+    def generar(self):
+        return random.randint(
+            10000,
+            500000,
+        )
     
 
 class ServicioTarjeta:
@@ -56,19 +62,25 @@ class ServicioTarjeta:
         "American Express": TarjetaAmericanExpress,
     }
 
-    def __init__(self, repositorio_billetera=None, buscador_tarjeta=None):
-        self.repositorio_billetera = repositorio_billetera or RepositorioBilletera()
-        self.buscador_tarjeta = buscador_tarjeta or BuscadorTarjeta()
-        self.validador_tarjeta_no_duplicada = (
-            ValidadorTarjetaNoDuplicada()
+    def __init__(
+        self,
+        repositorio_billetera,
+        buscador_tarjeta,
+        validaciones_tarjeta=None,
+        generador_saldo_tarjeta=None,
+    ):
+        self.repositorio_billetera = repositorio_billetera
+        self.buscador_tarjeta = buscador_tarjeta
+        self.validaciones_tarjeta = (
+            validaciones_tarjeta
+            or ValidacionesTarjeta(self.TIPOS_TARJETA)
         )
-
+        self.generador_saldo_tarjeta = (
+            generador_saldo_tarjeta
+            or GeneradorSaldoTarjeta()
+        )
         self.validador_saldo_definido = (
             ValidadorSaldoDefinido()
-        )
-
-        self.validador_fecha_vencimiento = (
-            ValidadorFechaVencimientoTarjeta()
         )
         self.validador_tarjeta_encontrada = ValidadorTarjetaEncontrada()
 
@@ -82,21 +94,8 @@ class ServicioTarjeta:
         self.validador_tarjeta_encontrada.validar(tarjeta)
         return tarjeta
 
-    def agregar_tarjeta( self, usuario, tipo, titular, numero, vencimiento, cvv):
+    def agregar_tarjeta(self, usuario, tipo, titular, numero, vencimiento, cvv):
         self.repositorio_billetera.obtener(usuario)
-        clase_tarjeta = self.TIPOS_TARJETA.get(tipo)
-
-        if clase_tarjeta is None:
-            raise ValueError("Tipo de tarjeta invalido.")
-
-        tarjeta_validadora = clase_tarjeta()
-
-        tarjeta_validadora.numero_valido(numero)
-
-        if len(str(cvv)) != tarjeta_validadora.longitud_cvv:
-            raise ValueError("CVV invalido para el tipo de tarjeta seleccionado.")
-
-        self.validador_fecha_vencimiento.validar(vencimiento)
 
         tarjeta = Tarjetas(
             titular=titular,
@@ -106,15 +105,19 @@ class ServicioTarjeta:
             saldo=None,
         )
 
-        self.validador_tarjeta_no_duplicada.validar((usuario, tarjeta))
+        self.validaciones_tarjeta.validar(
+            usuario,
+            tarjeta,
+            tipo,
+            numero,
+            vencimiento,
+            cvv,
+        )
 
         if not self.validador_saldo_definido.validar(
             tarjeta
         ):
-            tarjeta.saldo = random.randint(
-                10000,
-                500000,
-            )
+            tarjeta.saldo = self.generador_saldo_tarjeta.generar()
 
         usuario.billetera.tarjetas.append(
             tarjeta

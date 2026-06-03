@@ -11,7 +11,7 @@ from Vistas.viaje import VistaViaje
 from Repositorios.repositorio_billetera import RepositorioBilletera
 from Repositorios.repositorio_usuario import RepositorioUsuario
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
-from Servicios.Usuario.buscador import BuscadorUsuario
+from Servicios.Usuario.buscador import BuscadorTarjeta, BuscadorUsuario
 from Servicios.Usuario.registro import ServicioRegistro
 from Modelos.Billetera.tarjetas import ServicioTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
@@ -44,7 +44,11 @@ class Navegacion:
             self.repositorio_usuario,
             self.buscador_usuario,
         )
-        self.servicio_tarjeta = ServicioTarjeta(self.repositorio_billetera)
+        self.buscador_tarjeta = BuscadorTarjeta()
+        self.servicio_tarjeta = ServicioTarjeta(
+            self.repositorio_billetera,
+            self.buscador_tarjeta,
+        )
         self.servicio_billetera = ServicioBilletera(
             self.repositorio_billetera,
             self.servicio_tarjeta,

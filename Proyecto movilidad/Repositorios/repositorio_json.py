@@ -3,7 +3,6 @@
 
 
 import json
-from dataclasses import asdict
 
 
 def cargar_json(archivo):
@@ -21,9 +20,9 @@ def cargar_json(archivo):
 
 def guardar_json(archivo, datos):
     with open(archivo, "w", encoding="utf-8") as f:
-        json.dump([asdict(dato) for dato in datos],
+        json.dump(
+            datos,
             f,
             indent=4,
             ensure_ascii=False,
         )
-

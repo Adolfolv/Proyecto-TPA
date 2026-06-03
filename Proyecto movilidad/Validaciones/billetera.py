@@ -113,3 +113,34 @@ class ValidadorNumeroTarjetaAmericanExpress(Validador):
             raise ValueError("Numero de tarjeta American Express invalido.")
 
         return True
+
+
+class ValidacionesTarjeta:
+
+    def __init__(self, tipos_tarjeta):
+        self.tipos_tarjeta = tipos_tarjeta
+        self.validador_fecha_vencimiento = ValidadorFechaVencimientoTarjeta()
+        self.validador_tarjeta_no_duplicada = ValidadorTarjetaNoDuplicada()
+
+    def validar(self, usuario, tarjeta, tipo, numero, vencimiento, cvv):
+        clase_tarjeta = self._obtener_clase_tarjeta(tipo)
+        tarjeta_validadora = clase_tarjeta()
+
+        tarjeta_validadora.numero_valido(numero)
+        self._validar_cvv(tarjeta_validadora, cvv)
+        self.validador_fecha_vencimiento.validar(vencimiento)
+        self.validador_tarjeta_no_duplicada.validar((usuario, tarjeta))
+
+    def _obtener_clase_tarjeta(self, tipo):
+        clase_tarjeta = self.tipos_tarjeta.get(tipo)
+
+        if clase_tarjeta is None:
+            raise ValueError("Tipo de tarjeta invalido.")
+
+        return clase_tarjeta
+
+    def _validar_cvv(self, tarjeta_validadora, cvv):
+        if len(str(cvv)) != tarjeta_validadora.longitud_cvv:
+            raise ValueError("CVV invalido para el tipo de tarjeta seleccionado.")
+
+        return True
