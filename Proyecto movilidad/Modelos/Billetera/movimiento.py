@@ -14,57 +14,38 @@ class AdicionMonto:
         self.validador_saldo_suficiente = ValidadorSaldoSuficiente()
 
     def agregar_saldo(self, objeto, monto):
-
-        if self.validador_monto_positivo.validar(monto):
-
-            objeto.saldo += monto
-            return True
-
-        return False
+        self.validador_monto_positivo.validar(monto)
+        monto = float(monto)
+        objeto.saldo += monto
+        return True
 
 
     def quitar_saldo(self, billetera, monto):
-
-        if self.validador_saldo_suficiente.validar((billetera, monto)):
-
-            billetera.saldo -= monto
-            return True
-
-        return False
+        self.validador_saldo_suficiente.validar((billetera, monto))
+        monto = float(monto)
+        billetera.saldo -= monto
+        return True
 
 
 
 class MoverSaldo(AdicionMonto):
 
     def mover_saldo(self, origen, destino, monto):
-
-        if not self.validador_monto_positivo.validar(monto):
-
-            return False
-        if self.quitar_saldo(origen, monto):
-
-            self.agregar_saldo(destino, monto)
-            return True
-        return False
+        self.validador_monto_positivo.validar(monto)
+        self.quitar_saldo(origen, monto)
+        self.agregar_saldo(destino, monto)
+        return True
     
 class Pago(AdicionMonto):
     def pagar(self, billetera, monto):
-
-        pago_realizado = self.quitar_saldo(billetera, monto)
-        if pago_realizado:
-            return True
-        return False
+        return self.quitar_saldo(billetera, monto)
 
 
     def recibir_pago(self, billetera, monto):
-        pago_recibido = self.agregar_saldo(
+        return self.agregar_saldo(
             billetera,
             monto
         )
-
-        if pago_recibido:
-            return True
-        return False
 
 
 class HistorialTransacciones:

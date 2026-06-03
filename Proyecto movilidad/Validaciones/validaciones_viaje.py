@@ -26,3 +26,21 @@ class ValidacionesViaje:
             return False, "La ubicacion inicial y final deben ser distintas."
 
         return True, ""
+
+    def validar_pago_pasajero(self, servicio_billetera, usuario):
+        if servicio_billetera is None:
+            raise ValueError("No se pudo realizar el pago del viaje.")
+
+        if getattr(usuario, "tipo_usuario", "") != "pasajero":
+            raise ValueError("No se pudo realizar el pago del viaje.")
+
+        return True
+
+    def validar_abono_conductor(self, servicio_billetera, usuario):
+        if servicio_billetera is None:
+            raise ValueError("No se pudo abonar el pago al conductor.")
+
+        if getattr(usuario, "tipo_usuario", "") != "conductor":
+            raise ValueError("No se pudo abonar el pago al conductor.")
+
+        return True
