@@ -7,11 +7,6 @@
         "edad": "18",
         "telefono": "+56 9 30356421",
         "contrasena": "123456",
-        "billetera": {
-            "saldo": 0.0,
-            "tarjetas": [],
-            "transacciones": []
-        },
         "direccion": "sdafsadf",
         "tipo_usuario": "pasajero"
     },
@@ -23,185 +18,28 @@
         "edad": "18",
         "telefono": "+56 930364232",
         "contrasena": "123456",
-        "billetera": {
-            "saldo": 24308.0,
-            "tarjetas": [],
-            "transacciones": [
-                {
-                    "id_transaccion": "TRX0001",
-                    "tipo": "Pago recibido",
-                    "monto": 4500.0,
-                    "fecha": "01-06-2026 20:04"
-                },
-                {
-                    "id_transaccion": "TRX0002",
-                    "tipo": "Pago recibido",
-                    "monto": 4200.0,
-                    "fecha": "01-06-2026 20:19"
-                },
-                {
-                    "id_transaccion": "TRX0003",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0004",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0005",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0006",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0007",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0008",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0009",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0010",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0011",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0012",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0013",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0014",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0015",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0016",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0017",
-                    "tipo": "Carga desde tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0018",
-                    "tipo": "Retiro a tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0019",
-                    "tipo": "Retiro a tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0020",
-                    "tipo": "Retiro a tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0021",
-                    "tipo": "Retiro a tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0022",
-                    "tipo": "Retiro a tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0023",
-                    "tipo": "Retiro a tarjeta",
-                    "monto": 12.0,
-                    "fecha": "01-06-2026 20:26"
-                },
-                {
-                    "id_transaccion": "TRX0024",
-                    "tipo": "Pago recibido",
-                    "monto": 3900.0,
-                    "fecha": "01-06-2026 20:27"
-                },
-                {
-                    "id_transaccion": "TRX0025",
-                    "tipo": "Pago recibido",
-                    "monto": 3900.0,
-                    "fecha": "02-06-2026 17:40"
-                },
-                {
-                    "id_transaccion": "TRX0026",
-                    "tipo": "Pago recibido",
-                    "monto": 3600.0,
-                    "fecha": "02-06-2026 19:18"
-                },
-                {
-                    "id_transaccion": "TRX0027",
-                    "tipo": "Pago recibido",
-                    "monto": 4100.0,
-                    "fecha": "02-06-2026 19:19"
-                }
-            ]
-        },
         "tipo_licencia": "Categoria A2",
         "licencia_conducir": "22224358-0",
         "selfie": "",
         "auto": {
             "marca": "Toyota",
             "modelo": "Yaris",
-            "año": "2006",
+            "ano": "2006",
             "patente": "LS2134",
             "cantidad_asientos": "5",
             "peso_equipaje": "200"
         },
         "tipo_usuario": "conductor"
+    },
+    {
+        "id_usuario": "USR0003",
+        "nombre": "asd",
+        "apellido": "asd",
+        "correo": "asd@asd.dsa",
+        "edad": "18",
+        "telefono": "+56 976543214",
+        "contrasena": "123456",
+        "direccion": "",
+        "tipo_usuario": "pasajero"
     }
 ]
