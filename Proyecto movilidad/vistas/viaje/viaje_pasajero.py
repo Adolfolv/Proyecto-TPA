@@ -146,23 +146,25 @@ class AccionesBotonesPasajero:
         cantidad_usuarios = vista.entrada_usuarios.get()
         ubicacion_inicial = vista.selector_ubicacion_inicial.get()
         ubicacion_final = vista.selector_ubicacion_final.get()
-        busqueda_exitosa = vista.controlador_pasajero.buscar_vehiculos_pasajero(
+        resultado = vista.controlador_pasajero.buscar_vehiculos_pasajero(
             cantidad_usuarios,
             ubicacion_inicial,
             ubicacion_final,
         )
 
-        if busqueda_exitosa is False:
+        if not resultado.exitoso:
             # El controlador valida; la vista solo muestra el estado visual de error.
             vista.estado_visual.busqueda_con_error()
-            vista.renderizador.mostrar_error_busqueda(
-                vista.controlador_pasajero.obtener_error_busqueda_vehiculos()
-            )
+            vista.renderizador.mostrar_error_busqueda(resultado.error)
             return
 
         # Guarda estado de busqueda antes de pintar tabla y mapa.
-        vista.estado_visual.busqueda_exitosa(ubicacion_inicial, ubicacion_final)
-        ruta = vista.controlador_pasajero.obtener_ruta_busqueda_pasajero()
+        vista.estado_visual.busqueda_exitosa(
+            ubicacion_inicial,
+            ubicacion_final,
+            resultado.vehiculos,
+        )
+        ruta = resultado.ruta_busqueda
         if ruta is None:
             vista.estado_visual.busqueda_con_error()
             vista.renderizador.mostrar_error_busqueda(
@@ -200,24 +202,19 @@ class AccionesBotonesPasajero:
 
         vista.renderizador.mostrar_error_viaje("")
         # El controlador prepara rutas y cobra; la vista solo muestra el resultado.
-        pago_confirmado = vista.controlador_pasajero.confirmar_pago_pasajero(
+        resultado = vista.controlador_pasajero.confirmar_pago_pasajero(
             vista.usuario_actual,
             vista.vehiculo_seleccionado,
             vista.ubicacion_inicial_busqueda,
             vista.ubicacion_final_busqueda,
         )
-        if pago_confirmado is False:
-            vista.renderizador.mostrar_error_viaje(
-                vista.controlador_pasajero.obtener_error_viaje()
-            )
+        if not resultado.exitoso:
+            vista.renderizador.mostrar_error_viaje(resultado.error)
             return
 
         # Desde aqui se bloquea la pantalla hasta que termine la animacion.
         vista.estado_visual.viaje_en_proceso()
-        vista.controlador_pasajero.iniciar_viaje_pasajero_confirmado()
-        self.iniciar_animacion_viaje(
-            vista.controlador_pasajero.obtener_rutas_viaje_pasajero(),
-        )
+        self.iniciar_animacion_viaje(resultado.rutas_viaje)
 
     def presionar_boton_cancelar(self):
         self.vista.navegar("viaje")

@@ -9,6 +9,14 @@ from Controladores.controlador_viaje import (
 )
 from Repositorios.repositorio_billetera import RepositorioBilletera
 from Repositorios.repositorio_usuario import RepositorioUsuario
+from Servicios.Billetera.operaciones_billetera import (
+    OperacionCargaTarjeta,
+    OperacionPago,
+    OperacionPagoRecibido,
+    OperacionRetiroTarjeta,
+)
+from Servicios.Billetera.fabrica_billetera import FabricaBilletera
+from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Billetera.servicio_tarjetas import ServicioTarjeta
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
@@ -17,6 +25,7 @@ from Servicios.Usuario.buscador import (
     BuscadorUsuario,
     BuscadorUsuarioPorCorreo,
 )
+from Servicios.Usuario.fabrica_usuario import FabricaUsuario
 from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 
@@ -27,8 +36,13 @@ class DependenciasAplicacion:
     def __init__(self):
         # Punto de composicion: aqui se decide que implementaciones concretas
         # usa la aplicacion. Si cambia JSON por otra persistencia, se toca aqui.
-        self.repositorio_usuario = RepositorioUsuario()
-        self.repositorio_billetera = RepositorioBilletera()
+        self.fabrica_usuario = FabricaUsuario()
+        self.fabrica_billetera = FabricaBilletera()
+        self.fabrica_tarjeta = FabricaTarjeta()
+        self.repositorio_usuario = RepositorioUsuario(fabrica=self.fabrica_usuario)
+        self.repositorio_billetera = RepositorioBilletera(
+            fabrica=self.fabrica_billetera
+        )
 
         # Buscadores compartidos por servicios de usuario y billetera.
         self.buscador_usuario = BuscadorUsuario(self.repositorio_usuario)
@@ -45,14 +59,28 @@ class DependenciasAplicacion:
         self.servicio_registro = ServicioRegistro(
             self.repositorio_usuario,
             self.buscador_usuario_por_correo,
+            self.fabrica_usuario,
         )
         self.servicio_tarjeta = ServicioTarjeta(
             self.repositorio_billetera,
             self.buscador_tarjeta,
+            fabrica_tarjeta=self.fabrica_tarjeta,
         )
+        self.operaciones_billetera = {
+            "pagar": OperacionPago(self.repositorio_billetera),
+            "recibir": OperacionPagoRecibido(self.repositorio_billetera),
+            "cargar": OperacionCargaTarjeta(
+                self.repositorio_billetera,
+                self.servicio_tarjeta,
+            ),
+            "retirar": OperacionRetiroTarjeta(
+                self.repositorio_billetera,
+                self.servicio_tarjeta,
+            ),
+        }
         self.servicio_billetera = ServicioBilletera(
             self.repositorio_billetera,
-            self.servicio_tarjeta,
+            self.operaciones_billetera,
         )
         self.servicio_viaje = ServicioViaje(
             servicio_billetera=self.servicio_billetera,

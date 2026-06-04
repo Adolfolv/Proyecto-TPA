@@ -21,3 +21,10 @@ class Billetera:
     tarjetas: list[Tarjetas] = field(default_factory=list)
     transacciones: list[Transaccion] = field(default_factory=list)
 
+
+@dataclass
+class SolicitudOperacionBilletera:
+    usuario: object
+    monto: float
+    numero_tarjeta: str = None
+

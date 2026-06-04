@@ -55,10 +55,10 @@ class ServicioPagoViaje:
 
     def cobrar_pasajero(self, usuario, monto):
         self.validaciones.validar_pago_pasajero(self.servicio_billetera, usuario)
-        self.servicio_billetera.pagar(usuario, monto)
+        self.servicio_billetera.ejecutar("pagar", usuario, monto)
         return True
 
     def abonar_conductor(self, usuario, monto):
         self.validaciones.validar_abono_conductor(self.servicio_billetera, usuario)
-        self.servicio_billetera.recibir_pago(usuario, monto)
+        self.servicio_billetera.ejecutar("recibir", usuario, monto)
         return True

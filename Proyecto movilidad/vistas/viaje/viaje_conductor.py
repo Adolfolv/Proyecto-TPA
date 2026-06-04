@@ -105,13 +105,11 @@ class AccionesBotonesConductor:
             return
 
         vista.estado_visual.viaje_en_proceso()
-        vista.controlador_conductor.iniciar_viaje_conductor(
+        resultado = vista.controlador_conductor.iniciar_viaje_conductor(
             vista.info_pasajero_busqueda,
             vista.usuario_actual,
         )
-        self.iniciar_animacion_viaje(
-            vista.controlador_conductor.obtener_rutas_viaje_conductor(),
-        )
+        self.iniciar_animacion_viaje(resultado.rutas_viaje)
 
     def presionar_boton_cancelar(self):
         self.vista.navegar("viaje")

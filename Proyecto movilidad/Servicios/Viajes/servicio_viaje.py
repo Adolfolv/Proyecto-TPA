@@ -50,12 +50,6 @@ class ServicioViaje:
             ubicacion_final,
         )
 
-    def obtener_error_busqueda_vehiculos(self):
-        return self.pasajero.obtener_error_busqueda_vehiculos()
-
-    def obtener_vehiculos_encontrados(self):
-        return self.pasajero.obtener_vehiculos_encontrados()
-
     def formar_ruta_busqueda_pasajero(self, ubicacion_inicial, ubicacion_final):
         return self.pasajero.formar_ruta_busqueda(ubicacion_inicial, ubicacion_final)
 

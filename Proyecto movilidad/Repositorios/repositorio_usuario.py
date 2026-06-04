@@ -1,24 +1,25 @@
 from pathlib import Path
 from dataclasses import asdict
 
-from Modelos.Usuario.usuario_datos import Auto, Conductor, Pasajero, Usuario
 from Repositorios.repositorio_json import cargar_json, guardar_json
+from Servicios.Usuario.fabrica_usuario import FabricaUsuario
 from Servicios.Usuario.generador_id import GeneradorID
 
 
 class RepositorioUsuario:
 
-    def __init__(self, archivo=None):
+    def __init__(self, archivo=None, fabrica=None):
         archivo = (
             archivo
             or Path(__file__).resolve().parents[1] / "usuarios.json"
         )
         self.archivo = archivo
+        self.fabrica = fabrica or FabricaUsuario()
         self.usuarios = []
 
     def cargar(self):
         self.usuarios = [
-            self.crear_usuario(datos)
+            self.fabrica.crear_desde_dict(datos)
             for datos in cargar_json(self.archivo)
         ]
         GeneradorID.sincronizar_desde_usuarios(self.usuarios)
@@ -44,32 +45,6 @@ class RepositorioUsuario:
             self.cargar()
 
         return self.usuarios
-
-    def crear_usuario(self, datos):
-        tipo = datos.get("tipo_usuario", "usuario")
-        datos_usuario = {
-            clave: valor
-            for clave, valor in datos.items()
-            if clave not in ("billetera", "tipo_usuario")
-        }
-        datos_usuario.setdefault("apellido", "")
-
-        if tipo == "conductor":
-            auto = datos_usuario.get("auto")
-
-            if isinstance(auto, dict):
-                if "año" in auto and "ano" not in auto:
-                    auto["ano"] = auto.pop("año")
-                datos_usuario["auto"] = Auto(**auto)
-
-            datos_usuario.setdefault("selfie", "")
-            usuario = Conductor(**datos_usuario)
-        elif tipo == "pasajero":
-            usuario = Pasajero(**datos_usuario)
-        else:
-            usuario = Usuario(**datos_usuario)
-
-        return usuario
 
     def usuario_a_json(self, usuario):
         datos = asdict(usuario)

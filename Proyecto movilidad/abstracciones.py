@@ -2,10 +2,14 @@ from abc import ABC, abstractmethod
 
 #archivo para almacenar clases abstractas.
 class TarjetaBase(ABC):
-    
-    @abstractmethod
+    clase_validador_numero = None
+    longitud_cvv = 0
+
+    def __init__(self):
+        self.validador_numero = self.clase_validador_numero()
+
     def numero_valido(self, numero):
-        pass
+        return self.validador_numero.validar(numero)
 
 class Validador(ABC):
     @abstractmethod
@@ -17,6 +21,13 @@ class Buscador(ABC):
     @abstractmethod
     def buscar(self, *datos):
         pass
+
+
+class OperacionBilletera(ABC):
+    @abstractmethod
+    def ejecutar(self, solicitud):
+        pass
+
 
 class NavegadorAbstracto(ABC):
     @abstractmethod

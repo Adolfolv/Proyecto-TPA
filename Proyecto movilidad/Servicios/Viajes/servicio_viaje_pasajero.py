@@ -20,8 +20,6 @@ class ServicioViajePasajero:
         self.validaciones = validaciones or ValidacionesViaje()
         self.randomizador = randomizador or Random()
         self.servicio_pagos = servicio_pagos or ServicioPagoViaje()
-        self.error_busqueda_vehiculos = ""
-        self.vehiculos_encontrados = []
 
     def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
         valido, error = self.validaciones.validar_busqueda_vehiculos(
@@ -29,8 +27,6 @@ class ServicioViajePasajero:
             ubicacion_inicial,
             ubicacion_final,
         )
-        self.error_busqueda_vehiculos = error
-        self.vehiculos_encontrados = []
 
         if not valido:
             return ResultadoBusquedaVehiculos(False, error=error)
@@ -38,18 +34,11 @@ class ServicioViajePasajero:
         vehiculos = tuple(self.obtener_vehiculos_disponibles(ubicacion_inicial))
         ruta_busqueda = self.formar_ruta_busqueda(ubicacion_inicial, ubicacion_final)
 
-        self.vehiculos_encontrados = list(vehiculos)
         return ResultadoBusquedaVehiculos(
             True,
             vehiculos=vehiculos,
             ruta_busqueda=ruta_busqueda,
         )
-
-    def obtener_error_busqueda_vehiculos(self):
-        return self.error_busqueda_vehiculos
-
-    def obtener_vehiculos_encontrados(self):
-        return self.vehiculos_encontrados
 
     def formar_ruta_busqueda(self, ubicacion_inicial, ubicacion_final):
         return self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)

@@ -5,11 +5,9 @@ class EstadoVisualPasajero:
         # La vista sigue siendo duena de los widgets; esta clase solo cambia su estado.
         self.vista = vista
 
-    def busqueda_exitosa(self, ubicacion_inicial, ubicacion_final):
+    def busqueda_exitosa(self, ubicacion_inicial, ubicacion_final, vehiculos):
         # Estado posterior a una busqueda valida: guarda datos para tabla, mapa y pago.
-        self.vista.info_vehiculos_busqueda = (
-            self.vista.controlador_pasajero.obtener_vehiculos_encontrados()
-        )
+        self.vista.info_vehiculos_busqueda = list(vehiculos)
         self.vista.ubicacion_inicial_busqueda = ubicacion_inicial
         self.vista.ubicacion_final_busqueda = ubicacion_final
         self.vista.vehiculo_seleccionado = None

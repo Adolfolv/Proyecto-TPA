@@ -2,15 +2,13 @@ from Modelos.Billetera.tarjetas import (
     TarjetaVisa,
     TarjetaMastercard,
     TarjetaAmericanExpress,
-    GeneradorSaldoTarjeta,
 )
 from Validaciones.billetera import (
-    ValidadorSaldoDefinido,
     ValidadorTarjetaEncontrada,
     ValidacionesTarjeta,
 )
 
-from Modelos.Billetera.datos_billetera import Tarjetas
+from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 
 class ServicioTarjeta:
 
@@ -25,6 +23,7 @@ class ServicioTarjeta:
         repositorio_billetera,
         buscador_tarjeta,
         validaciones_tarjeta=None,
+        fabrica_tarjeta=None,
         generador_saldo_tarjeta=None,
     ):
         self.repositorio_billetera = repositorio_billetera
@@ -33,12 +32,8 @@ class ServicioTarjeta:
             validaciones_tarjeta
             or ValidacionesTarjeta(self.TIPOS_TARJETA)
         )
-        self.generador_saldo_tarjeta = (
+        self.fabrica_tarjeta = fabrica_tarjeta or FabricaTarjeta(
             generador_saldo_tarjeta
-            or GeneradorSaldoTarjeta()
-        )
-        self.validador_saldo_definido = (
-            ValidadorSaldoDefinido()
         )
         self.validador_tarjeta_encontrada = ValidadorTarjetaEncontrada()
 
@@ -58,13 +53,7 @@ class ServicioTarjeta:
         billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
         usuario.billetera = billetera
 
-        tarjeta = Tarjetas(
-            titular=titular,
-            numero_tarjeta=numero,
-            vencimiento=vencimiento,
-            cvv=cvv,
-            saldo=None,
-        )
+        tarjeta = self.fabrica_tarjeta.crear(titular, numero, vencimiento, cvv)
 
         self.validaciones_tarjeta.validar(
             titular,
@@ -76,14 +65,7 @@ class ServicioTarjeta:
             cvv,
         )
 
-        if not self.validador_saldo_definido.validar(
-            tarjeta
-        ):
-            tarjeta.saldo = self.generador_saldo_tarjeta.generar()
-
-        billetera.tarjetas.append(
-            tarjeta
-        )
+        billetera.tarjetas.append(tarjeta)
         self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
 
         return True

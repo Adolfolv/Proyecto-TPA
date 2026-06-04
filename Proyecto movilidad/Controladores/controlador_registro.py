@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from Modelos.Usuario.usuario_datos import Pasajero, Conductor, Auto
-
 
 @dataclass
 class ResultadoRegistro:
@@ -29,19 +27,20 @@ class ControladorRegistro:
         confirmar_contrasena,
         direccion,
     ):
-
-        usuario = Pasajero(
-            id_usuario=None,
-            nombre=nombre,
-            apellido=apellido,
-            correo=correo,
-            edad=edad,
-            telefono=telefono,
-            contrasena=contrasena,
-            direccion=direccion,
+        datos = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "correo": correo,
+            "edad": edad,
+            "telefono": telefono,
+            "contrasena": contrasena,
+            "direccion": direccion,
+        }
+        return self._registrar(
+            self.servicio_registro.registrar_pasajero,
+            datos,
+            confirmar_contrasena,
         )
-
-        return self._registrar(usuario, confirmar_contrasena)
 
     def registrar_conductor(
         self,
@@ -62,35 +61,33 @@ class ControladorRegistro:
         cantidad_asientos,
         peso_equipaje,
     ):
-        auto = Auto(
-            marca=marca,
-            modelo=modelo,
-            ano=ano,
-            patente=patente,
-            cantidad_asientos=cantidad_asientos,
-            peso_equipaje=peso_equipaje,
+        datos = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "correo": correo,
+            "edad": edad,
+            "telefono": telefono,
+            "contrasena": contrasena,
+            "tipo_licencia": tipo_licencia,
+            "licencia_conducir": licencia_conducir,
+            "selfie": selfie,
+            "marca": marca,
+            "modelo": modelo,
+            "ano": ano,
+            "patente": patente,
+            "cantidad_asientos": cantidad_asientos,
+            "peso_equipaje": peso_equipaje,
+        }
+        return self._registrar(
+            self.servicio_registro.registrar_conductor,
+            datos,
+            confirmar_contrasena,
         )
 
-        usuario = Conductor(
-            id_usuario=None,
-            nombre= nombre,
-            apellido=apellido,
-            correo=correo,
-            edad=edad,
-            telefono=telefono,
-            contrasena=contrasena,
-            tipo_licencia=tipo_licencia,
-            licencia_conducir=licencia_conducir,
-            selfie=selfie,
-            auto=auto,
-        )
-
-        return self._registrar(usuario, confirmar_contrasena)
-
-    def _registrar(self, usuario, confirmar_contrasena):
+    def _registrar(self, registrar, datos, confirmar_contrasena):
         try:
-            usuario_registrado = self.servicio_registro.registrar_usuario(
-                usuario,
+            usuario_registrado = registrar(
+                datos,
                 confirmar_contrasena,
             )
             return ResultadoRegistro(usuario=usuario_registrado)
