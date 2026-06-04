@@ -1,6 +1,6 @@
 [
     {
-        "saldo": 9200.0,
+        "saldo": 5100.0,
         "tarjetas": [
             {
                 "titular": "adolfo",
@@ -75,12 +75,18 @@
                 "tipo": "Pago",
                 "monto": 4500.0,
                 "fecha": "04-06-2026 15:47"
+            },
+            {
+                "id_transaccion": "TRX0012",
+                "tipo": "Pago",
+                "monto": 4100.0,
+                "fecha": "04-06-2026 16:43"
             }
         ],
         "id_usuario": "USR0001"
     },
     {
-        "saldo": 58408.0,
+        "saldo": 67108.0,
         "tarjetas": [
             {
                 "titular": "adolfo",
@@ -317,6 +323,18 @@
                 "tipo": "Pago recibido",
                 "monto": 3900.0,
                 "fecha": "04-06-2026 15:13"
+            },
+            {
+                "id_transaccion": "TRX0038",
+                "tipo": "Pago recibido",
+                "monto": 4200.0,
+                "fecha": "04-06-2026 16:44"
+            },
+            {
+                "id_transaccion": "TRX0039",
+                "tipo": "Pago recibido",
+                "monto": 4500.0,
+                "fecha": "04-06-2026 16:46"
             }
         ],
         "id_usuario": "USR0002"

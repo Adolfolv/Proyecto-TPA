@@ -74,6 +74,8 @@ class MapaViajeComun:
     def dibujar_trayectoria(self, ruta, color="#1a73e8", limpiar=True):
         if limpiar:
             self.limpiar_trayectorias()
+        if len(ruta) < 2:
+            return
         trayectoria = self.mapa.set_path(ruta, color=color, width=5)
         self.trayectorias.append(trayectoria)
 
@@ -111,35 +113,25 @@ class MapaViajeComun:
         imagen.thumbnail((46, 46))
         return ImageTk.PhotoImage(imagen)
 
-    def animar_ruta(self, marcador, ruta, duracion, al_actualizar_progreso, estado, al_finalizar, indice=0):
-        if not ruta:
-            return
-
+    def animar_trayectos(self, marcadores, rutas, duraciones, estados, al_actualizar_progreso, al_terminar_viaje, tramo=0, indice=0):
+        marcador, ruta, duracion, estado = marcadores[tramo], rutas[tramo], max(1, duraciones[tramo]), estados[tramo]
         progreso = int((indice / max(1, len(ruta) - 1)) * 100)
         al_actualizar_progreso(progreso, estado)
-
         if marcador is not None:
-            latitud, longitud = ruta[indice]
-            marcador.set_position(latitud, longitud)
-
+            marcador.set_position(*ruta[indice])
         if indice >= len(ruta) - 1:
             al_actualizar_progreso(100, estado)
-            if al_finalizar:
-                self.mapa.after(600, al_finalizar)
+            siguiente = (lambda: self.animar_trayectos(marcadores, rutas, duraciones, estados, al_actualizar_progreso, al_terminar_viaje, tramo + 1)) if tramo + 1 < len(rutas) else al_terminar_viaje
+            self.mapa.after(600, siguiente)
             return
-
         intervalo = max(120, int((duracion * 1000) / max(1, len(ruta) - 1)))
-        self.mapa.after(intervalo, lambda: self.animar_ruta(marcador, ruta, duracion, al_actualizar_progreso, estado, al_finalizar, indice + 1))
-
-    def animar_dos_tramos(self, marcador_llegada, marcador_viaje, rutas_viaje, duracion_llegada, duracion_viaje, al_actualizar_progreso, estado_llegada, estado_viaje, al_terminar_viaje):
-        self.animar_ruta(marcador_llegada, rutas_viaje.llegada, max(1, duracion_llegada), al_actualizar_progreso, estado_llegada, lambda: self.animar_ruta(marcador_viaje, rutas_viaje.viaje, max(1, duracion_viaje), al_actualizar_progreso, estado_viaje, al_terminar_viaje))
+        self.mapa.after(intervalo, lambda: self.animar_trayectos(marcadores, rutas, duraciones, estados, al_actualizar_progreso, al_terminar_viaje, tramo, indice + 1))
 
 
 class MapaViajeConductor(MapaViajeComun):
     """Mapa base del conductor: lugares de Osorno y trayecto del pasajero."""
 
-    def pintar_mapa_real(self, lugares=None):
-        lugares = tuple(LUGARES_OSORNO) if lugares is None else lugares
+    def pintar_mapa_real(self, lugares=LUGARES_OSORNO):
         for lugar in lugares:
             if lugar not in self.imagenes_lugares:
                 imagen = Image.open(RUTA_IMAGENES_LUGARES / IMAGENES_LUGARES_OSORNO[lugar])
@@ -161,9 +153,11 @@ class MapaViajeConductor(MapaViajeComun):
         ruta_llegada = rutas_viaje.llegada
         ruta_viaje = rutas_viaje.viaje
         self.imagen_pasajero_viaje = self.obtener_foto(RUTA_IMAGENES_USUARIOS / pasajero.imagen)
+        self.dibujar_trayectoria(ruta_llegada, color="#f59e0b")
+        self.dibujar_trayectoria(ruta_viaje, limpiar=False)
         self.crear_marcadores_extremos(ruta_llegada, ruta_viaje)
         marcador_pasajero = self.crear_marcador_imagen(ruta_llegada[-1], self.imagen_pasajero_viaje)
-        self.animar_dos_tramos(None, marcador_pasajero, rutas_viaje, pasajero.tiempo_para_llegar, pasajero.tiempo_transportando, al_actualizar_progreso, "Llegando al punto de partida", "Transportando pasajero", al_terminar_viaje)
+        self.animar_trayectos((None, marcador_pasajero), (ruta_llegada, ruta_viaje), (pasajero.tiempo_para_llegar, pasajero.tiempo_transportando), ("Llegando al punto de partida", "Transportando pasajero"), al_actualizar_progreso, al_terminar_viaje)
 
 
 class MapaViajePasajero(MapaViajeConductor):
@@ -210,4 +204,4 @@ class MapaViajePasajero(MapaViajeConductor):
         marcador_conductor = self.crear_marcador_imagen(ruta_llegada[0], self.imagen_conductor_viaje)
 
         duracion = vehiculo.tiempo
-        self.animar_dos_tramos(marcador_conductor, marcador_conductor, rutas_viaje, duracion, duracion, al_actualizar_progreso, "Conductor en camino", "Viajando al destino", al_terminar_viaje)
+        self.animar_trayectos((marcador_conductor, marcador_conductor), (ruta_llegada, ruta_viaje), (duracion, duracion), ("Conductor en camino", "Viajando al destino"), al_actualizar_progreso, al_terminar_viaje)
