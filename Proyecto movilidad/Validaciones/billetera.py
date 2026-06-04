@@ -3,6 +3,10 @@ from datetime import date
 from Validaciones.registro import ValidadorNombre
 
 
+def normalizar_numero_tarjeta(numero):
+    return str(numero or "").replace(" ", "").replace("-", "")
+
+
 class ValidadorMontoPositivo(Validador):
     def validar(self, valor):
         try:
@@ -43,9 +47,13 @@ class ValidadorTarjetaNoDuplicada(Validador):
     def validar(self, datos):
         origen, tarjeta = datos
         billetera = getattr(origen, "billetera", origen)
+        numero_tarjeta = normalizar_numero_tarjeta(tarjeta.numero_tarjeta)
 
         for tarjeta_guardada in billetera.tarjetas:
-            if tarjeta_guardada.numero_tarjeta == tarjeta.numero_tarjeta:
+            numero_guardado = normalizar_numero_tarjeta(
+                tarjeta_guardada.numero_tarjeta
+            )
+            if numero_guardado == numero_tarjeta:
                 raise ValueError("La tarjeta ya se encuentra agregada.")
 
         return True
@@ -86,8 +94,12 @@ class ValidadorFechaVencimientoTarjeta(Validador):
 
 class ValidadorNumeroTarjetaVisa(Validador):
     def validar(self, valor):
-        numero = str(valor or "")
-        if not numero.startswith("4") or not 13 <= len(numero) <= 19:
+        numero = normalizar_numero_tarjeta(valor)
+        if (
+            not numero.isdigit()
+            or not numero.startswith("4")
+            or not 13 <= len(numero) <= 19
+        ):
             raise ValueError("Numero de tarjeta Visa invalido.")
 
         return True
@@ -95,7 +107,7 @@ class ValidadorNumeroTarjetaVisa(Validador):
 
 class ValidadorNumeroTarjetaMastercard(Validador):
     def validar(self, valor):
-        numero = str(valor or "")
+        numero = normalizar_numero_tarjeta(valor)
 
         if len(numero) != 16 or not numero.isdigit():
             raise ValueError("Numero de tarjeta Mastercard invalido.")
@@ -110,8 +122,12 @@ class ValidadorNumeroTarjetaMastercard(Validador):
 
 class ValidadorNumeroTarjetaAmericanExpress(Validador):
     def validar(self, valor):
-        numero = str(valor or "")
-        if len(numero) != 15 or not numero.startswith(("34", "37")):
+        numero = normalizar_numero_tarjeta(valor)
+        if (
+            not numero.isdigit()
+            or len(numero) != 15
+            or not numero.startswith(("34", "37"))
+        ):
             raise ValueError("Numero de tarjeta American Express invalido.")
 
         return True

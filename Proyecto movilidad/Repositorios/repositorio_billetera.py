@@ -35,15 +35,17 @@ class RepositorioBilletera:
         guardar_json(self.archivo, datos)
         self.cargado = True
 
-    def obtener(self, usuario):
-        billetera = self.obtener_por_usuario(usuario.id_usuario)
-        usuario.billetera = billetera
-        return billetera
-
-    def obtener_por_usuario(self, id_usuario):
+    def _asegurar_cargado(self):
         if not self.cargado:
             self.cargar()
 
+    def obtener(self, usuario):
+        billetera = self._obtener_por_id(usuario.id_usuario)
+        usuario.billetera = billetera
+        return billetera
+
+    def _obtener_por_id(self, id_usuario):
+        self._asegurar_cargado()
         id_usuario = str(id_usuario)
         billetera = self.billeteras.get(id_usuario)
 
@@ -54,14 +56,8 @@ class RepositorioBilletera:
 
         return billetera
 
-    def guardar_usuario(self, usuario):
-        billetera = usuario.billetera or self.obtener_por_usuario(usuario.id_usuario)
-        self.guardar_por_usuario(usuario.id_usuario, billetera)
-
     def guardar_por_usuario(self, id_usuario, billetera):
-        if not self.cargado:
-            self.cargar()
-
+        self._asegurar_cargado()
         self.billeteras[str(id_usuario)] = billetera
         self.guardar()
 

@@ -1,12 +1,12 @@
 from abstracciones import OperacionBilletera
 from Modelos.Billetera.movimiento import HistorialTransacciones, MoverSaldo, Pago
 
-#.
-class OperacionMovimiento(OperacionBilletera):
-    tipo_transaccion = ""
 
-    def __init__(self, repositorio_billetera, historial=None):
+class OperacionMovimiento(OperacionBilletera):
+
+    def __init__(self, repositorio_billetera, tipo_transaccion, historial=None):
         self.repositorio_billetera = repositorio_billetera
+        self.tipo_transaccion = tipo_transaccion
         self.historial = historial or HistorialTransacciones()
 
     def _completar(self, usuario, billetera, monto):
@@ -15,15 +15,21 @@ class OperacionMovimiento(OperacionBilletera):
         return True
 
     def _obtener_billetera(self, usuario):
-        billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
-        usuario.billetera = billetera
-        return billetera
+        return self.repositorio_billetera.obtener(usuario)
 
-class OperacionPagoBase(OperacionMovimiento):
-    metodo_pago = ""
 
-    def __init__(self, repositorio_billetera, pago=None, historial=None):
-        super().__init__(repositorio_billetera, historial)
+class OperacionPago(OperacionMovimiento):
+
+    def __init__(
+        self,
+        repositorio_billetera,
+        tipo_transaccion,
+        metodo_pago,
+        pago=None,
+        historial=None,
+    ):
+        super().__init__(repositorio_billetera, tipo_transaccion, historial)
+        self.metodo_pago = metodo_pago
         self.pago = pago or Pago()
 
     def ejecutar(self, solicitud):
@@ -32,28 +38,20 @@ class OperacionPagoBase(OperacionMovimiento):
         return self._completar(solicitud.usuario, billetera, solicitud.monto)
 
 
-class OperacionPago(OperacionPagoBase):
-    tipo_transaccion = "Pago"
-    metodo_pago = "pagar"
-
-
-class OperacionPagoRecibido(OperacionPagoBase):
-    tipo_transaccion = "Pago recibido"
-    metodo_pago = "recibir_pago"
-
-
 class OperacionMovimientoTarjeta(OperacionMovimiento):
-    origen_es_billetera = False
 
     def __init__(
         self,
         repositorio_billetera,
         servicio_tarjeta,
+        tipo_transaccion,
+        origen_es_billetera=False,
         mover=None,
         historial=None,
     ):
-        super().__init__(repositorio_billetera, historial)
+        super().__init__(repositorio_billetera, tipo_transaccion, historial)
         self.servicio_tarjeta = servicio_tarjeta
+        self.origen_es_billetera = origen_es_billetera
         self.mover = mover or MoverSaldo()
 
     def ejecutar(self, solicitud):
@@ -69,12 +67,3 @@ class OperacionMovimientoTarjeta(OperacionMovimiento):
         )
         self.mover.mover_saldo(origen, destino, solicitud.monto)
         return self._completar(solicitud.usuario, billetera, solicitud.monto)
-
-
-class OperacionCargaTarjeta(OperacionMovimientoTarjeta):
-    tipo_transaccion = "Carga desde tarjeta"
-
-
-class OperacionRetiroTarjeta(OperacionMovimientoTarjeta):
-    tipo_transaccion = "Retiro a tarjeta"
-    origen_es_billetera = True

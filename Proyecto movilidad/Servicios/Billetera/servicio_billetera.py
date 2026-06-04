@@ -11,9 +11,7 @@ class ServicioBilletera:
         self.operaciones = operaciones
 
     def obtener_billetera(self, usuario):
-        billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
-        usuario.billetera = billetera
-        return billetera
+        return self.repositorio_billetera.obtener(usuario)
 
     def ejecutar(self, nombre_operacion, usuario, monto, numero_tarjeta=None):
         operacion = self.operaciones[nombre_operacion]
