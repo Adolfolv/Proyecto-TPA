@@ -57,7 +57,11 @@ class ServicioViajePasajero:
             ubicacion_inicial,
             ubicacion_final,
         )
-        self.servicio_pagos.cobrar_pasajero(usuario, vehiculo.precio)
+        try:
+            self.servicio_pagos.cobrar_pasajero(usuario, vehiculo.precio)
+        except ValueError as error:
+            return ResultadoViaje(False, error=str(error))
+
         viaje = self.comun.fabrica.crear_viaje_pasajero(vehiculo, usuario)
         self.comun.iniciar_viaje(viaje)
         return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)

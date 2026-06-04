@@ -14,7 +14,15 @@ class ServicioViajeConductor:
         self.servicio_pagos = servicio_pagos or ServicioPagoViaje()
 
     def buscar_pasajeros(self, ubicacion_inicial):
-        pasajero = self.randomizador.choice(PASAJEROS_SIMULADOS)
+        pasajeros = [
+            pasajero
+            for pasajero in PASAJEROS_SIMULADOS
+            if pasajero.ubicacion_inicial == ubicacion_inicial
+        ]
+        if not pasajeros:
+            return None
+
+        pasajero = self.randomizador.choice(pasajeros)
         duracion_busqueda = self.randomizador.randint(5, 10)
         return self.obtener_datos_pasajero(
             pasajero,

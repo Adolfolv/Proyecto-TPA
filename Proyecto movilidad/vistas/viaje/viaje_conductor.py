@@ -96,6 +96,13 @@ class AccionesBotonesConductor:
         # La vista captura la ubicacion; el controlador busca el pasajero.
         vista.ubicacion_inicial_busqueda = vista.selector_ubicacion.get()
         vista.info_pasajero_busqueda = vista.controlador_conductor.buscar_pasajero_conductor(vista.ubicacion_inicial_busqueda)
+        if vista.info_pasajero_busqueda is None:
+            messagebox.showinfo(
+                "Sin pasajeros",
+                "No hay pasajeros esperando en el lugar seleccionado.",
+            )
+            return
+
         vista.estado_visual.buscando_pasajero()
         vista.renderizador.actualizar_cronometro_busqueda()
 
