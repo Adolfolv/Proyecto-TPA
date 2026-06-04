@@ -28,3 +28,4 @@ class SolicitudOperacionBilletera:
     monto: float
     numero_tarjeta: str = None
 
+#.

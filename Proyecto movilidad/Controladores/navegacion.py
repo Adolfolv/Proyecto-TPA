@@ -98,9 +98,9 @@ class RutaBilletera(RutaNavegacion):
         vista = VistaBilletera(
             self.navegacion.ventana,
             self.navegacion.navegar,
-        )
-        self.navegacion.dependencias.controlador_billetera.conectar_vista(
-            vista,
+            self.navegacion.dependencias.controlador_resumen_billetera,
+            self.navegacion.dependencias.controlador_tarjetas,
+            self.navegacion.dependencias.controlador_movimientos_billetera,
             self.navegacion.obtener_usuario_actual(),
         )
 

@@ -1,4 +1,4 @@
-"""Pantalla de inicio de sesion."""
+"""Pantalla de inicio de sesion.."""
 
 import tkinter as tk
 from tkinter import messagebox

@@ -24,8 +24,8 @@ class ControladorRegistro:
         edad,
         telefono,
         contrasena,
-        confirmar_contrasena,
         direccion,
+        confirmar_contrasena
     ):
         datos = {
             "nombre": nombre,
@@ -50,7 +50,6 @@ class ControladorRegistro:
         edad,
         telefono,
         contrasena,
-        confirmar_contrasena,
         tipo_licencia,
         licencia_conducir,
         selfie,
@@ -60,6 +59,7 @@ class ControladorRegistro:
         patente,
         cantidad_asientos,
         peso_equipaje,
+        confirmar_contrasena
     ):
         datos = {
             "nombre": nombre,

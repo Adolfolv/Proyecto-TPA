@@ -3,7 +3,7 @@ from Modelos.Billetera.tarjetas import GeneradorSaldoTarjeta
 
 
 class FabricaTarjeta:
-    """Construye tarjetas nuevas sin modificar los datos recibidos."""
+    """Construye tarjetas nuevas sin modificar los datos recibidos.."""
 
     def __init__(self, generador_saldo=None):
         self.generador_saldo = generador_saldo or GeneradorSaldoTarjeta()

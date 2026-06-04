@@ -1,6 +1,6 @@
 from abstracciones import Buscador
 
-
+#-
 class BuscadorUsuario(Buscador):
 
     def __init__(self, repositorio_usuario):

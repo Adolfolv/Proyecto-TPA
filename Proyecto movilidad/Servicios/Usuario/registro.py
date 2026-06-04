@@ -2,7 +2,7 @@ from Modelos.Usuario.usuario_datos import Conductor
 from Servicios.Usuario.generador_id import GeneradorID
 from Validaciones.registro import ValidacionesUsuario, ValidacionesConductor
 
-
+#.
 
 class ServicioRegistro:
 

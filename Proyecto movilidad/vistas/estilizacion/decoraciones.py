@@ -1,4 +1,4 @@
-"""Decoraciones visuales reutilizables."""
+"""Decoraciones visuales reutilizables.."""
 
 import tkinter as tk
 

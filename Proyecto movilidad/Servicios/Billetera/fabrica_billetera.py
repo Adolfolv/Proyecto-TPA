@@ -2,7 +2,7 @@ from Modelos.Billetera.datos_billetera import Billetera, Tarjetas, Transaccion
 
 
 class FabricaBilletera:
-    """Reconstruye billeteras y sus modelos anidados desde datos persistidos."""
+    """Reconstruye billeteras y sus modelos anidados desde datos persistidos.."""
 
     def crear_desde_dict(self, datos):
         return Billetera(

@@ -2,7 +2,7 @@ from Modelos.Usuario.usuario_datos import Auto, Conductor, Pasajero, Usuario
 
 
 class FabricaUsuario:
-    """Construye usuarios nuevos y reconstruye usuarios persistidos."""
+    """Construye usuarios nuevos y reconstruye usuarios persistidos.."""
 
     def crear_pasajero(self, datos):
         return Pasajero(id_usuario=None, **datos)

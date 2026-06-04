@@ -1,4 +1,4 @@
-# Clase para generar IDs únicos para los usuarios, con un formato específico.
+# Clase para generar IDs únicos para los usuarios, con un formato específico..
 class GeneradorID:
 
     contador = 0

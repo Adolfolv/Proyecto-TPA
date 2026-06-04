@@ -1,4 +1,4 @@
-"""Punto de entrada de la aplicacion.."""
+"""Punto de entrada de la aplicacion..."""
 
 from Controladores.navegacion import Navegacion
 

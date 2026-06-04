@@ -1,5 +1,5 @@
 class ControladorViajeBase:
-    """Operaciones compartidas por los controladores del modulo de viaje."""
+    """Operaciones compartidas por los controladores del modulo de viaje.."""
 
     def __init__(self, servicio_viaje):
         self.servicio_viaje = servicio_viaje

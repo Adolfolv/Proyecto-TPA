@@ -1,4 +1,4 @@
-"""Tema visual comun para las vistas."""
+"""Tema visual comun para las vistas.."""
 
 #colores
 FONDO = "#111827"

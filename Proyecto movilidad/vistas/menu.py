@@ -1,4 +1,4 @@
-"""Pantalla de menu principal visual sin navegacion real."""
+"""Pantalla de menu principal visual sin navegacion real.."""
 
 import tkinter as tk
 

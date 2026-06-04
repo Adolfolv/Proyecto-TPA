@@ -2,7 +2,7 @@ from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
 
 
 class ValidacionesViaje:
-    """Reglas de entrada del formulario de busqueda de viajes."""
+    """Reglas de entrada del formulario de busqueda de viajes.."""
 
     def validar_busqueda_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
         try:

@@ -1,4 +1,4 @@
-"""Pantalla de billetera separada por responsabilidades."""
+"""Pantalla de billetera separada por responsabilidades.."""
 
 import tkinter as tk
 from tkinter import messagebox
@@ -170,30 +170,41 @@ class PanelBilletera:
 
 
 class VistaBilletera(tk.Frame):
-    def __init__(self, master, navegar):
+    def __init__(
+        self,
+        master,
+        navegar,
+        controlador_resumen,
+        controlador_tarjetas,
+        controlador_movimientos,
+        usuario,
+    ):
         self.navegar = navegar
-        self.controlador = None
-        self.usuario = None
+        self.controlador_resumen = controlador_resumen
+        self.controlador_tarjetas = controlador_tarjetas
+        self.controlador_movimientos = controlador_movimientos
+        self.usuario = usuario
         self.moldes = Moldes()
         self.moldes.configurar_selectores(master)
         super().__init__(master, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
         self.crear_widgets()
+        self.actualizar_vista()
 
     def crear_widgets(self):
-        callbacks = {"volver_menu": lambda: self.navegar("menu"), "agregar_tarjeta": self.agregar_tarjeta, "eliminar_tarjeta": self.eliminar_tarjeta, "mover_saldo": self.mover_saldo}
+        callbacks = {
+            "volver_menu": lambda: self.navegar("menu"),
+            "agregar_tarjeta": self.agregar_tarjeta,
+            "eliminar_tarjeta": self.eliminar_tarjeta,
+            "mover_saldo": self.mover_saldo,
+        }
         self.panel = PanelBilletera(self, self.moldes, callbacks)
         self.panel.crear()
-
-    def conectar_controlador(self, controlador, usuario):
-        self.controlador = controlador
-        self.usuario = usuario
-        self.actualizar_vista()
 
     def agregar_tarjeta(self):
         tipo, titular, numero, vencimiento, cvv = self.panel.tarjetas.datos_tarjeta()
         self.ejecutar_accion(
-            lambda: self.controlador.agregar_tarjeta(
+            lambda: self.controlador_tarjetas.agregar_tarjeta(
                 self.usuario,
                 tipo,
                 titular,
@@ -207,14 +218,17 @@ class VistaBilletera(tk.Frame):
     def eliminar_tarjeta(self):
         numero = self.panel.tarjetas.numero_tarjeta_seleccionada()
         self.ejecutar_accion(
-            lambda: self.controlador.eliminar_tarjeta(self.usuario, numero),
+            lambda: self.controlador_tarjetas.eliminar_tarjeta(
+                self.usuario,
+                numero,
+            ),
             "Tarjeta eliminada correctamente.",
         )
 
     def mover_saldo(self):
         numero, direccion, monto = self.panel.movimiento.datos_movimiento()
         self.ejecutar_accion(
-            lambda: self.controlador.mover_saldo(
+            lambda: self.controlador_movimientos.mover_saldo(
                 self.usuario,
                 numero,
                 direccion,
@@ -232,9 +246,9 @@ class VistaBilletera(tk.Frame):
             messagebox.showerror("Billetera", f"Revisa este dato: {error}")
 
     def actualizar_vista(self):
-        if self.usuario is None or self.controlador is None:
+        if self.usuario is None:
             return
-        resumen = self.controlador.obtener_resumen(self.usuario)
+        resumen = self.controlador_resumen.obtener_resumen(self.usuario)
         self.panel.actualizar(
             resumen["saldo_billetera"],
             resumen["tarjetas"],

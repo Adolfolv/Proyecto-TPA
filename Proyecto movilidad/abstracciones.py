@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-#archivo para almacenar clases abstractas.
+#archivo para .almacenar clases abstractas.
 class TarjetaBase(ABC):
     clase_validador_numero = None
     longitud_cvv = 0

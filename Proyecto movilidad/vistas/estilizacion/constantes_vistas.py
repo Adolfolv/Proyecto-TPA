@@ -1,4 +1,4 @@
-"""Constantes compartidas por las vistas."""
+"""Constantes compartidas por las vistas.."""
 
 
 # --- constantes archivo registro.py ---

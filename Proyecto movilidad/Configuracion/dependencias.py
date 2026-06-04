@@ -1,6 +1,10 @@
-"""Construccion de dependencias de la aplicacion."""
+"""Construccion de dependencias de la aplicacion,."""
 
-from Controladores.controlador_billetera import ControladorBilletera
+from Controladores.controlador_billetera import (
+    ControladorMovimientosBilletera,
+    ControladorResumenBilletera,
+    ControladorTarjetas,
+)
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_registro import ControladorRegistro
 from Controladores.controlador_viaje import (
@@ -93,9 +97,14 @@ class DependenciasAplicacion:
         self.controlador_registro = ControladorRegistro(
             self.servicio_registro,
         )
-        self.controlador_billetera = ControladorBilletera(
+        self.controlador_resumen_billetera = ControladorResumenBilletera(
             self.servicio_billetera,
+        )
+        self.controlador_tarjetas = ControladorTarjetas(
             self.servicio_tarjeta,
+        )
+        self.controlador_movimientos_billetera = ControladorMovimientosBilletera(
+            self.servicio_billetera,
         )
         self.controlador_viaje_pasajero = ControladorViajePasajero(
             self.servicio_viaje,

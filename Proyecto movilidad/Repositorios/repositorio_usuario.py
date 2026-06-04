@@ -51,3 +51,4 @@ class RepositorioUsuario:
         datos.pop("billetera", None)
         datos["tipo_usuario"] = getattr(usuario, "tipo_usuario", "usuario")
         return datos
+#.

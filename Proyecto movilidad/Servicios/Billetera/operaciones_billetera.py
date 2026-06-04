@@ -1,7 +1,7 @@
 from abstracciones import OperacionBilletera
 from Modelos.Billetera.movimiento import HistorialTransacciones, MoverSaldo, Pago
 
-
+#.
 class OperacionMovimiento(OperacionBilletera):
     tipo_transaccion = ""
 
