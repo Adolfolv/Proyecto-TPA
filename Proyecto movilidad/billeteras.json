@@ -1,6 +1,6 @@
 [
     {
-        "saldo": 5100.0,
+        "saldo": 1100.0,
         "tarjetas": [
             {
                 "titular": "adolfo",
@@ -81,6 +81,12 @@
                 "tipo": "Pago",
                 "monto": 4100.0,
                 "fecha": "04-06-2026 16:43"
+            },
+            {
+                "id_transaccion": "TRX0013",
+                "tipo": "Pago",
+                "monto": 4000.0,
+                "fecha": "04-06-2026 19:29"
             }
         ],
         "id_usuario": "USR0001"

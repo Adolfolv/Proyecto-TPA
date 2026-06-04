@@ -17,9 +17,6 @@ class VistaViajePasajero:
         self.controlador_pasajero = controlador_pasajero
         self.usuario_actual = usuario_actual
         self.moldes = Moldes()
-        self.info_vehiculos_busqueda = []
-        self.vehiculos_por_item = {}
-        self.vehiculo_seleccionado = None
         # State visual: controla que botones/paneles se muestran segun el flujo.
         self.estado_visual = EstadoVisualPasajero(self)
         # Renderizador: pinta datos en tabla, mapa y labels sin decidir la logica.
@@ -140,6 +137,8 @@ class AccionesBotonesPasajero:
         cantidad_usuarios = vista.entrada_usuarios.get()
         ubicacion_inicial = vista.selector_ubicacion_inicial.get()
         ubicacion_final = vista.selector_ubicacion_final.get()
+        vista.vehiculo_seleccionado = None
+        vista.estado_visual.reiniciar_busqueda()
         resultado = vista.controlador_pasajero.buscar_vehiculos_pasajero(
             cantidad_usuarios,
             ubicacion_inicial,
@@ -147,39 +146,23 @@ class AccionesBotonesPasajero:
         )
 
         if not resultado.exitoso:
-            self.mostrar_busqueda_con_error(resultado.error)
+            vista.renderizador.mostrar_mensaje_error(resultado.error)
+            vista.renderizador.limpiar_tabla_vehiculos()
+            vista.vehiculos_por_item = {}
+            vista.mapa_viaje.limpiar_busqueda()
             return
 
-        # Guarda los datos de la busqueda; el estado visual solo controla widgets.
-        vista.info_vehiculos_busqueda = list(resultado.vehiculos)
+        vista.info_vehiculos_busqueda = resultado.vehiculos
         vista.ubicacion_inicial_busqueda = ubicacion_inicial
         vista.ubicacion_final_busqueda = ubicacion_final
-        vista.vehiculo_seleccionado = None
         vista.renderizador.mostrar_mensaje_error("")
-        vista.estado_visual.busqueda_exitosa()
-        ruta = resultado.ruta_busqueda
-        if ruta is None:
-            self.mostrar_busqueda_con_error(
-                "No se pudo obtener la ruta profesional. Intenta nuevamente."
-            )
-            return
-
-        # Renderiza los datos que ya preparo el controlador.
         vista.vehiculos_por_item = vista.renderizador.mostrar_vehiculos()
         vista.mapa_viaje.mostrar_busqueda_pasajero(
             vista.info_vehiculos_busqueda,
             ubicacion_inicial,
             ubicacion_final,
-            ruta,
+            resultado.ruta_busqueda,
         )
-
-    def mostrar_busqueda_con_error(self, mensaje):
-        vista = self.vista
-        vista.estado_visual.busqueda_con_error()
-        vista.renderizador.mostrar_mensaje_error(mensaje)
-        vista.renderizador.limpiar_tabla_vehiculos()
-        vista.vehiculos_por_item = {}
-        vista.mapa_viaje.limpiar_busqueda()
 
     def presionar_boton_seleccionar_vehiculo(self, _evento=None):
         vista = self.vista
@@ -187,24 +170,14 @@ class AccionesBotonesPasajero:
         if not seleccion:
             return
 
-        vehiculo = vista.vehiculos_por_item.get(seleccion[0])
-        if vehiculo is None:
-            return
-
-        vista.vehiculo_seleccionado = vehiculo
+        vista.vehiculo_seleccionado = vista.vehiculos_por_item[seleccion[0]]
         vista.estado_visual.vehiculo_seleccionado()
 
     def presionar_boton_pagar(self):
-        # Solo muestra la confirmacion; el cobro real ocurre al confirmar.
-        if self.vista.vehiculo_seleccionado is None:
-            return
         self.vista.estado_visual.confirmando_pago()
 
     def presionar_boton_confirmar_pago(self):
         vista = self.vista
-        if vista.vehiculo_seleccionado is None:
-            return
-
         vista.renderizador.mostrar_mensaje_error("")
         # El controlador prepara rutas y cobra; la vista solo muestra el resultado.
         resultado = vista.controlador_pasajero.confirmar_pago_pasajero(
@@ -213,10 +186,6 @@ class AccionesBotonesPasajero:
             vista.ubicacion_inicial_busqueda,
             vista.ubicacion_final_busqueda,
         )
-        if not resultado.exitoso:
-            vista.renderizador.mostrar_mensaje_error(resultado.error)
-            return
-
         # Desde aqui se bloquea la pantalla hasta que termine la animacion.
         vista.renderizador.mostrar_estado_viaje("viaje en proceso")
         vista.estado_visual.viaje_en_proceso()

@@ -5,7 +5,7 @@ class ControladorViajeBase:
         self.servicio_viaje = servicio_viaje
 
     def obtener_lugares_disponibles(self):
-        return self.servicio_viaje.obtener_lugares_disponibles()
+        return self.servicio_viaje.comun.obtener_lugares_disponibles()
 
 
 class ControladorViajePasajero(ControladorViajeBase):

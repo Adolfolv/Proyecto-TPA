@@ -5,13 +5,7 @@ class EstadoVisualPasajero:
         # La vista sigue siendo duena de los widgets; esta clase solo cambia su estado.
         self.vista = vista
 
-    def busqueda_exitosa(self):
-        # Una nueva busqueda oculta acciones que requieren una seleccion anterior.
-        self.vista.frame_confirmacion.grid_remove()
-        self.vista.boton_pagar.grid_remove()
-
-    def busqueda_con_error(self):
-        # Si la busqueda falla, se ocultan acciones que solo sirven con resultados.
+    def reiniciar_busqueda(self):
         self.vista.frame_confirmacion.grid_remove()
         self.vista.boton_pagar.grid_remove()
 
