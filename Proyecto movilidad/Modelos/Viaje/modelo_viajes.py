@@ -97,6 +97,34 @@ class ResultadoBusquedaVehiculos:
     ruta_busqueda: RutaReal | None = None
 
 
+@dataclass(frozen=True)
+class ResultadoBusquedaPasajero:
+    """Respuesta del caso de uso de busqueda del conductor."""
+
+    exitoso: bool
+    error: str = ""
+    pasajero: PasajeroEncontrado | None = None
+    ruta_pasajero: RutaReal | None = None
+
+
+@dataclass(frozen=True)
+class DatosInicioViajePasajero:
+    """Datos necesarios para iniciar un viaje desde el flujo de pasajero."""
+
+    vehiculo: VehiculoDisponible
+    ubicacion_inicial: str
+    ubicacion_final: str
+    usuario: object = None
+
+
+@dataclass(frozen=True)
+class DatosInicioViajeConductor:
+    """Datos necesarios para iniciar un viaje desde el flujo de conductor."""
+
+    pasajero: PasajeroEncontrado
+    conductor: object = None
+
+
 @dataclass
 class Viaje:
     """Registro de un viaje creado durante el flujo actual."""

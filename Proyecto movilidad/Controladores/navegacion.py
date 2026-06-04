@@ -3,12 +3,12 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
-from Vistas.billetera import VistaBilletera
-from Vistas.inicio_sesion import VistaInicioSesion
-from Vistas.menu import VistaMenu
-from Vistas.pantalla_inicial import VistaPantallaInicial
-from Vistas.registro import VistaRegistro
-from Vistas.viaje import VistaViaje
+from vistas.billetera import VistaBilletera
+from vistas.inicio_sesion import VistaInicioSesion
+from vistas.menu import VistaMenu
+from vistas.pantalla_inicial import VistaPantallaInicial
+from vistas.registro import VistaRegistro
+from vistas.viaje import VistaViaje
 from abstracciones import NavegadorAbstracto, RutaNavegacion
 
 class Navegacion:
@@ -104,7 +104,8 @@ class RutaBilletera(RutaNavegacion):
             self.navegacion.obtener_usuario_actual(),
         )
 
-
+#1, se manda a vistaviaje(archivo init de viajes los datos necesarios
+#para cumplir sus funcionalidades 
 class RutaViaje(RutaNavegacion):
     destino = "viaje"
 

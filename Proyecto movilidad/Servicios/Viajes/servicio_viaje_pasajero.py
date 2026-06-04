@@ -1,8 +1,10 @@
 from random import Random
 
-from Modelos.Viaje.modelo_viajes import ResultadoBusquedaVehiculos, ResultadoViaje, RutasViaje
+from Modelos.Viaje.modelo_viajes import (
+    DatosInicioViajePasajero,
+    ResultadoBusquedaVehiculos,
+)
 from Servicios.Viajes.datos_viaje import CALLES_OSORNO, CONDUCTORES_SIMULADOS
-from Servicios.Viajes.servicios_compartidos import ServicioPagoViaje
 from Validaciones.validaciones_viaje import ValidacionesViaje
 
 
@@ -14,12 +16,14 @@ class ServicioViajePasajero:
         servicio_comun,
         validaciones=None,
         randomizador=None,
-        servicio_pagos=None,
+        inicio_viaje=None,
     ):
         self.comun = servicio_comun
         self.validaciones = validaciones or ValidacionesViaje()
         self.randomizador = randomizador or Random()
-        self.servicio_pagos = servicio_pagos or ServicioPagoViaje()
+        if inicio_viaje is None:
+            raise ValueError("ServicioViajePasajero requiere inicio_viaje.")
+        self.inicio_viaje = inicio_viaje
 
     def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
         valido, error = self.validaciones.validar_busqueda_vehiculos(
@@ -40,31 +44,26 @@ class ServicioViajePasajero:
             ruta_busqueda=ruta_busqueda,
         )
 
+
     def formar_ruta_busqueda(self, ubicacion_inicial, ubicacion_final):
         return self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)
 
     def formar_rutas_inicio_viaje(self, vehiculo, ubicacion_inicial, ubicacion_final):
-        ruta_llegada = self.comun.formar_trayectoria_por_puntos(
-            vehiculo.ubicacion_relativa,
-            self.comun.obtener_punto_lugar(ubicacion_inicial),
+        datos = DatosInicioViajePasajero(
+            vehiculo=vehiculo,
+            ubicacion_inicial=ubicacion_inicial,
+            ubicacion_final=ubicacion_final,
         )
-        ruta_viaje = self.comun.formar_trayectoria(ubicacion_inicial, ubicacion_final)
-        return RutasViaje(llegada=ruta_llegada, viaje=ruta_viaje)
+        return self.inicio_viaje.formar_rutas(datos)
 
     def confirmar_viaje(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final):
-        rutas_viaje = self.formar_rutas_inicio_viaje(
-            vehiculo,
-            ubicacion_inicial,
-            ubicacion_final,
+        datos = DatosInicioViajePasajero(
+            vehiculo=vehiculo,
+            ubicacion_inicial=ubicacion_inicial,
+            ubicacion_final=ubicacion_final,
+            usuario=usuario,
         )
-        try:
-            self.servicio_pagos.cobrar_pasajero(usuario, vehiculo.precio)
-        except ValueError as error:
-            return ResultadoViaje(False, error=str(error))
-
-        viaje = self.comun.fabrica.crear_viaje_pasajero(vehiculo, usuario)
-        self.comun.iniciar_viaje(viaje)
-        return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)
+        return self.inicio_viaje.iniciar(datos)
 
     def obtener_vehiculos_disponibles(self, ubicacion_inicial):
         vehiculos = []

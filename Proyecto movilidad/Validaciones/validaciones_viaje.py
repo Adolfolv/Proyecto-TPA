@@ -16,12 +16,6 @@ class ValidacionesViaje:
         if cantidad > 4:
             return False, "La cantidad maxima de usuarios es 4."
 
-        if ubicacion_inicial not in LUGARES_OSORNO:
-            return False, "La ubicacion inicial no esta disponible."
-
-        if ubicacion_final not in LUGARES_OSORNO:
-            return False, "La ubicacion final no esta disponible."
-
         if ubicacion_inicial == ubicacion_final:
             return False, "La ubicacion inicial y final deben ser distintas."
 

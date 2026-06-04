@@ -1,15 +1,11 @@
-from pathlib import Path
 from tkinter import ttk
 
 from ..estilizacion import tema
 from ..estilizacion.widgets import Moldes
-from .animacion_viaje import AnimacionViaje
 from .estado_visual_pasajero import EstadoVisualPasajero
-from .mapa_viaje import MapaViaje
+from .mapa_viaje import MapaViajePasajero
 from .renderizador_pasajero import RenderizadorPasajero
 
-
-RUTA_IMAGENES_CONDUCTORES = Path(__file__).resolve().parent.parent / "estilizacion" / "Imagenes" / "imagenes_conductores"
 
 class VistaViajePasajero:
     """Vista principal del flujo de pasajero."""
@@ -20,13 +16,10 @@ class VistaViajePasajero:
         self.comando_volver_menu = comando_volver_menu
         self.controlador_pasajero = controlador_pasajero
         self.usuario_actual = usuario_actual
-        self.animacion_viaje = AnimacionViaje()
         self.moldes = Moldes()
         self.info_vehiculos_busqueda = []
         self.vehiculos_por_item = {}
         self.vehiculo_seleccionado = None
-        self.viaje_en_proceso = False
-        self.mapa_viaje = None
         # State visual: controla que botones/paneles se muestran segun el flujo.
         self.estado_visual = EstadoVisualPasajero(self)
         # Renderizador: pinta datos en tabla, mapa y labels sin decidir la logica.
@@ -42,6 +35,7 @@ class VistaViajePasajero:
         FrameDerechoPasajero(self).crear(contenedor)
 
     def finalizar_viaje(self):
+        self.renderizador.mostrar_estado_viaje("viaje finalizado")
         self.estado_visual.viaje_finalizado()
         
 class FrameIzquierdoPasajero:
@@ -130,7 +124,7 @@ class FrameDerechoPasajero:
         self.vista = vista
 
     def crear(self, padre):
-        self.vista.mapa_viaje = MapaViaje(padre, self.vista.moldes)
+        self.vista.mapa_viaje = MapaViajePasajero(padre, self.vista.moldes)
         self.vista.mapa_viaje.crear(False)
 
 
@@ -153,29 +147,39 @@ class AccionesBotonesPasajero:
         )
 
         if not resultado.exitoso:
-            # El controlador valida; la vista solo muestra el estado visual de error.
-            vista.estado_visual.busqueda_con_error()
-            vista.renderizador.mostrar_error_busqueda(resultado.error)
+            self.mostrar_busqueda_con_error(resultado.error)
             return
 
-        # Guarda estado de busqueda antes de pintar tabla y mapa.
-        vista.estado_visual.busqueda_exitosa(
-            ubicacion_inicial,
-            ubicacion_final,
-            resultado.vehiculos,
-        )
+        # Guarda los datos de la busqueda; el estado visual solo controla widgets.
+        vista.info_vehiculos_busqueda = list(resultado.vehiculos)
+        vista.ubicacion_inicial_busqueda = ubicacion_inicial
+        vista.ubicacion_final_busqueda = ubicacion_final
+        vista.vehiculo_seleccionado = None
+        vista.renderizador.mostrar_mensaje_error("")
+        vista.estado_visual.busqueda_exitosa()
         ruta = resultado.ruta_busqueda
         if ruta is None:
-            vista.estado_visual.busqueda_con_error()
-            vista.renderizador.mostrar_error_busqueda(
+            self.mostrar_busqueda_con_error(
                 "No se pudo obtener la ruta profesional. Intenta nuevamente."
             )
             return
 
         # Renderiza los datos que ya preparo el controlador.
-        vista.renderizador.mostrar_vehiculos()
-        vista.renderizador.dibujar_trayecto_en_mapa(ruta)
-        vista.renderizador.mostrar_conductores_en_mapa()
+        vista.vehiculos_por_item = vista.renderizador.mostrar_vehiculos()
+        vista.mapa_viaje.mostrar_busqueda_pasajero(
+            vista.info_vehiculos_busqueda,
+            ubicacion_inicial,
+            ubicacion_final,
+            ruta,
+        )
+
+    def mostrar_busqueda_con_error(self, mensaje):
+        vista = self.vista
+        vista.estado_visual.busqueda_con_error()
+        vista.renderizador.mostrar_mensaje_error(mensaje)
+        vista.renderizador.limpiar_tabla_vehiculos()
+        vista.vehiculos_por_item = {}
+        vista.mapa_viaje.limpiar_busqueda()
 
     def presionar_boton_seleccionar_vehiculo(self, _evento=None):
         vista = self.vista
@@ -187,7 +191,8 @@ class AccionesBotonesPasajero:
         if vehiculo is None:
             return
 
-        vista.estado_visual.vehiculo_seleccionado(vehiculo)
+        vista.vehiculo_seleccionado = vehiculo
+        vista.estado_visual.vehiculo_seleccionado()
 
     def presionar_boton_pagar(self):
         # Solo muestra la confirmacion; el cobro real ocurre al confirmar.
@@ -197,10 +202,10 @@ class AccionesBotonesPasajero:
 
     def presionar_boton_confirmar_pago(self):
         vista = self.vista
-        if vista.viaje_en_proceso or vista.vehiculo_seleccionado is None:
+        if vista.vehiculo_seleccionado is None:
             return
 
-        vista.renderizador.mostrar_error_viaje("")
+        vista.renderizador.mostrar_mensaje_error("")
         # El controlador prepara rutas y cobra; la vista solo muestra el resultado.
         resultado = vista.controlador_pasajero.confirmar_pago_pasajero(
             vista.usuario_actual,
@@ -209,10 +214,11 @@ class AccionesBotonesPasajero:
             vista.ubicacion_final_busqueda,
         )
         if not resultado.exitoso:
-            vista.renderizador.mostrar_error_viaje(resultado.error)
+            vista.renderizador.mostrar_mensaje_error(resultado.error)
             return
 
         # Desde aqui se bloquea la pantalla hasta que termine la animacion.
+        vista.renderizador.mostrar_estado_viaje("viaje en proceso")
         vista.estado_visual.viaje_en_proceso()
         self.iniciar_animacion_viaje(resultado.rutas_viaje)
 
@@ -221,7 +227,10 @@ class AccionesBotonesPasajero:
 
     def iniciar_animacion_viaje(self, rutas_viaje):
         vista = self.vista
-        # La animacion recibe rutas ya calculadas; la vista solo prepara el mapa.
-        vista.mapa_viaje.limpiar_lugares()
-        vista.mapa_viaje.limpiar_trayectorias()
-        vista.animacion_viaje.animacion_viaje_pasajero(vista.mapa_viaje.mapa, vista.mapa_viaje.marcadores_conductores, RUTA_IMAGENES_CONDUCTORES, vista.vehiculo_seleccionado, rutas_viaje, vista.barra_progreso, vista.label_estado_progreso, vista.label_porcentaje_progreso, vista.finalizar_viaje)
+        # La animacion recibe rutas ya calculadas; el mapa se encarga de pintarlas.
+        vista.mapa_viaje.animar_viaje_pasajero(
+            vista.vehiculo_seleccionado,
+            rutas_viaje,
+            vista.renderizador.actualizar_progreso_viaje,
+            vista.finalizar_viaje,
+        )

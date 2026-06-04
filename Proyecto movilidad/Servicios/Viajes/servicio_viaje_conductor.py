@@ -1,33 +1,41 @@
 from random import Random
 
-from Modelos.Viaje.modelo_viajes import PasajeroSimulado, ResultadoViaje, RutasViaje
+from Modelos.Viaje.modelo_viajes import (
+    DatosInicioViajeConductor,
+    PasajeroSimulado,
+    ResultadoBusquedaPasajero,
+)
 from Servicios.Viajes.datos_viaje import PASAJEROS_SIMULADOS
-from Servicios.Viajes.servicios_compartidos import ServicioPagoViaje
 
 
 class ServicioViajeConductor:
     """Caso de uso donde un conductor busca y acepta un pasajero."""
 
-    def __init__(self, servicio_comun, randomizador=None, servicio_pagos=None):
+    def __init__(
+        self,
+        servicio_comun,
+        randomizador=None,
+        inicio_viaje=None,
+    ):
         self.comun = servicio_comun
         self.randomizador = randomizador or Random()
-        self.servicio_pagos = servicio_pagos or ServicioPagoViaje()
+        if inicio_viaje is None:
+            raise ValueError("ServicioViajeConductor requiere inicio_viaje.")
+        self.inicio_viaje = inicio_viaje
 
-    def buscar_pasajeros(self, ubicacion_inicial):
-        pasajeros = [
-            pasajero
-            for pasajero in PASAJEROS_SIMULADOS
-            if pasajero.ubicacion_inicial == ubicacion_inicial
-        ]
-        if not pasajeros:
-            return None
-
+    def buscar_pasajeros(self, ubicacion_conductor):
+        pasajeros = tuple(PASAJEROS_SIMULADOS)
         pasajero = self.randomizador.choice(pasajeros)
         duracion_busqueda = self.randomizador.randint(5, 10)
-        return self.obtener_datos_pasajero(
+        pasajero_encontrado = self.obtener_datos_pasajero(
             pasajero,
-            ubicacion_inicial,
+            ubicacion_conductor,
             duracion_busqueda,
+        )
+        return ResultadoBusquedaPasajero(
+            True,
+            pasajero=pasajero_encontrado,
+            ruta_pasajero=self.formar_ruta_pasajero(pasajero_encontrado),
         )
 
     def obtener_datos_pasajero(
@@ -50,16 +58,8 @@ class ServicioViajeConductor:
         )
 
     def formar_rutas_inicio_viaje(self, pasajero):
-        return RutasViaje(
-            llegada=self.comun.formar_trayectoria(
-                pasajero.ubicacion_conductor,
-                pasajero.ubicacion_inicial,
-            ),
-            viaje=self.comun.formar_trayectoria(
-                pasajero.ubicacion_inicial,
-                pasajero.ubicacion_final,
-            ),
-        )
+        datos = DatosInicioViajeConductor(pasajero=pasajero)
+        return self.inicio_viaje.formar_rutas(datos)
 
     def formar_ruta_pasajero(self, pasajero):
         return self.comun.formar_trayectoria(
@@ -68,11 +68,8 @@ class ServicioViajeConductor:
         )
 
     def iniciar_viaje(self, pasajero, conductor):
-        rutas_viaje = self.formar_rutas_inicio_viaje(pasajero)
-        viaje = self.comun.fabrica.crear_viaje_conductor(pasajero, conductor)
-        self.servicio_pagos.abonar_conductor(conductor, viaje.precio)
-        self.comun.iniciar_viaje(viaje)
-        return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)
+        datos = DatosInicioViajeConductor(pasajero=pasajero, conductor=conductor)
+        return self.inicio_viaje.iniciar(datos)
 
     def calcular_km_viaje(self, ubicacion_conductor, pasajero):
         ruta_llegada = self.comun.trayectoria.calcular_trayectoria(

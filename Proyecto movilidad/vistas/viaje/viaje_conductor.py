@@ -1,11 +1,11 @@
 from pathlib import Path
+import tkinter as tk
 from tkinter import messagebox, ttk
 
 from ..estilizacion import tema
 from ..estilizacion.widgets import Moldes
-from .animacion_viaje import AnimacionViaje
 from .estado_visual_conductor import EstadoVisualConductor
-from .mapa_viaje import MapaViaje
+from .mapa_viaje import MapaViajeConductor
 from .renderizador_conductor import RenderizadorConductor
 
 
@@ -53,6 +53,17 @@ class FrameIzquierdoConductor:
 
     def crear_panel_pasajero(self):
         self.vista.frame_pasajero = self.moldes.crear_frame(self.vista.frame, tema.PANEL_SUAVE, tema.BORDE, 1, fila=6, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 0), (1, 1)))
+        self.vista.label_imagen_pasajero = tk.Label(
+            self.vista.frame_pasajero,
+            bg=tema.PANEL_SUAVE,
+        )
+        self.vista.label_imagen_pasajero.grid(row=0, column=0, rowspan=4, sticky="nw", padx=10, pady=10)
+        self.vista.label_nombre_pasajero = self.moldes.crear_label(self.vista.frame_pasajero, "", ("Arial", 12, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=1, sticky="w", margen_x=8, margen_y=(10, 2))
+        self.vista.label_trayecto_pasajero = self.moldes.crear_label(self.vista.frame_pasajero, "", ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, 300, "left", metodo="grid", fila=1, columna=1, sticky="w", margen_x=8)
+        self.vista.label_vehiculo_pasajero = self.moldes.crear_label(self.vista.frame_pasajero, "", ("Arial", 9), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=1, sticky="w", margen_x=8)
+        self.vista.label_pago_pasajero = self.moldes.crear_label(self.vista.frame_pasajero, "", ("Arial", 9, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=1, sticky="w", margen_x=8, margen_y=(0, 10))
+        self.vista.label_llegada_pasajero = self.moldes.crear_label(self.vista.frame_pasajero, "", ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=4, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 2))
+        self.vista.label_traslado_pasajero = self.moldes.crear_label(self.vista.frame_pasajero, "", ("Arial", 9), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=5, columna=0, columnas=2, sticky="w", margen_x=10, margen_y=(0, 10))
         self.vista.frame_pasajero.grid_remove()
 
     def crear_confirmacion(self):
@@ -81,7 +92,7 @@ class FrameDerechoConductor:
         self.vista = vista
 
     def crear(self, padre):
-        self.vista.mapa_viaje = MapaViaje(padre, self.vista.moldes)
+        self.vista.mapa_viaje = MapaViajeConductor(padre, self.vista.moldes)
         self.vista.mapa_viaje.crear()
 
 
@@ -93,24 +104,28 @@ class AccionesBotonesConductor:
 
     def presionar_boton_buscar_pasajero(self):
         vista = self.vista
-        # La vista captura la ubicacion; el controlador busca el pasajero.
-        vista.ubicacion_inicial_busqueda = vista.selector_ubicacion.get()
-        vista.info_pasajero_busqueda = vista.controlador_conductor.buscar_pasajero_conductor(vista.ubicacion_inicial_busqueda)
-        if vista.info_pasajero_busqueda is None:
-            messagebox.showinfo(
-                "Sin pasajeros",
-                "No hay pasajeros esperando en el lugar seleccionado.",
-            )
-            return
-
+        # La vista captura la ubicacion del conductor; el controlador busca un pasajero.
+        ubicacion_conductor = vista.selector_ubicacion.get()
+        resultado = vista.controlador_conductor.buscar_pasajero_conductor(
+            ubicacion_conductor
+        )
+        vista.ubicacion_conductor_busqueda = ubicacion_conductor
+        vista.info_pasajero_busqueda = resultado.pasajero
+        ruta_pasajero = resultado.ruta_pasajero
         vista.estado_visual.buscando_pasajero()
-        vista.renderizador.actualizar_cronometro_busqueda()
+        vista.renderizador.actualizar_cronometro_busqueda(
+            lambda: self.finalizar_busqueda_pasajero(ruta_pasajero)
+        )
+    #5 segundos despues(al finalizar el cronometro despues de 
+    # presionar el boton buscar pasajero)
+    def finalizar_busqueda_pasajero(self, ruta_pasajero):
+        self.vista.renderizador.mostrar_pasajero_encontrado()
+        self.vista.mapa_viaje.dibujar_trayectoria(ruta_pasajero)
+        self.vista.estado_visual.pasajero_encontrado()
 
     def presionar_boton_confirmar_viaje(self):
         vista = self.vista
-        if vista.viaje_en_proceso:
-            return
-
+        vista.renderizador.mostrar_estado_viaje("viaje en proceso")
         vista.estado_visual.viaje_en_proceso()
         resultado = vista.controlador_conductor.iniciar_viaje_conductor(
             vista.info_pasajero_busqueda,
@@ -129,9 +144,14 @@ class AccionesBotonesConductor:
 
     def iniciar_animacion_viaje(self, rutas_viaje):
         vista = self.vista
-        vista.animacion_viaje.animacion_viaje_conductor(vista.mapa_viaje.mapa, vista.mapa_viaje.marcadores_lugares, RUTA_IMAGENES_USUARIOS, vista.info_pasajero_busqueda, rutas_viaje, vista.barra_progreso, vista.label_estado_progreso, vista.label_porcentaje_progreso, vista.finalizar_viaje)
+        vista.mapa_viaje.animar_viaje_conductor(
+            vista.info_pasajero_busqueda,
+            rutas_viaje,
+            vista.renderizador.actualizar_progreso_viaje,
+            vista.finalizar_viaje,
+        )
 
-
+#2, se crean los widgets necesarios
 class VistaViajeConductor:
     """Vista principal del flujo de conductor."""
 
@@ -141,10 +161,7 @@ class VistaViajeConductor:
         self.comando_volver_menu = comando_volver_menu
         self.controlador_conductor = controlador_conductor
         self.usuario_actual = usuario_actual
-        self.animacion_viaje = AnimacionViaje()
         self.moldes = Moldes()
-        self.viaje_en_proceso = False
-        self.mapa_viaje = None
         self.ruta_imagenes_usuarios = RUTA_IMAGENES_USUARIOS
         # State visual: controla botones/paneles durante busqueda, confirmacion y viaje.
         self.estado_visual = EstadoVisualConductor(self)
@@ -161,4 +178,5 @@ class VistaViajeConductor:
         FrameDerechoConductor(self).crear(contenedor)
 
     def finalizar_viaje(self):
+        self.renderizador.mostrar_estado_viaje("viaje finalizado")
         self.estado_visual.viaje_finalizado()

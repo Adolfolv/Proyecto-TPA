@@ -30,11 +30,8 @@ class ControladorViajePasajero(ControladorViajeBase):
 class ControladorViajeConductor(ControladorViajeBase):
     """Controlador del flujo donde el conductor acepta un viaje."""
 
-    def buscar_pasajero_conductor(self, ubicacion_inicial):
-        return self.servicio_viaje.buscar_pasajeros(ubicacion_inicial)
-
-    def formar_ruta_pasajero_conductor(self, pasajero):
-        return self.servicio_viaje.formar_ruta_pasajero_conductor(pasajero)
+    def buscar_pasajero_conductor(self, ubicacion_conductor):
+        return self.servicio_viaje.buscar_pasajeros(ubicacion_conductor)
 
     def iniciar_viaje_conductor(self, pasajero, conductor):
         return self.servicio_viaje.iniciar_viaje_conductor(pasajero, conductor)
