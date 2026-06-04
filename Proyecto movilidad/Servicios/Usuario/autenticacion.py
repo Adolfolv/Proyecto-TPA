@@ -15,7 +15,6 @@ class ServicioAutenticacion:
         self.buscador_usuario_por_correo = BuscadorUsuarioPorCorreo(repositorio_usuario)
 
     def iniciar_sesion(self, correo, contrasena):
-        self.repositorio_usuario.cargar()
         usuario = self.buscador_usuario_por_correo.buscar(correo)
 
         if not self.validador_usuario_encontrado.validar(usuario):

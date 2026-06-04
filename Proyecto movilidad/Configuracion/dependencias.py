@@ -14,10 +14,8 @@ from Controladores.controlador_viaje import (
 from Repositorios.repositorio_billetera import RepositorioBilletera
 from Repositorios.repositorio_usuario import RepositorioUsuario
 from Servicios.Billetera.operaciones_billetera import (
-    OperacionCargaTarjeta,
     OperacionPago,
-    OperacionPagoRecibido,
-    OperacionRetiroTarjeta,
+    OperacionMovimientoTarjeta,
 )
 from Servicios.Billetera.fabrica_billetera import FabricaBilletera
 from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
@@ -71,15 +69,26 @@ class DependenciasAplicacion:
             fabrica_tarjeta=self.fabrica_tarjeta,
         )
         self.operaciones_billetera = {
-            "pagar": OperacionPago(self.repositorio_billetera),
-            "recibir": OperacionPagoRecibido(self.repositorio_billetera),
-            "cargar": OperacionCargaTarjeta(
+            "pagar": OperacionPago(
                 self.repositorio_billetera,
-                self.servicio_tarjeta,
+                "Pago",
+                "pagar",
             ),
-            "retirar": OperacionRetiroTarjeta(
+            "recibir": OperacionPago(
+                self.repositorio_billetera,
+                "Pago recibido",
+                "recibir_pago",
+            ),
+            "cargar": OperacionMovimientoTarjeta(
                 self.repositorio_billetera,
                 self.servicio_tarjeta,
+                "Carga desde tarjeta",
+            ),
+            "retirar": OperacionMovimientoTarjeta(
+                self.repositorio_billetera,
+                self.servicio_tarjeta,
+                "Retiro a tarjeta",
+                origen_es_billetera=True,
             ),
         }
         self.servicio_billetera = ServicioBilletera(
