@@ -25,6 +25,12 @@ class ControladorBilletera:
     def retirar_a_tarjeta(self, usuario, numero_tarjeta, monto):
         return self.servicio_billetera.retirar_a_tarjeta(usuario, numero_tarjeta, float(monto))
 
+    def mover_saldo(self, usuario, numero_tarjeta, direccion, monto):
+        if direccion == "Tarjeta a billetera":
+            return self.cargar_desde_tarjeta(usuario, numero_tarjeta, monto)
+
+        return self.retirar_a_tarjeta(usuario, numero_tarjeta, monto)
+
     def listar_tarjetas(self, usuario):
         return self.servicio_tarjeta.obtener_tarjetas(usuario)
 

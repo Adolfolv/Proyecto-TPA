@@ -65,7 +65,7 @@ class ControladorRegistro:
         auto = Auto(
             marca=marca,
             modelo=modelo,
-            año=ano,
+            ano=ano,
             patente=patente,
             cantidad_asientos=cantidad_asientos,
             peso_equipaje=peso_equipaje,

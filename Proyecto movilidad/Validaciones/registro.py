@@ -173,7 +173,7 @@ class ValidadorCorreoUnico(Validador):
         self.buscador_usuarios = buscador_usuarios
 
     def validar(self, valor):
-        if self.buscador_usuarios.buscar_por_correo(valor) is not None:
+        if self.buscador_usuarios.buscar(valor) is not None:
             raise ValueError("El correo ya se encuentra registrado.")
 
         return True
@@ -208,6 +208,7 @@ class ValidacionesUsuario:
         self.validador_correo_unico = ValidadorCorreoUnico(buscador_usuarios)
         self.validador_contrasena = ValidadorContrasena()
         self.validador_confirmacion = ValidadorConfirmacionContrasena()
+        self.validador_campo_obligatorio = ValidadorSelfie()
 
     def validar(self, usuario, confirmar_contrasena=None):
 
@@ -219,6 +220,12 @@ class ValidacionesUsuario:
         self.validador_correo_unico.validar(usuario.correo)
 
         self.validador_contrasena.validar(usuario.contrasena)
+
+        if hasattr(usuario, "direccion"):
+            try:
+                self.validador_campo_obligatorio.validar(usuario.direccion)
+            except ValueError:
+                raise ValueError("La direccion es obligatoria.")
 
         if confirmar_contrasena is not None:
             self.validador_confirmacion.validar(

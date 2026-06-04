@@ -12,7 +12,11 @@ from Repositorios.repositorio_usuario import RepositorioUsuario
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Billetera.servicio_tarjetas import ServicioTarjeta
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
-from Servicios.Usuario.buscador import BuscadorTarjeta, BuscadorUsuario
+from Servicios.Usuario.buscador import (
+    BuscadorTarjeta,
+    BuscadorUsuario,
+    BuscadorUsuarioPorCorreo,
+)
 from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 
@@ -28,6 +32,9 @@ class DependenciasAplicacion:
 
         # Buscadores compartidos por servicios de usuario y billetera.
         self.buscador_usuario = BuscadorUsuario(self.repositorio_usuario)
+        self.buscador_usuario_por_correo = BuscadorUsuarioPorCorreo(
+            self.repositorio_usuario
+        )
         self.buscador_tarjeta = BuscadorTarjeta()
 
         # Servicios: contienen la logica de negocio y dependen de repositorios.
@@ -37,7 +44,7 @@ class DependenciasAplicacion:
         )
         self.servicio_registro = ServicioRegistro(
             self.repositorio_usuario,
-            self.buscador_usuario,
+            self.buscador_usuario_por_correo,
         )
         self.servicio_tarjeta = ServicioTarjeta(
             self.repositorio_billetera,

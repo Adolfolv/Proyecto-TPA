@@ -62,7 +62,7 @@ class PanelTarjetasBilletera:
         self.moldes.crear_label(tarjeta, "CVV", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=5, columna=0, sticky="w", margen_x=4, margen_y=(0, 4))
         self.entrada_cvv = self.moldes.crear_entrada(tarjeta, metodo="grid", fila=6, columna=0, sticky="ew", margen_x=4, margen_y=(0, 10), ipady=4)
         acciones_tarjeta = self.moldes.crear_frame(tarjeta, tema.PANEL_SUAVE, fila=7, columna=0, columnas=2, sticky="w", margen_y=(0, 8))
-        self.moldes.crear_boton(acciones_tarjeta, "Anadir tarjeta", True, None, self.callbacks["agregar_tarjeta"], lado="left", margen_x=(0, 6))
+        self.moldes.crear_boton(acciones_tarjeta, "Añadir tarjeta", True, None, self.callbacks["agregar_tarjeta"], lado="left", margen_x=(0, 6))
         self.moldes.crear_boton(acciones_tarjeta, "Eliminar tarjeta", False, None, self.callbacks["eliminar_tarjeta"], lado="left")
         self.label_cantidad_tarjetas = self.moldes.crear_label(tarjeta, "Tarjetas agregadas: 0", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=8, columna=0, columnas=2, sticky="w", margen_y=(0, 6))
         self.lista_tarjetas = tk.Listbox(tarjeta, height=8, activestyle="none", relief="solid", bd=1, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO)
@@ -169,36 +169,6 @@ class PanelBilletera:
         self.movimiento.actualizar_historial(transacciones)
 
 
-class FlujoBilletera:
-    def __init__(self, vista, panel):
-        self.vista = vista
-        self.panel = panel
-
-    def agregar_tarjeta(self):
-        tipo, titular, numero, vencimiento, cvv = self.panel.tarjetas.datos_tarjeta()
-        self.ejecutar_accion(lambda: self.vista.controlador.agregar_tarjeta(self.vista.usuario, tipo, titular, numero, vencimiento, cvv), "Tarjeta agregada correctamente.")
-
-    def eliminar_tarjeta(self):
-        numero = self.panel.tarjetas.numero_tarjeta_seleccionada()
-        self.ejecutar_accion(lambda: self.vista.controlador.eliminar_tarjeta(self.vista.usuario, numero), "Tarjeta eliminada correctamente.")
-
-    def mover_saldo(self):
-        numero, direccion, monto = self.panel.movimiento.datos_movimiento()
-        if direccion == "Tarjeta a billetera":
-            accion = lambda: self.vista.controlador.cargar_desde_tarjeta(self.vista.usuario, numero, monto)
-        else:
-            accion = lambda: self.vista.controlador.retirar_a_tarjeta(self.vista.usuario, numero, monto)
-        self.ejecutar_accion(accion, "Saldo movido correctamente.")
-
-    def ejecutar_accion(self, accion, mensaje_exito):
-        try:
-            accion()
-            self.vista.actualizar_vista()
-            messagebox.showinfo("Billetera", mensaje_exito)
-        except ValueError as error:
-            messagebox.showerror("Billetera", f"Revisa este dato: {error}")
-
-
 class VistaBilletera(tk.Frame):
     def __init__(self, master, navegar):
         self.navegar = navegar
@@ -214,7 +184,6 @@ class VistaBilletera(tk.Frame):
         callbacks = {"volver_menu": lambda: self.navegar("menu"), "agregar_tarjeta": self.agregar_tarjeta, "eliminar_tarjeta": self.eliminar_tarjeta, "mover_saldo": self.mover_saldo}
         self.panel = PanelBilletera(self, self.moldes, callbacks)
         self.panel.crear()
-        self.flujo = FlujoBilletera(self, self.panel)
 
     def conectar_controlador(self, controlador, usuario):
         self.controlador = controlador
@@ -222,13 +191,45 @@ class VistaBilletera(tk.Frame):
         self.actualizar_vista()
 
     def agregar_tarjeta(self):
-        self.flujo.agregar_tarjeta()
+        tipo, titular, numero, vencimiento, cvv = self.panel.tarjetas.datos_tarjeta()
+        self.ejecutar_accion(
+            lambda: self.controlador.agregar_tarjeta(
+                self.usuario,
+                tipo,
+                titular,
+                numero,
+                vencimiento,
+                cvv,
+            ),
+            "Tarjeta agregada correctamente.",
+        )
 
     def eliminar_tarjeta(self):
-        self.flujo.eliminar_tarjeta()
+        numero = self.panel.tarjetas.numero_tarjeta_seleccionada()
+        self.ejecutar_accion(
+            lambda: self.controlador.eliminar_tarjeta(self.usuario, numero),
+            "Tarjeta eliminada correctamente.",
+        )
 
     def mover_saldo(self):
-        self.flujo.mover_saldo()
+        numero, direccion, monto = self.panel.movimiento.datos_movimiento()
+        self.ejecutar_accion(
+            lambda: self.controlador.mover_saldo(
+                self.usuario,
+                numero,
+                direccion,
+                monto,
+            ),
+            "Saldo movido correctamente.",
+        )
+
+    def ejecutar_accion(self, accion, mensaje_exito):
+        try:
+            accion()
+            self.actualizar_vista()
+            messagebox.showinfo("Billetera", mensaje_exito)
+        except ValueError as error:
+            messagebox.showerror("Billetera", f"Revisa este dato: {error}")
 
     def actualizar_vista(self):
         if self.usuario is None or self.controlador is None:

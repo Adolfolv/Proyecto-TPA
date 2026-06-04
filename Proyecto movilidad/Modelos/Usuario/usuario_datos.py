@@ -12,7 +12,7 @@ from Modelos.Billetera.datos_billetera import Billetera
 class Auto:
     marca: str
     modelo: str
-    año: int
+    ano: int
     patente: str
     cantidad_asientos: int
     peso_equipaje: float

@@ -73,13 +73,13 @@ class FormularioRegistroBase:
     def alternar_contrasena(self, entradas, boton):
         mostrar = entradas[0].cget("show") == "*"
         caracter = "" if mostrar else "*"
-        texto = "Ocultar contrasena" if mostrar else "Mostrar contrasena"
+        texto = "Ocultar contraseña" if mostrar else "Mostrar contraseña"
         for entrada in entradas:
             entrada.configure(show=caracter)
         boton.configure(text=texto)
 
     def crear_boton_mostrar_contrasena(self, bloque, fila, entradas):
-        boton = self.moldes.crear_boton(bloque, "Mostrar contrasena", False, None, None)
+        boton = self.moldes.crear_boton(bloque, "Mostrar contraseña", False, None, None)
         boton.configure(command=lambda: self.alternar_contrasena(entradas, boton))
         boton.grid(row=fila, column=0, sticky="w", padx=5, pady=(0, 4))
 
@@ -91,12 +91,12 @@ class FormularioPasajero(FormularioRegistroBase):
         self.entrada_nombre = self.crear_entrada(bloque, "Nombre", 2, 0)
         self.entrada_apellido = self.crear_entrada(bloque, "Apellido", 2, 1)
         self.entrada_correo = self.crear_entrada(bloque, "Correo", 4, 0)
-        self.entrada_telefono = self.crear_entrada(bloque, "Telefono", 4, 1, telefono=True)
+        self.entrada_telefono = self.crear_entrada(bloque, "Teléfono", 4, 1, telefono=True)
         self.entrada_edad = self.crear_entrada(bloque, "Edad", 6, 0)
-        self.entrada_direccion = self.crear_entrada(bloque, "Direccion", 6, 1)
+        self.entrada_direccion = self.crear_entrada(bloque, "Dirección", 6, 1)
         self.crear_subtitulo(bloque, "Datos de la cuenta", 8)
-        self.entrada_contrasena = self.crear_entrada(bloque, "Contrasena", 9, 0, mostrar="*")
-        self.entrada_confirmar = self.crear_entrada(bloque, "Confirmar contrasena", 9, 1, mostrar="*")
+        self.entrada_contrasena = self.crear_entrada(bloque, "Contraseña", 9, 0, mostrar="*")
+        self.entrada_confirmar = self.crear_entrada(bloque, "Confirmar contraseña", 9, 1, mostrar="*")
         self.crear_boton_mostrar_contrasena(bloque, 11, (self.entrada_contrasena, self.entrada_confirmar))
 
     def datos(self):
@@ -130,12 +130,12 @@ class FormularioConductor(FormularioRegistroBase):
         self.entrada_nombre = self.crear_entrada(bloque, "Nombre", 2, 0)
         self.entrada_apellido = self.crear_entrada(bloque, "Apellido", 2, 1)
         self.entrada_correo = self.crear_entrada(bloque, "Correo", 4, 0)
-        self.entrada_telefono = self.crear_entrada(bloque, "Telefono", 4, 1, telefono=True)
+        self.entrada_telefono = self.crear_entrada(bloque, "Teléfono", 4, 1, telefono=True)
         self.entrada_edad = self.crear_entrada(bloque, "Edad", 6, 0)
         self.crear_selfie(bloque)
         self.crear_subtitulo(bloque, "Datos de la cuenta", 11)
-        self.entrada_contrasena = self.crear_entrada(bloque, "Contrasena", 12, 0, mostrar="*")
-        self.entrada_confirmar = self.crear_entrada(bloque, "Confirmar contrasena", 12, 1, mostrar="*")
+        self.entrada_contrasena = self.crear_entrada(bloque, "Contraseña", 12, 0, mostrar="*")
+        self.entrada_confirmar = self.crear_entrada(bloque, "Confirmar contraseña", 12, 1, mostrar="*")
         self.crear_boton_mostrar_contrasena(bloque, 14, (self.entrada_contrasena, self.entrada_confirmar))
 
     def crear_selfie(self, bloque):
@@ -146,13 +146,13 @@ class FormularioConductor(FormularioRegistroBase):
         self.moldes.crear_boton(bloque, "Quitar selfie", False, None, self.quitar_selfie).grid(row=10, column=1, sticky="ew", padx=5, pady=(2, 6))
 
     def crear_datos_vehiculo(self, padre):
-        bloque = self.crear_bloque(padre, "Datos del vehiculo y documentos", llenar="both", expandir=True)
-        self.crear_subtitulo(bloque, "Datos del vehiculo", 2)
+        bloque = self.crear_bloque(padre, "Datos del vehículo y documentos", llenar="both", expandir=True)
+        self.crear_subtitulo(bloque, "Datos del vehículo", 2)
         self.crear_selectores_vehiculo(bloque)
         self.entrada_patente = self.crear_entrada(bloque, "Patente", 5, 0)
-        self.entrada_ano = self.crear_entrada(bloque, "Ano de creacion", 5, 1)
+        self.entrada_ano = self.crear_entrada(bloque, "Año de creación", 5, 1)
         self.entrada_cantidad_asientos = self.crear_entrada(bloque, "Cantidad de pasajeros", 7, 0)
-        self.entrada_peso_equipaje = self.crear_entrada(bloque, "Peso maximo de equipaje", 7, 1)
+        self.entrada_peso_equipaje = self.crear_entrada(bloque, "Peso máximo de equipaje", 7, 1)
         self.crear_subtitulo(bloque, "Documentos", 9)
         self.crear_documentos(bloque)
 
@@ -166,13 +166,13 @@ class FormularioConductor(FormularioRegistroBase):
         self.selector_marca.bind("<<ComboboxSelected>>", self.actualizar_modelos)
 
     def crear_documentos(self, bloque):
-        self.moldes.crear_label(bloque, "Categoria", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=10, column=0, sticky="w", padx=5, pady=(6, 0))
-        self.moldes.crear_label(bloque, "Numero de licencia", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=10, column=1, sticky="w", padx=5, pady=(6, 0))
+        self.moldes.crear_label(bloque, "Categoría", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=10, column=0, sticky="w", padx=5, pady=(6, 0))
+        self.moldes.crear_label(bloque, "Número de licencia", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE).grid(row=10, column=1, sticky="w", padx=5, pady=(6, 0))
         self.selector_categoria = self.moldes.crear_selector(bloque, CATEGORIAS_LICENCIA)
         self.selector_categoria.grid(row=11, column=0, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.entrada_licencia = self.moldes.crear_entrada(bloque)
         self.entrada_licencia.grid(row=11, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
-        self.crear_entrada(bloque, "Emision de licencia", 12, 0)
+        self.crear_entrada(bloque, "Emisión de licencia", 12, 0)
         self.crear_entrada(bloque, "Vencimiento de licencia -> formato(DD-MM-YYYY)", 12, 1)
 
     def actualizar_modelos(self, evento=None):
@@ -181,7 +181,7 @@ class FormularioConductor(FormularioRegistroBase):
         self.selector_modelo.current(0)
 
     def seleccionar_selfie(self):
-        ruta = filedialog.askopenfilename(title="Seleccionar selfie", filetypes=(("Imagenes", "*.png *.jpg *.jpeg"), ("Todos los archivos", "*.*")))
+        ruta = filedialog.askopenfilename(title="Seleccionar selfie", filetypes=(("Imágenes", "*.png *.jpg *.jpeg"), ("Todos los archivos", "*.*")))
         if not ruta:
             return
         self.ruta_selfie = ruta

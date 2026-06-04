@@ -58,6 +58,8 @@ class RepositorioUsuario:
             auto = datos_usuario.get("auto")
 
             if isinstance(auto, dict):
+                if "año" in auto and "ano" not in auto:
+                    auto["ano"] = auto.pop("año")
                 datos_usuario["auto"] = Auto(**auto)
 
             datos_usuario.setdefault("selfie", "")
