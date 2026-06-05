@@ -7,9 +7,10 @@ from Servicios.Viajes.datos_viaje import COORDENADAS_REALES_OSORNO, IMAGENES_LUG
 from ..estilizacion import tema
 
 
-RUTA_IMAGENES_LUGARES = Path(__file__).resolve().parent.parent / "estilizacion" / "Imagenes" / "imagenes_lugares"
-RUTA_IMAGENES_CONDUCTORES = Path(__file__).resolve().parent.parent / "estilizacion" / "Imagenes" / "imagenes_conductores"
-RUTA_IMAGENES_USUARIOS = Path(__file__).resolve().parent.parent / "estilizacion" / "Imagenes" / "imagenes_usuarios"
+RUTA_IMAGENES = Path(__file__).resolve().parents[1] / "estilizacion" / "Imagenes"
+RUTA_IMAGENES_LUGARES = RUTA_IMAGENES / "imagenes_lugares"
+RUTA_IMAGENES_CONDUCTORES = RUTA_IMAGENES / "imagenes_conductores"
+RUTA_IMAGENES_USUARIOS = RUTA_IMAGENES / "imagenes_usuarios"
 
 
 class MapaViajeComun:
@@ -26,13 +27,13 @@ class MapaViajeComun:
 
   #crear se ejecuta cuando se muestra el mapa, para evitar cargar 
   #recursos antes de tiempo. Se pueden agregar mas 
-  #parametros para pintar cosas especificas segun el caso de uso.
+    #parametros para pintar cosas especificas segun el caso de uso.
     def crear(self, pintar_lugares=True):
-        frame = self.moldes.crear_frame(self.padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=1, sticky="nsew", margen_x=(12, 0))
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(1, weight=1)
-        self.crear_cabecera(frame)
-        self.crear_mapa(frame, pintar_lugares)
+        panel = self.moldes.crear_frame(self.padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=1, sticky="nsew", margen_x=(12, 0))
+        panel.grid_columnconfigure(0, weight=1)
+        panel.grid_rowconfigure(1, weight=1)
+        self.crear_cabecera(panel)
+        self.crear_mapa(panel, pintar_lugares)
 
     def crear_cabecera(self, panel):
         cabecera = self.moldes.crear_frame(panel, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=18, margen_y=(16, 8), columnas_peso=((0, 1),))

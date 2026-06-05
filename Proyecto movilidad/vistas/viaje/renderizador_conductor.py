@@ -7,8 +7,7 @@ class RenderizadorConductor:
     def __init__(self, vista):
         self.vista = vista
 
-    def actualizar_cronometro_busqueda(self, al_finalizar, segundos=0):
-        duracion = 5
+    def actualizar_cronometro_busqueda(self, al_finalizar, duracion, segundos=0):
         self.vista.label_cronometro.config(text=f"00:{segundos:02d}")
 
         if segundos >= duracion:
@@ -19,6 +18,7 @@ class RenderizadorConductor:
             1000,
             self.actualizar_cronometro_busqueda,
             al_finalizar,
+            duracion,
             segundos + 1,
         )
 

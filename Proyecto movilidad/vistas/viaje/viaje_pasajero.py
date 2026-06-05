@@ -28,21 +28,21 @@ class VistaViajePasajero:
         contenedor = self.moldes.crear_frame(self.padre, tema.FONDO, llenar="both", expandir=True, margen_x=20, margen_y=20, columnas_peso=((0, 0), (1, 1)), filas_peso=((0, 1),))
         contenedor.grid_columnconfigure(0, minsize=420)
         contenedor.grid_columnconfigure(1, minsize=640)
-        FrameIzquierdoPasajero(self).crear(contenedor)
-        FrameDerechoPasajero(self).crear(contenedor)
+        PanelIzquierdoPasajero(self).crear(contenedor)
+        PanelDerechoPasajero(self).crear(contenedor)
 
     def finalizar_viaje(self):
         self.renderizador.mostrar_estado_viaje("viaje finalizado")
         self.estado_visual.viaje_finalizado()
         
-class FrameIzquierdoPasajero:
+class PanelIzquierdoPasajero:
     def __init__(self, vista):
         self.vista = vista
         self.moldes = vista.moldes
 
     def crear(self, padre):
-        self.vista.frame = self.moldes.crear_frame(padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=0, sticky="nsew", margen_x=(0, 12))
-        self.vista.frame.grid_columnconfigure(0, weight=1)
+        self.vista.panel = self.moldes.crear_frame(padre, tema.PANEL, tema.BORDE, 1, fila=0, columna=0, sticky="nsew", margen_x=(0, 12))
+        self.vista.panel.grid_columnconfigure(0, weight=1)
         self.crear_cabecera()
         self.crear_servicio()
         self.crear_formulario()
@@ -53,16 +53,16 @@ class FrameIzquierdoPasajero:
         self.crear_boton_buscar_otro()
 
     def crear_cabecera(self):
-        cabecera = self.moldes.crear_frame(self.vista.frame, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=16, margen_y=(16, 12), columnas_peso=((0, 1),))
+        cabecera = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=0, columna=0, sticky="ew", margen_x=16, margen_y=(16, 12), columnas_peso=((0, 1),))
         self.moldes.crear_label(cabecera, "Solicitud de viaje", ("Arial", 18, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
         self.moldes.crear_boton(cabecera, "Volver", False, None, self.vista.comando_volver_menu, metodo="grid", fila=0, columna=1, sticky="e")
 
     def crear_servicio(self):
-        self.moldes.crear_label(self.vista.frame, "Servicio", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_x=16, margen_y=(0, 4))
-        self.moldes.crear_label(self.vista.frame, "Viaje normal", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), ipady=8)
+        self.moldes.crear_label(self.vista.panel, "Servicio", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_x=16, margen_y=(0, 4))
+        self.moldes.crear_label(self.vista.panel, "Viaje normal", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), ipady=8)
 
     def crear_formulario(self):
-        datos = self.moldes.crear_frame(self.vista.frame, tema.PANEL, fila=3, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
+        datos = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=3, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
         self.vista.selector_ubicacion_inicial = self.crear_selector_ubicacion(datos, "Ubicacion inicial", 0, 0, (0, 5))
         self.vista.selector_ubicacion_final = self.crear_selector_ubicacion(datos, "Ubicacion final", 0, 1, (5, 0))
         self.vista.selector_ubicacion_final.current(1)
@@ -83,7 +83,7 @@ class FrameIzquierdoPasajero:
         return entrada
 
     def crear_busqueda_vehiculos(self):
-        contenedor = self.moldes.crear_frame(self.vista.frame, tema.PANEL, fila=4, columna=0, sticky="nsew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
+        contenedor = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=4, columna=0, sticky="nsew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
         self.vista.boton_buscar_vehiculos = self.moldes.crear_boton(contenedor, "Buscar vehiculos", True, None, self.vista.acciones.presionar_boton_buscar_vehiculos, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 4))
         self.vista.label_error_busqueda = self.moldes.crear_label(contenedor, "", ("Arial", 9), tema.ERROR, tema.PANEL, 300, "left", metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 8))
         self.vista.label_vehiculos_disponibles = self.moldes.crear_label(contenedor, "Vehiculos disponibles", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(0, 6))
@@ -92,31 +92,31 @@ class FrameIzquierdoPasajero:
         self.vista.tabla_vehiculos.bind("<<TreeviewSelect>>", self.vista.acciones.presionar_boton_seleccionar_vehiculo)
 
     def crear_boton_pagar(self):
-        self.vista.boton_pagar = self.moldes.crear_boton(self.vista.frame, "Pagar viaje seleccionado", True, None, self.vista.acciones.presionar_boton_pagar, metodo="grid", fila=6, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10))
+        self.vista.boton_pagar = self.moldes.crear_boton(self.vista.panel, "Pagar viaje seleccionado", True, None, self.vista.acciones.presionar_boton_pagar, metodo="grid", fila=6, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10))
         self.vista.boton_pagar.grid_remove()
 
     def crear_confirmacion(self):
-        self.vista.frame_confirmacion = self.moldes.crear_frame(self.vista.frame, tema.FONDO, tema.BORDE, 1, fila=7, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
-        self.vista.label_pregunta_confirmacion = self.moldes.crear_label(self.vista.frame_confirmacion, "Confirmar pago del viaje seleccionado?", tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
-        self.vista.boton_confirmar_pago = self.moldes.crear_boton(self.vista.frame_confirmacion, "Si, confirmar", True, None, self.vista.acciones.presionar_boton_confirmar_pago, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
-        self.vista.boton_cancelar_pago = self.moldes.crear_boton(self.vista.frame_confirmacion, "Cancelar", False, None, self.vista.acciones.presionar_boton_cancelar, metodo="grid", fila=1, columna=1, sticky="ew", margen_x=(4, 10), margen_y=(0, 8))
-        self.vista.label_estado_viaje = self.moldes.crear_label(self.vista.frame_confirmacion, "", tema.FUENTE_BOTON, tema.PRIMARIO, tema.FONDO, metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=10)
+        self.vista.panel_confirmacion = self.moldes.crear_frame(self.vista.panel, tema.FONDO, tema.BORDE, 1, fila=7, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
+        self.vista.label_pregunta_confirmacion = self.moldes.crear_label(self.vista.panel_confirmacion, "Confirmar pago del viaje seleccionado?", tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
+        self.vista.boton_confirmar_pago = self.moldes.crear_boton(self.vista.panel_confirmacion, "Si, confirmar", True, None, self.vista.acciones.presionar_boton_confirmar_pago, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
+        self.vista.boton_cancelar_pago = self.moldes.crear_boton(self.vista.panel_confirmacion, "Cancelar", False, None, self.vista.acciones.presionar_boton_cancelar, metodo="grid", fila=1, columna=1, sticky="ew", margen_x=(4, 10), margen_y=(0, 8))
+        self.vista.label_estado_viaje = self.moldes.crear_label(self.vista.panel_confirmacion, "", tema.FUENTE_BOTON, tema.PRIMARIO, tema.FONDO, metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=10)
         self.vista.label_estado_viaje.grid_remove()
-        self.vista.frame_confirmacion.grid_remove()
+        self.vista.panel_confirmacion.grid_remove()
 
     def crear_progreso(self):
-        progreso = self.moldes.crear_frame(self.vista.frame, tema.PANEL, fila=8, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
+        progreso = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=8, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
         self.vista.label_estado_progreso = self.moldes.crear_label(progreso, "Progreso del trayecto", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 8))
         self.vista.barra_progreso = ttk.Progressbar(progreso, maximum=100, mode="determinate", value=0)
         self.vista.barra_progreso.grid(row=1, column=0, sticky="ew")
         self.vista.label_porcentaje_progreso = self.moldes.crear_label(progreso, "0%", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(6, 0))
 
     def crear_boton_buscar_otro(self):
-        self.vista.boton_buscar_otro_viaje = self.moldes.crear_boton(self.vista.frame, "Buscar otro viaje", True, None, self.vista.acciones.presionar_boton_cancelar, metodo="grid", fila=9, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10))
+        self.vista.boton_buscar_otro_viaje = self.moldes.crear_boton(self.vista.panel, "Buscar otro viaje", True, None, self.vista.acciones.presionar_boton_cancelar, metodo="grid", fila=9, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10))
         self.vista.boton_buscar_otro_viaje.grid_remove()
 
 
-class FrameDerechoPasajero:
+class PanelDerechoPasajero:
     def __init__(self, vista):
         self.vista = vista
 
@@ -186,10 +186,20 @@ class AccionesBotonesPasajero:
             vista.ubicacion_inicial_busqueda,
             vista.ubicacion_final_busqueda,
         )
+        {
+            True: self.iniciar_viaje_confirmado,
+            False: self.mostrar_error_confirmacion,
+        }[resultado.exitoso](resultado)
+
+    def iniciar_viaje_confirmado(self, resultado):
+        vista = self.vista
         # Desde aqui se bloquea la pantalla hasta que termine la animacion.
         vista.renderizador.mostrar_estado_viaje("viaje en proceso")
         vista.estado_visual.viaje_en_proceso()
         self.iniciar_animacion_viaje(resultado.rutas_viaje)
+
+    def mostrar_error_confirmacion(self, resultado):
+        self.vista.renderizador.mostrar_mensaje_error(resultado.error)
 
     def presionar_boton_cancelar(self):
         self.vista.navegar("viaje")

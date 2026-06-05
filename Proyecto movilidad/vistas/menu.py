@@ -8,11 +8,11 @@ from .estilizacion.widgets import Moldes
 
 
 class VistaMenu(tk.Frame):
-    def __init__(self, master, navegar):
+    def __init__(self, padre, navegar):
         self.navegar = navegar
         self.moldes = Moldes()
 
-        super().__init__(master, bg=tema.FONDO)
+        super().__init__(padre, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 

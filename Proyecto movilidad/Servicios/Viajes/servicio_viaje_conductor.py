@@ -19,7 +19,7 @@ class ServicioViajeConductor:
     ):
         self.comun = servicio_comun
         self.pagos = servicio_pagos
-        self.randomizador = randomizador or Random()
+        self.randomizador = Random()
 
     def buscar_pasajeros(self, ubicacion_conductor):                                                           
         pasajeros = tuple(PASAJEROS_SIMULADOS)

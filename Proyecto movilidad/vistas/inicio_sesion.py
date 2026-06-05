@@ -8,17 +8,17 @@ from .estilizacion.widgets import Moldes
 
 
 class VistaInicioSesion(tk.Frame):
-    def __init__(self, master, navegar, controlador, al_iniciar=None):
+    def __init__(self, padre, navegar, controlador, al_iniciar=None):
         self.navegar = navegar
         self.controlador = controlador
         self.al_iniciar = al_iniciar
         self.moldes = Moldes()
-        self.mostrar_contrasena = tk.BooleanVar(master=master, value=False)
+        self.mostrar_contrasena = tk.BooleanVar(padre, value=False)
         self.entrada_correo = None
         self.entrada_contrasena = None
-        self.mensaje = tk.StringVar(master=master, value="")
+        self.mensaje = tk.StringVar(padre, value="")
 
-        super().__init__(master, bg=tema.FONDO)
+        super().__init__(padre, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 

@@ -12,8 +12,8 @@ class EstadoVisualConductor:
 
     def pasajero_encontrado(self):
         # Estado intermedio: se muestra el pasajero encontrado y se pide confirmacion.
-        self.vista.frame_pasajero.grid()
-        self.vista.frame_confirmacion.grid()
+        self.vista.panel_pasajero.grid()
+        self.vista.panel_confirmacion.grid()
         self.vista.boton_volver.config(
             command=self.vista.acciones.presionar_boton_volver_pregunta_activa
         )

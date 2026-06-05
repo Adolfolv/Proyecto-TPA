@@ -6,17 +6,17 @@ class EstadoVisualPasajero:
         self.vista = vista
 
     def reiniciar_busqueda(self):
-        self.vista.frame_confirmacion.grid_remove()
+        self.vista.panel_confirmacion.grid_remove()
         self.vista.boton_pagar.grid_remove()
 
     def vehiculo_seleccionado(self):
         # Estado donde ya existe un vehiculo elegido y se puede pasar al pago.
-        self.vista.frame_confirmacion.grid_remove()
+        self.vista.panel_confirmacion.grid_remove()
         self.vista.boton_pagar.grid()
 
     def confirmando_pago(self):
         # Muestra el panel de confirmacion sin iniciar todavia el viaje.
-        self.vista.frame_confirmacion.grid()
+        self.vista.panel_confirmacion.grid()
 
     def viaje_en_proceso(self):
         # Estado bloqueante: evita cambiar datos mientras corre la animacion del viaje.

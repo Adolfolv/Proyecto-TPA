@@ -106,7 +106,7 @@ class Moldes:
         metodo=None,
         **ubicacion,
     ):
-        frame = tk.Frame(
+        panel = tk.Frame(
             padre,
             bg=color,
             width=ancho_fijo,
@@ -118,24 +118,24 @@ class Moldes:
         )
 
         if metodo is None and fila is None and relx is None and (llenar or expandir or lado or margen_x or margen_y):
-            frame.pack(fill=llenar, expand=expandir, side=lado, padx=margen_x, pady=margen_y)
+            panel.pack(fill=llenar, expand=expandir, side=lado, padx=margen_x, pady=margen_y)
 
         if relx is not None and rely is not None:
-            frame.place(relx=relx, rely=rely, anchor=ancla, width=ancho, height=alto)
+            panel.place(relx=relx, rely=rely, anchor=ancla, width=ancho, height=alto)
 
         if fila is not None and columna is not None:
-            frame.grid(row=fila, column=columna, columnspan=columnas, sticky=sticky, padx=margen_x, pady=margen_y)
+            panel.grid(row=fila, column=columna, columnspan=columnas, sticky=sticky, padx=margen_x, pady=margen_y)
 
         if metodo is not None:
-            self.ubicar(frame, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
+            self.ubicar(panel, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
 
         for indice, peso in (columnas_peso or ()):
-            frame.grid_columnconfigure(indice, weight=peso)
+            panel.grid_columnconfigure(indice, weight=peso)
 
         for indice, peso in (filas_peso or ()):
-            frame.grid_rowconfigure(indice, weight=peso)
+            panel.grid_rowconfigure(indice, weight=peso)
 
-        return frame
+        return panel
 
     def crear_label(
         self,

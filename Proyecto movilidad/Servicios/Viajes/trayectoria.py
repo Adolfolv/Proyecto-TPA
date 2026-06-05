@@ -2,16 +2,17 @@ import json
 import urllib.request
 
 from Modelos.Viaje.modelo_viajes import PuntoRelativo
-from Servicios.Viajes.datos_viaje import (
-    OSORNO_LAT_NORTE,
-    OSORNO_LAT_SUR,
-    OSORNO_LNG_ESTE,
-    OSORNO_LNG_OESTE,
-)
 
 
 URL_OSRM = "http://router.project-osrm.org/route/v1/driving"
 TIMEOUT_OSRM = 4
+
+# Limites geograficos usados para convertir entre el mapa relativo de la
+# aplicacion y coordenadas reales de Osorno.
+OSORNO_LAT_NORTE = -40.5480
+OSORNO_LAT_SUR = -40.6050
+OSORNO_LNG_OESTE = -73.1650
+OSORNO_LNG_ESTE = -73.0850
 
 
 def punto_relativo_desde_coordenada(latitud: float, longitud: float) -> PuntoRelativo:
@@ -36,11 +37,6 @@ class Trayectoria:
         latitud = OSORNO_LAT_NORTE + y * (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
         longitud = OSORNO_LNG_OESTE + x * (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
         return latitud, longitud
-
-    def punto_relativo_desde_coordenada(self, latitud, longitud):
-        """Convierte latitud/longitud real a un punto relativo del mapa."""
-
-        return punto_relativo_desde_coordenada(latitud, longitud)
 
     def limpiar_puntos(self, puntos, umbral=0.001):
         """Reduce puntos casi repetidos para que la animacion sea estable."""
@@ -78,7 +74,7 @@ class Trayectoria:
 
         coordenadas = datos["routes"][0]["geometry"]["coordinates"]
         puntos = [
-            self.punto_relativo_desde_coordenada(latitud, longitud)
+            punto_relativo_desde_coordenada(latitud, longitud)
             for longitud, latitud in coordenadas
         ]
         return self.limpiar_puntos(puntos)

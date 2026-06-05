@@ -20,23 +20,32 @@ class DependenciasAplicacion {
 }
 
 class Vista {
-  -controlador
+  -navegar
   -usuario_actual
-  +mostrar_pantalla()
-  +capturar_datos()
-  +mostrar_resultado()
+  -controladores
+  +iniciar_sesion()
+  +registrar()
+  +actualizar_billetera()
+  +buscar_vehiculos()
+  +confirmar_viaje()
 }
 
 class Controlador {
-  -servicio
-  +procesar_accion()
-  +devolver_resultado()
+  -servicio_usuario
+  -servicio_billetera
+  -servicio_viaje
+  +iniciar_sesion(correo, contrasena)
+  +registrar_pasajero(datos)
+  +obtener_resumen(usuario)
+  +buscar_vehiculos_pasajero(...)
+  +iniciar_viaje_conductor(...)
 }
 
 class ServicioUsuario {
   -repositorio_usuario
   -fabrica_usuario
-  -validaciones
+  -validaciones_usuario
+  -validaciones_conductor
   +iniciar_sesion(correo, contrasena)
   +registrar_pasajero(datos)
   +registrar_conductor(datos)
@@ -46,8 +55,8 @@ class ServicioBilletera {
   -repositorio_billetera
   -operaciones
   +obtener_billetera(usuario)
-  +agregar_tarjeta(...)
-  +mover_saldo(...)
+  +obtener_resumen(usuario)
+  +guardar(usuario, billetera)
   +ejecutar(nombre_operacion, usuario, monto)
 }
 
@@ -64,21 +73,30 @@ class ServicioViaje <<Facade>> {
 
 class Repositorio {
   -archivo
-  -datos
+  -usuarios
+  -billeteras
+  -cargado
   +cargar()
   +guardar()
   +listar()
-  +obtener()
+  +obtener(usuario)
+  +guardar_por_usuario(id_usuario, billetera)
 }
 
 class Modelo {
-  +datos
+  +Usuario / Pasajero / Conductor
+  +Billetera / Tarjetas / Transaccion
+  +VehiculoDisponible
+  +PasajeroEncontrado
+  +Viaje / ResultadoViaje
 }
 
 class Validaciones {
-  +validar_usuario()
-  +validar_billetera()
-  +validar_viaje()
+  +validar(usuario, confirmar_contrasena)
+  +validar_busqueda_vehiculos(...)
+  +validar_pago_pasajero(servicio_billetera, usuario)
+  +validar_abono_conductor(servicio_billetera, usuario)
+  +validar_tarjeta(...)
 }
 
 Navegacion *-- DependenciasAplicacion

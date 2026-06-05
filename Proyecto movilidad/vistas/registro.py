@@ -257,15 +257,15 @@ class FlujoRegistro:
 
 
 class VistaRegistro(tk.Frame):
-    def __init__(self, master, navegar, controlador, al_registrar=None):
+    def __init__(self, padre, navegar, controlador, al_registrar=None):
         self.navegar = navegar
         self.controlador = controlador
         self.al_registrar = al_registrar
         self.moldes = Moldes()
-        self.moldes.configurar_selectores(master)
+        self.moldes.configurar_selectores(padre)
         self.tipo_registro = "pasajero"
         self.formulario_actual = None
-        super().__init__(master, bg=tema.FONDO)
+        super().__init__(padre, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 

@@ -630,12 +630,12 @@ package "Navegacion" {
 }
 
 package "Vistas principales" {
-  class VistaPantallaInicial { -navegar; -moldes; +__init__(master, navegar); +crear_widgets() }
-  class VistaMenu { -navegar; -moldes; +__init__(master, navegar); +crear_widgets() }
-  class VistaInicioSesion { -navegar; -controlador; -al_iniciar; -moldes; +__init__(master, navegar, controlador, al_iniciar); +crear_widgets(); +actualizar_visibilidad_contrasena(); +iniciar_sesion() }
-  class VistaRegistro { -navegar; -controlador; -al_registrar; -moldes; -flujo; +__init__(master, navegar, controlador, al_registrar); +crear_widgets(); +crear_cabecera(contenedor); +mostrar_pasajero(); +mostrar_conductor(); +registrar() }
-  class VistaBilletera { -navegar; -usuario; -controlador_resumen; -controlador_tarjetas; -controlador_movimientos; -panel; +__init__(master, navegar, controlador_resumen, controlador_tarjetas, controlador_movimientos, usuario); +crear_widgets(); +agregar_tarjeta(); +eliminar_tarjeta(); +mover_saldo(); +ejecutar_accion(accion, mensaje_exito); +actualizar_vista() }
-  class VistaViaje { +__init__(master, navegar, tipo_usuario, comando_volver_menu, controlador_pasajero, controlador_conductor, usuario_actual) }
+  class VistaPantallaInicial { -navegar; -moldes; +__init__(padre, navegar); +crear_widgets() }
+  class VistaMenu { -navegar; -moldes; +__init__(padre, navegar); +crear_widgets() }
+  class VistaInicioSesion { -navegar; -controlador; -al_iniciar; -moldes; +__init__(padre, navegar, controlador, al_iniciar); +crear_widgets(); +actualizar_visibilidad_contrasena(); +iniciar_sesion() }
+  class VistaRegistro { -navegar; -controlador; -al_registrar; -moldes; -flujo; +__init__(padre, navegar, controlador, al_registrar); +crear_widgets(); +crear_cabecera(contenedor); +mostrar_pasajero(); +mostrar_conductor(); +registrar() }
+  class VistaBilletera { -navegar; -usuario; -controlador_resumen; -controlador_tarjetas; -controlador_movimientos; -panel; +__init__(padre, navegar, controlador_resumen, controlador_tarjetas, controlador_movimientos, usuario); +crear_widgets(); +agregar_tarjeta(); +eliminar_tarjeta(); +mover_saldo(); +ejecutar_accion(accion, mensaje_exito); +actualizar_vista() }
+  class VistaViaje { +__init__(padre, navegar, tipo_usuario, comando_volver_menu, controlador_pasajero, controlador_conductor, usuario_actual) }
 }
 
 package "Vistas.Registro" {
@@ -648,11 +648,11 @@ package "Vistas.Registro" {
 }
 
 package "Vistas.Billetera" {
-  class CabeceraBilletera { -panel; -moldes; -callbacks; +__init__(panel); +crear() }
+  class CabeceraBilletera { -panel; -moldes; -acciones; +__init__(panel); +crear() }
   class ResumenBilletera { -panel; -moldes; +__init__(panel); +crear(); +actualizar(saldo_billetera, saldo_tarjetas) }
-  class PanelTarjetasBilletera { -panel; -moldes; -callbacks; +__init__(panel); +crear(padre); +datos_tarjeta(); +numero_tarjeta_seleccionada(); +actualizar(tarjetas) }
-  class PanelMovimientoBilletera { -panel; -moldes; -callbacks; +__init__(panel); +crear(padre); +datos_movimiento(); +numero_tarjeta_movimiento(); +actualizar_tarjetas(tarjetas); +actualizar_historial(transacciones) }
-  class PanelBilletera { -padre; -moldes; -callbacks; -resumen; -tarjetas; -movimiento; +__init__(padre, moldes, callbacks); +crear(); +crear_gestion(); +actualizar(saldo_billetera, tarjetas, transacciones) }
+  class PanelTarjetasBilletera { -panel; -moldes; -acciones; +__init__(panel); +crear(padre); +datos_tarjeta(); +numero_tarjeta_seleccionada(); +actualizar(tarjetas) }
+  class PanelMovimientoBilletera { -panel; -moldes; -acciones; +__init__(panel); +crear(padre); +datos_movimiento(); +numero_tarjeta_movimiento(); +actualizar_tarjetas(tarjetas); +actualizar_historial(transacciones) }
+  class PanelBilletera { -padre; -moldes; -acciones; -resumen; -tarjetas; -movimiento; +__init__(padre, moldes, acciones); +crear(); +crear_gestion(); +actualizar(saldo_billetera, tarjetas, transacciones) }
 }
 
 package "Vistas.Viaje" {

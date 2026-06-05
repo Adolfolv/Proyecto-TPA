@@ -3,17 +3,13 @@ from Modelos.Viaje.modelo_viajes import (
     ConductorSimulado,
     PasajeroSimulado,
 )
-
-
-# Limites geograficos usados para convertir entre el mapa relativo de la
-# aplicacion y coordenadas reales de Osorno.
-OSORNO_LAT_NORTE = -40.5480
-OSORNO_LAT_SUR = -40.6050
-OSORNO_LNG_OESTE = -73.1650
-OSORNO_LNG_ESTE = -73.0850
-
-
-from Servicios.Viajes.trayectoria import punto_relativo_desde_coordenada
+from Servicios.Viajes.trayectoria import (
+    OSORNO_LAT_NORTE,
+    OSORNO_LAT_SUR,
+    OSORNO_LNG_ESTE,
+    OSORNO_LNG_OESTE,
+    punto_relativo_desde_coordenada,
+)
 
 
 COORDENADAS_REALES_OSORNO = {

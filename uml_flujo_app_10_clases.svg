@@ -47,11 +47,12 @@
   <rect class="box" x="85" y="405" width="250" height="160"/>
   <text x="210" y="433" text-anchor="middle" class="title">Vista</text>
   <line x1="85" y1="445" x2="335" y2="445" stroke="#cbd5e1"/>
-  <text x="105" y="470" class="text">- controlador</text>
+  <text x="105" y="470" class="text">- navegar</text>
   <text x="105" y="492" class="text">- usuario_actual</text>
-  <line x1="85" y1="505" x2="335" y2="505" stroke="#cbd5e1"/>
-  <text x="105" y="527" class="text">+ capturar_datos()</text>
-  <text x="105" y="549" class="text">+ mostrar_resultado()</text>
+  <text x="105" y="514" class="text">- controladores</text>
+  <line x1="85" y1="522" x2="335" y2="522" stroke="#cbd5e1"/>
+  <text x="105" y="535" class="text">+ iniciar/registrar()</text>
+  <text x="105" y="557" class="text">+ buscar/confirmar viaje()</text>
 
   <!-- Dependencias -->
   <rect class="box" x="455" y="155" width="270" height="145"/>
@@ -65,19 +66,21 @@
   <rect class="box" x="455" y="405" width="270" height="155"/>
   <text x="590" y="433" text-anchor="middle" class="title">Controlador</text>
   <line x1="455" y1="445" x2="725" y2="445" stroke="#cbd5e1"/>
-  <text x="475" y="470" class="text">- servicio</text>
-  <line x1="455" y1="483" x2="725" y2="483" stroke="#cbd5e1"/>
-  <text x="475" y="505" class="text">+ procesar_accion()</text>
-  <text x="475" y="527" class="text">+ devolver_resultado()</text>
+  <text x="475" y="470" class="text">- servicio_usuario</text>
+  <text x="475" y="492" class="text">- servicio_billetera/viaje</text>
+  <line x1="455" y1="502" x2="725" y2="502" stroke="#cbd5e1"/>
+  <text x="475" y="515" class="text">+ iniciar_sesion()</text>
+  <text x="475" y="537" class="text">+ registrar/buscar viaje()</text>
 
   <!-- ServicioUsuario -->
   <rect class="box" x="830" y="135" width="350" height="150"/>
   <text x="1005" y="163" text-anchor="middle" class="title">ServicioUsuario</text>
   <line x1="830" y1="175" x2="1180" y2="175" stroke="#cbd5e1"/>
   <text x="850" y="200" class="text">- repositorio_usuario</text>
-  <text x="850" y="222" class="text">- validaciones</text>
+  <text x="850" y="222" class="text">- fabrica_usuario</text>
   <line x1="830" y1="235" x2="1180" y2="235" stroke="#cbd5e1"/>
-  <text x="850" y="257" class="text">+ iniciar_sesion() / registrar()</text>
+  <text x="850" y="257" class="text">+ iniciar_sesion()</text>
+  <text x="1015" y="257" class="text">+ registrar()</text>
 
   <!-- ServicioBilletera -->
   <rect class="box" x="830" y="340" width="350" height="155"/>
@@ -87,7 +90,7 @@
   <text x="850" y="427" class="text">- operaciones</text>
   <line x1="830" y1="440" x2="1180" y2="440" stroke="#cbd5e1"/>
   <text x="850" y="462" class="text">+ obtener_billetera()</text>
-  <text x="850" y="484" class="text">+ ejecutar(pago/movimiento)</text>
+  <text x="850" y="484" class="text">+ ejecutar() / obtener_resumen()</text>
 
   <!-- ServicioViaje -->
   <rect class="box" x="830" y="570" width="350" height="170"/>
@@ -103,24 +106,24 @@
   <rect class="box" x="830" y="790" width="350" height="90"/>
   <text x="1005" y="818" text-anchor="middle" class="title">Validaciones</text>
   <line x1="830" y1="830" x2="1180" y2="830" stroke="#cbd5e1"/>
-  <text x="850" y="855" class="text">+ validar_usuario/billetera/viaje()</text>
+  <text x="850" y="855" class="text">+ validar usuario/tarjeta/viaje()</text>
 
   <!-- Repositorio -->
   <rect class="box" x="1290" y="250" width="210" height="135"/>
   <text x="1395" y="278" text-anchor="middle" class="title">Repositorio</text>
   <line x1="1290" y1="290" x2="1500" y2="290" stroke="#cbd5e1"/>
   <text x="1310" y="315" class="text">- archivo</text>
-  <text x="1310" y="337" class="text">- datos</text>
+  <text x="1310" y="337" class="text">- usuarios/billeteras</text>
   <line x1="1290" y1="350" x2="1500" y2="350" stroke="#cbd5e1"/>
-  <text x="1310" y="372" class="text">+ cargar()/guardar()</text>
+  <text x="1310" y="372" class="text">+ cargar/guardar/obtener()</text>
 
   <!-- Modelo -->
   <rect class="box" x="1290" y="555" width="210" height="135"/>
   <text x="1395" y="583" text-anchor="middle" class="title">Modelo</text>
   <line x1="1290" y1="595" x2="1500" y2="595" stroke="#cbd5e1"/>
-  <text x="1310" y="620" class="text">+ Usuario</text>
-  <text x="1310" y="642" class="text">+ Billetera</text>
-  <text x="1310" y="664" class="text">+ Viaje / Resultado</text>
+  <text x="1310" y="620" class="text">+ Usuario/Billetera</text>
+  <text x="1310" y="642" class="text">+ Tarjeta/Transaccion</text>
+  <text x="1310" y="664" class="text">+ Viaje/Resultado</text>
 
   <!-- Relationships -->
   <path class="line" d="M335 232 C390 232, 400 228, 455 228"/>
