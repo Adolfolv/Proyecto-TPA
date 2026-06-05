@@ -7,15 +7,27 @@ def normalizar_numero_tarjeta(numero):
     return str(numero or "").replace(" ", "").replace("-", "")
 
 
+def normalizar_monto_entero(valor):
+    if isinstance(valor, bool):
+        raise ValueError("El monto debe ser un número entero mayor a 0.")
+
+    if isinstance(valor, int):
+        monto = valor
+    else:
+        texto = str(valor or "").strip()
+        if not texto.isdigit():
+            raise ValueError("El monto debe ser un número entero mayor a 0.")
+        monto = int(texto)
+
+    if monto <= 0:
+        raise ValueError("El monto debe ser un número entero mayor a 0.")
+
+    return monto
+
+
 class ValidadorMontoPositivo(Validador):
     def validar(self, valor):
-        try:
-            if float(valor) <= 0:
-                raise ValueError("El monto debe ser mayor a 0.")
-
-        except (TypeError, ValueError):
-            raise ValueError("El monto debe ser mayor a 0.")
-
+        normalizar_monto_entero(valor)
         return True
 
 
@@ -27,7 +39,7 @@ class ValidadorSaldoSuficiente(Validador):
         objeto, monto = datos
 
         self.validador_monto.validar(monto)
-        monto = float(monto)
+        monto = normalizar_monto_entero(monto)
 
         if getattr(objeto, "saldo", 0) < monto:
             raise ValueError("Saldo insuficiente.")

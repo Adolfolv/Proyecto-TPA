@@ -55,7 +55,7 @@ class PanelTarjetasBilletera:
         self.moldes.crear_label(tarjeta, "Titular", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=1, sticky="w", margen_x=4, margen_y=(0, 4))
         self.selector_tipo_tarjeta = self.moldes.crear_selector(tarjeta, ("Visa", "Mastercard", "American Express"), metodo="grid", fila=2, columna=0, sticky="ew", margen_x=4, margen_y=(0, 8), ipady=4)
         self.entrada_titular = self.moldes.crear_entrada(tarjeta, metodo="grid", fila=2, columna=1, sticky="ew", margen_x=4, margen_y=(0, 8), ipady=4)
-        self.moldes.crear_label(tarjeta, "Numero", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=0, sticky="w", margen_x=4, margen_y=(0, 4))
+        self.moldes.crear_label(tarjeta, "Número", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=0, sticky="w", margen_x=4, margen_y=(0, 4))
         self.moldes.crear_label(tarjeta, "Caducidad (MM/AA)", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=1, sticky="w", margen_x=4, margen_y=(0, 4))
         self.entrada_numero = self.moldes.crear_entrada(tarjeta, metodo="grid", fila=4, columna=0, sticky="ew", margen_x=4, margen_y=(0, 8), ipady=4)
         self.entrada_vencimiento = self.moldes.crear_entrada(tarjeta, metodo="grid", fila=4, columna=1, sticky="ew", margen_x=4, margen_y=(0, 8), ipady=4)
@@ -66,7 +66,7 @@ class PanelTarjetasBilletera:
         self.moldes.crear_boton(acciones_tarjeta, "Eliminar tarjeta", False, None, self.acciones["eliminar_tarjeta"], lado="left")
         self.label_cantidad_tarjetas = self.moldes.crear_label(tarjeta, "Tarjetas agregadas: 0", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=8, columna=0, columnas=2, sticky="w", margen_y=(0, 6))
         self.lista_tarjetas = tk.Listbox(tarjeta, height=8, activestyle="none", relief="solid", bd=1, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO)
-        self.lista_tarjetas.insert(tk.END, "Aun no hay tarjetas agregadas.")
+        self.lista_tarjetas.insert(tk.END, "Aún no hay tarjetas agregadas.")
         self.moldes.ubicar(self.lista_tarjetas, "grid", fila=9, columna=0, columnas=2, sticky="nsew")
 
     def datos_tarjeta(self):
@@ -84,7 +84,7 @@ class PanelTarjetasBilletera:
         self.label_cantidad_tarjetas.config(text=f"Tarjetas agregadas: {len(tarjetas)}")
         self.lista_tarjetas.delete(0, tk.END)
         if not tarjetas:
-            self.lista_tarjetas.insert(tk.END, "Aun no hay tarjetas agregadas.")
+            self.lista_tarjetas.insert(tk.END, "Aún no hay tarjetas agregadas.")
             return
         for tarjeta in tarjetas:
             self.lista_tarjetas.insert(tk.END, f"{tarjeta.titular} - {tarjeta.numero_tarjeta} - ${tarjeta.saldo:.0f}")
@@ -100,7 +100,7 @@ class PanelMovimientoBilletera:
         movimiento = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 14, fila=0, columna=1, margen_x=(8, 0), columnas_peso=((0, 1), (1, 1)), filas_peso=((9, 1),))
         self.moldes.crear_label(movimiento, "Mover saldo", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 10))
         self.moldes.crear_label(movimiento, "Tarjeta", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=0, sticky="w", margen_x=4, margen_y=(0, 4))
-        self.moldes.crear_label(movimiento, "Direccion", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=1, sticky="w", margen_x=4, margen_y=(0, 4))
+        self.moldes.crear_label(movimiento, "Dirección", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=1, sticky="w", margen_x=4, margen_y=(0, 4))
         self.selector_tarjeta_movimiento = self.moldes.crear_selector(movimiento, ("Sin tarjetas",), metodo="grid", fila=2, columna=0, sticky="ew", margen_x=4, margen_y=(0, 8), ipady=4)
         self.selector_direccion = self.moldes.crear_selector(movimiento, ("Tarjeta a billetera", "Billetera a tarjeta"), metodo="grid", fila=2, columna=1, sticky="ew", margen_x=4, margen_y=(0, 8), ipady=4)
         self.moldes.crear_label(movimiento, "Monto", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=0, sticky="w", margen_x=4, margen_y=(0, 4))
@@ -109,7 +109,7 @@ class PanelMovimientoBilletera:
         self.moldes.crear_boton(movimiento, "Mover saldo", True, None, self.acciones["mover_saldo"], metodo="grid", fila=6, columna=0, sticky="w")
         self.moldes.crear_label(movimiento, "Historial de transacciones", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=8, columna=0, columnas=2, sticky="w", margen_y=(14, 6))
         self.lista_historial = tk.Listbox(movimiento, height=8, activestyle="none", relief="solid", bd=1, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO)
-        self.lista_historial.insert(tk.END, "Aun no hay transacciones registradas.")
+        self.lista_historial.insert(tk.END, "Aún no hay transacciones registradas.")
         self.moldes.ubicar(self.lista_historial, "grid", fila=9, columna=0, columnas=2, sticky="nsew")
 
     def datos_movimiento(self):
@@ -131,7 +131,7 @@ class PanelMovimientoBilletera:
     def actualizar_historial(self, transacciones):
         self.lista_historial.delete(0, tk.END)
         if not transacciones:
-            self.lista_historial.insert(tk.END, "Aun no hay transacciones registradas.")
+            self.lista_historial.insert(tk.END, "Aún no hay transacciones registradas.")
             return
         for transaccion in transacciones:
             self.lista_historial.insert(tk.END, f"{transaccion.id_transaccion} - {transaccion.tipo} - ${transaccion.monto:.0f} - {transaccion.fecha}")
