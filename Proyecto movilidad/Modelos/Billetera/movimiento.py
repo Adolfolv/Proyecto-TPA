@@ -16,11 +16,13 @@ class AdicionMonto:
     def agregar_saldo(self, objeto, monto):
         self.validador_monto_positivo.validar(monto)
         monto = float(monto)
+        # objeto puede ser una billetera o una tarjeta; ambos tienen atributo saldo.
         objeto.saldo += monto
         return True
 
 
     def quitar_saldo(self, billetera, monto):
+        # Antes de descontar se comprueba que el origen tenga saldo suficiente.
         self.validador_saldo_suficiente.validar((billetera, monto))
         monto = float(monto)
         billetera.saldo -= monto
@@ -32,16 +34,19 @@ class MoverSaldo(AdicionMonto):
 
     def mover_saldo(self, origen, destino, monto):
         self.validador_monto_positivo.validar(monto)
+        # Movimiento atomico a nivel de dominio: resta del origen y suma al destino.
         self.quitar_saldo(origen, monto)
         self.agregar_saldo(destino, monto)
         return True
     
 class Pago(AdicionMonto):
     def pagar(self, billetera, monto):
+        # Pagar es simplemente descontar saldo desde la billetera.
         return self.quitar_saldo(billetera, monto)
 
 
     def recibir_pago(self, billetera, monto):
+        # Recibir pago es agregar saldo a la billetera.
         return self.agregar_saldo(
             billetera,
             monto
@@ -50,6 +55,7 @@ class Pago(AdicionMonto):
 
 class HistorialTransacciones:
     def crear_transaccion(self, billetera, tipo, monto):
+        # El historial queda guardado dentro de la misma billetera del usuario.
         transaccion = Transaccion(
             id_transaccion=self._generar_id(billetera),
             tipo=tipo,
@@ -60,6 +66,7 @@ class HistorialTransacciones:
         return transaccion
 
     def _generar_id(self, billetera):
+        # El ID se calcula por posicion: TRX0001, TRX0002, etc.
         return f"TRX{len(billetera.transacciones) + 1:04d}"
 
 

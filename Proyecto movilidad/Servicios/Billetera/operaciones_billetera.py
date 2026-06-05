@@ -10,6 +10,7 @@ class OperacionMovimiento(OperacionBilletera):
         self.historial = historial or HistorialTransacciones()
 
     def _completar(self, usuario, billetera, monto):
+        # Toda operacion que cambia saldo termina registrando historial y guardando JSON.
         self.historial.crear_transaccion(billetera, self.tipo_transaccion, monto)
         self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
         return True
@@ -34,6 +35,7 @@ class OperacionPago(OperacionMovimiento):
 
     def ejecutar(self, solicitud):
         billetera = self._obtener_billetera(solicitud.usuario)
+        # metodo_pago contiene el nombre del metodo real: pagar o recibir_pago.
         getattr(self.pago, self.metodo_pago)(billetera, solicitud.monto)
         return self._completar(solicitud.usuario, billetera, solicitud.monto)
 
@@ -60,6 +62,7 @@ class OperacionMovimientoTarjeta(OperacionMovimiento):
             solicitud.usuario,
             solicitud.numero_tarjeta,
         )
+        # Cambia el sentido del movimiento segun si el origen es la billetera o la tarjeta.
         origen, destino = (
             (billetera, tarjeta)
             if self.origen_es_billetera

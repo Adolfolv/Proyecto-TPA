@@ -9,6 +9,7 @@ class FabricaTarjeta:
         self.generador_saldo = generador_saldo or GeneradorSaldoTarjeta()
 
     def crear(self, titular, numero, vencimiento, cvv):
+        # Toda tarjeta nueva parte con un saldo simulado generado automaticamente.
         return Tarjetas(
             titular=titular,
             numero_tarjeta=numero,
