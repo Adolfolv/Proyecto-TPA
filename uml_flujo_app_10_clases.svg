@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #ffffff; stroke: #334155; stroke-width: 2; rx: 10; }
+      .title { fill: #0f172a; font: 700 18px Arial, sans-serif; }
+      .text { fill: #334155; font: 14px Arial, sans-serif; }
+      .small { fill: #475569; font: 12px Arial, sans-serif; }
+      .line { stroke: #334155; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 7 5; }
+      .label { fill: #0f172a; font: 12px Arial, sans-serif; }
+      .package { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1; rx: 16; }
+      .package-title { fill: #334155; font: 700 16px Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1500" height="980"/>
+  <text x="750" y="40" text-anchor="middle" class="title" style="font-size:26px">UML resumido del flujo de la app</text>
+  <text x="750" y="66" text-anchor="middle" class="text">Vista -> Controlador -> Servicios -> Repositorios / Modelos</text>
+
+  <rect class="package" x="50" y="95" width="325" height="785"/>
+  <text x="70" y="123" class="package-title">Presentacion</text>
+
+  <rect class="package" x="430" y="95" width="315" height="785"/>
+  <text x="450" y="123" class="package-title">Control</text>
+
+  <rect class="package" x="800" y="95" width="410" height="785"/>
+  <text x="820" y="123" class="package-title">Servicios</text>
+
+  <rect class="package" x="1260" y="95" width="250" height="785"/>
+  <text x="1280" y="123" class="package-title">Datos</text>
+
+  <!-- Navegacion -->
+  <rect class="box" x="85" y="155" width="250" height="155"/>
+  <text x="210" y="183" text-anchor="middle" class="title">Navegacion</text>
+  <line x1="85" y1="195" x2="335" y2="195" stroke="#cbd5e1"/>
+  <text x="105" y="220" class="text">- usuario_actual</text>
+  <text x="105" y="242" class="text">- dependencias</text>
+  <text x="105" y="264" class="text">- navegador</text>
+  <line x1="85" y1="276" x2="335" y2="276" stroke="#cbd5e1"/>
+  <text x="105" y="298" class="text">+ navegar(destino)</text>
+
+  <!-- Vista -->
+  <rect class="box" x="85" y="405" width="250" height="160"/>
+  <text x="210" y="433" text-anchor="middle" class="title">Vista</text>
+  <line x1="85" y1="445" x2="335" y2="445" stroke="#cbd5e1"/>
+  <text x="105" y="470" class="text">- controlador</text>
+  <text x="105" y="492" class="text">- usuario_actual</text>
+  <line x1="85" y1="505" x2="335" y2="505" stroke="#cbd5e1"/>
+  <text x="105" y="527" class="text">+ capturar_datos()</text>
+  <text x="105" y="549" class="text">+ mostrar_resultado()</text>
+
+  <!-- Dependencias -->
+  <rect class="box" x="455" y="155" width="270" height="145"/>
+  <text x="590" y="183" text-anchor="middle" class="title">DependenciasAplicacion</text>
+  <line x1="455" y1="195" x2="725" y2="195" stroke="#cbd5e1"/>
+  <text x="475" y="220" class="text">- repositorios</text>
+  <text x="475" y="242" class="text">- servicios</text>
+  <text x="475" y="264" class="text">- controladores</text>
+
+  <!-- Controlador -->
+  <rect class="box" x="455" y="405" width="270" height="155"/>
+  <text x="590" y="433" text-anchor="middle" class="title">Controlador</text>
+  <line x1="455" y1="445" x2="725" y2="445" stroke="#cbd5e1"/>
+  <text x="475" y="470" class="text">- servicio</text>
+  <line x1="455" y1="483" x2="725" y2="483" stroke="#cbd5e1"/>
+  <text x="475" y="505" class="text">+ procesar_accion()</text>
+  <text x="475" y="527" class="text">+ devolver_resultado()</text>
+
+  <!-- ServicioUsuario -->
+  <rect class="box" x="830" y="135" width="350" height="150"/>
+  <text x="1005" y="163" text-anchor="middle" class="title">ServicioUsuario</text>
+  <line x1="830" y1="175" x2="1180" y2="175" stroke="#cbd5e1"/>
+  <text x="850" y="200" class="text">- repositorio_usuario</text>
+  <text x="850" y="222" class="text">- validaciones</text>
+  <line x1="830" y1="235" x2="1180" y2="235" stroke="#cbd5e1"/>
+  <text x="850" y="257" class="text">+ iniciar_sesion() / registrar()</text>
+
+  <!-- ServicioBilletera -->
+  <rect class="box" x="830" y="340" width="350" height="155"/>
+  <text x="1005" y="368" text-anchor="middle" class="title">ServicioBilletera</text>
+  <line x1="830" y1="380" x2="1180" y2="380" stroke="#cbd5e1"/>
+  <text x="850" y="405" class="text">- repositorio_billetera</text>
+  <text x="850" y="427" class="text">- operaciones</text>
+  <line x1="830" y1="440" x2="1180" y2="440" stroke="#cbd5e1"/>
+  <text x="850" y="462" class="text">+ obtener_billetera()</text>
+  <text x="850" y="484" class="text">+ ejecutar(pago/movimiento)</text>
+
+  <!-- ServicioViaje -->
+  <rect class="box" x="830" y="570" width="350" height="170"/>
+  <text x="1005" y="598" text-anchor="middle" class="title">ServicioViaje &lt;&lt;Facade&gt;&gt;</text>
+  <line x1="830" y1="610" x2="1180" y2="610" stroke="#cbd5e1"/>
+  <text x="850" y="635" class="text">- pasajero / conductor</text>
+  <text x="850" y="657" class="text">- comun / pagos</text>
+  <line x1="830" y1="670" x2="1180" y2="670" stroke="#cbd5e1"/>
+  <text x="850" y="692" class="text">+ buscar_vehiculos()</text>
+  <text x="850" y="714" class="text">+ confirmar / iniciar viaje()</text>
+
+  <!-- Validaciones -->
+  <rect class="box" x="830" y="790" width="350" height="90"/>
+  <text x="1005" y="818" text-anchor="middle" class="title">Validaciones</text>
+  <line x1="830" y1="830" x2="1180" y2="830" stroke="#cbd5e1"/>
+  <text x="850" y="855" class="text">+ validar_usuario/billetera/viaje()</text>
+
+  <!-- Repositorio -->
+  <rect class="box" x="1290" y="250" width="210" height="135"/>
+  <text x="1395" y="278" text-anchor="middle" class="title">Repositorio</text>
+  <line x1="1290" y1="290" x2="1500" y2="290" stroke="#cbd5e1"/>
+  <text x="1310" y="315" class="text">- archivo</text>
+  <text x="1310" y="337" class="text">- datos</text>
+  <line x1="1290" y1="350" x2="1500" y2="350" stroke="#cbd5e1"/>
+  <text x="1310" y="372" class="text">+ cargar()/guardar()</text>
+
+  <!-- Modelo -->
+  <rect class="box" x="1290" y="555" width="210" height="135"/>
+  <text x="1395" y="583" text-anchor="middle" class="title">Modelo</text>
+  <line x1="1290" y1="595" x2="1500" y2="595" stroke="#cbd5e1"/>
+  <text x="1310" y="620" class="text">+ Usuario</text>
+  <text x="1310" y="642" class="text">+ Billetera</text>
+  <text x="1310" y="664" class="text">+ Viaje / Resultado</text>
+
+  <!-- Relationships -->
+  <path class="line" d="M335 232 C390 232, 400 228, 455 228"/>
+  <text x="382" y="218" class="label">crea</text>
+
+  <path class="line" d="M210 310 L210 405"/>
+  <text x="225" y="360" class="label">muestra</text>
+
+  <path class="line" d="M335 485 C390 485, 400 482, 455 482"/>
+  <text x="365" y="470" class="label">acciones</text>
+
+  <path class="line" d="M725 450 C775 390, 780 230, 830 210"/>
+  <text x="738" y="314" class="label">login/registro</text>
+
+  <path class="line" d="M725 485 C780 485, 785 420, 830 420"/>
+  <text x="748" y="450" class="label">billetera</text>
+
+  <path class="line" d="M725 530 C780 560, 785 650, 830 650"/>
+  <text x="755" y="610" class="label">viaje</text>
+
+  <path class="line" d="M1180 210 C1230 210, 1245 300, 1290 300"/>
+  <text x="1210" y="248" class="label">consulta</text>
+
+  <path class="line" d="M1180 420 C1230 420, 1245 350, 1290 350"/>
+  <text x="1212" y="395" class="label">persiste</text>
+
+  <path class="line" d="M1180 647 C1230 647, 1245 630, 1290 630"/>
+  <text x="1214" y="622" class="label">crea</text>
+
+  <path class="line" d="M1395 385 L1395 555"/>
+  <text x="1410" y="476" class="label">almacena objetos</text>
+
+  <path class="line dashed" d="M1005 740 L1005 790"/>
+  <text x="1020" y="770" class="label">valida</text>
+
+  <path class="line dashed" d="M1005 495 L1005 790"/>
+  <text x="1020" y="655" class="label">valida pagos</text>
+
+  <path class="line dashed" d="M1005 285 L1005 790"/>
+  <text x="1020" y="540" class="label">valida datos</text>
+
+  <path class="line" d="M1005 570 L1005 495"/>
+  <text x="1020" y="535" class="label">cobra / abona</text>
+
+  <rect x="70" y="905" width="1360" height="45" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="90" y="932" class="small">
+    Lectura del flujo: Navegacion muestra una Vista, la Vista envia acciones al Controlador, el Controlador llama Servicios, los Servicios validan reglas y consultan/guardan Modelos en Repositorios.
+  </text>
+</svg>

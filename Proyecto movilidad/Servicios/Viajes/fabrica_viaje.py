@@ -72,6 +72,4 @@ class FabricaViaje:
         )
 
     def nombre_usuario(self, usuario):
-        if usuario is None:
-            return ""
-        return f"{getattr(usuario, 'nombre', '')} {getattr(usuario, 'apellido', '')}".strip()
+        return f"{usuario.nombre} {usuario.apellido}".strip()

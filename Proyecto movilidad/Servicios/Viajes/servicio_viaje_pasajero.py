@@ -16,13 +16,11 @@ class ServicioViajePasajero:
         self,
         servicio_comun,
         servicio_pagos,
-        validaciones=None,
-        randomizador=None,
     ):
         self.comun = servicio_comun
         self.pagos = servicio_pagos
-        self.validaciones = validaciones or ValidacionesViaje()
-        self.randomizador = randomizador or Random()
+        self.validaciones = ValidacionesViaje()
+        self.randomizador = Random()
 
     def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
         valido, error = self.validaciones.validar_busqueda_vehiculos(

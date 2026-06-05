@@ -2,7 +2,6 @@ from Modelos.Viaje.modelo_viajes import (
     CalleOsorno,
     ConductorSimulado,
     PasajeroSimulado,
-    PuntoRelativo,
 )
 
 
@@ -14,15 +13,7 @@ OSORNO_LNG_OESTE = -73.1650
 OSORNO_LNG_ESTE = -73.0850
 
 
-def punto_relativo_desde_coordenada(latitud: float, longitud: float) -> PuntoRelativo:
-    """Convierte una coordenada real a un punto normalizado entre 0 y 1."""
-
-    x = (longitud - OSORNO_LNG_OESTE) / (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
-    y = (latitud - OSORNO_LAT_NORTE) / (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
-    return (
-        min(1.0, max(0.0, round(x, 5))),
-        min(1.0, max(0.0, round(y, 5))),
-    )
+from Servicios.Viajes.trayectoria import punto_relativo_desde_coordenada
 
 
 COORDENADAS_REALES_OSORNO = {

@@ -16,13 +16,12 @@ class ServicioViajeConductor:
         self,
         servicio_comun,
         servicio_pagos,
-        randomizador=None,
     ):
         self.comun = servicio_comun
         self.pagos = servicio_pagos
         self.randomizador = randomizador or Random()
 
-    def buscar_pasajeros(self, ubicacion_conductor):
+    def buscar_pasajeros(self, ubicacion_conductor):                                                           
         pasajeros = tuple(PASAJEROS_SIMULADOS)
         pasajero = self.randomizador.choice(pasajeros)
         duracion_busqueda = self.randomizador.randint(5, 10)

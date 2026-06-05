@@ -1,0 +1,343 @@
+@startuml
+skinparam classAttributeIconSize 0
+title UML resumido - Proyecto movilidad
+
+package "Navegacion y configuracion" {
+  class Navegacion {
+    -ventana
+    -usuario_actual
+    -dependencias
+    -navegador
+    +iniciar()
+    +navegar(destino)
+    +establecer_usuario_actual(usuario)
+    +obtener_usuario_actual()
+  }
+
+  class NavegadorRutas {
+    -rutas
+    +navegar(destino)
+  }
+
+  class DependenciasAplicacion {
+    -repositorios
+    -servicios
+    -controladores
+    +__init__()
+  }
+}
+
+package "Vistas" {
+  class VistaInicioSesion {
+    -controlador
+    -navegar
+    +iniciar_sesion()
+  }
+
+  class VistaRegistro {
+    -controlador
+    -navegar
+    +registrar()
+  }
+
+  class VistaMenu {
+    -navegar
+    +crear_widgets()
+  }
+
+  class VistaBilletera {
+    -controlador_resumen
+    -controlador_tarjetas
+    -controlador_movimientos
+    -usuario
+    +agregar_tarjeta()
+    +eliminar_tarjeta()
+    +mover_saldo()
+    +actualizar_vista()
+  }
+
+  class VistaViaje {
+    +__init__(tipo_usuario)
+  }
+
+  class VistaViajePasajero {
+    -controlador_pasajero
+    -usuario_actual
+    -estado_visual
+    -renderizador
+    -acciones
+    +crear_widgets()
+    +finalizar_viaje()
+  }
+
+  class VistaViajeConductor {
+    -controlador_conductor
+    -usuario_actual
+    -estado_visual
+    -renderizador
+    -acciones
+    +crear_widgets()
+    +finalizar_viaje()
+  }
+}
+
+package "Controladores" {
+  class ControladorInicioSesion {
+    -servicio_autenticacion
+    +iniciar_sesion(correo, contrasena)
+  }
+
+  class ControladorRegistro {
+    -servicio_registro
+    +registrar_pasajero(...)
+    +registrar_conductor(...)
+  }
+
+  class ControladorBilletera {
+    -servicio_billetera
+    -servicio_tarjeta
+    +obtener_resumen(usuario)
+    +agregar_tarjeta(...)
+    +eliminar_tarjeta(...)
+    +mover_saldo(...)
+  }
+
+  class ControladorViajePasajero {
+    -servicio_viaje
+    +obtener_lugares_disponibles()
+    +buscar_vehiculos_pasajero(...)
+    +confirmar_pago_pasajero(...)
+  }
+
+  class ControladorViajeConductor {
+    -servicio_viaje
+    +obtener_lugares_disponibles()
+    +buscar_pasajero_conductor(...)
+    +iniciar_viaje_conductor(...)
+  }
+}
+
+package "Servicios usuario" {
+  class ServicioAutenticacion {
+    -repositorio_usuario
+    -buscador_usuario_por_correo
+    -validadores
+    +iniciar_sesion(correo, contrasena)
+  }
+
+  class ServicioRegistro {
+    -repositorio_usuario
+    -fabrica_usuario
+    -validaciones_usuario
+    -validaciones_conductor
+    +registrar_pasajero(datos, confirmar_contrasena)
+    +registrar_conductor(datos, confirmar_contrasena)
+  }
+
+  class FabricaUsuario {
+    +crear_pasajero(datos)
+    +crear_conductor(datos)
+    +crear_desde_dict(datos)
+  }
+}
+
+package "Servicios billetera" {
+  class ServicioBilletera {
+    -repositorio_billetera
+    -operaciones
+    +obtener_billetera(usuario)
+    +ejecutar(nombre_operacion, usuario, monto, numero_tarjeta)
+    +obtener_resumen(usuario)
+  }
+
+  class ServicioTarjeta {
+    -repositorio_billetera
+    -buscador_tarjeta
+    -validaciones_tarjeta
+    -fabrica_tarjeta
+    +obtener_tarjetas(usuario)
+    +agregar_tarjeta(...)
+    +eliminar_tarjeta(...)
+  }
+
+  abstract class OperacionBilletera {
+    +ejecutar(solicitud)
+  }
+
+  class OperacionPago {
+    -pago
+    +ejecutar(solicitud)
+  }
+
+  class OperacionMovimientoTarjeta {
+    -servicio_tarjeta
+    -mover
+    +ejecutar(solicitud)
+  }
+}
+
+package "Servicios viaje" {
+  class ServicioViaje <<Facade>> {
+    -comun
+    -pagos
+    -pasajero
+    -conductor
+    +buscar_vehiculos(...)
+    +confirmar_viaje_pasajero(...)
+    +buscar_pasajeros(...)
+    +iniciar_viaje_conductor(...)
+  }
+
+  class ServicioViajePasajero {
+    -comun
+    -pagos
+    -validaciones
+    -randomizador
+    +buscar_vehiculos(...)
+    +confirmar_viaje(...)
+  }
+
+  class ServicioViajeConductor {
+    -comun
+    -pagos
+    -randomizador
+    +buscar_pasajeros(...)
+    +iniciar_viaje(...)
+  }
+
+  class ServicioViajeComun {
+    -trayectoria
+    -calculadora
+    -fabrica
+    -viajes
+    +obtener_lugares_disponibles()
+    +formar_trayectoria(...)
+    +iniciar_viaje(viaje)
+    +calcular_tiempos_viaje(...)
+  }
+
+  class ServicioPagoViaje {
+    -servicio_billetera
+    -validaciones
+    +cobrar_pasajero(usuario, monto)
+    +abonar_conductor(usuario, monto)
+  }
+
+  class FabricaViaje {
+    -trayectoria
+    -calculadora
+    +crear_vehiculo_disponible(...)
+    +crear_pasajero_encontrado(...)
+    +crear_viaje_pasajero(...)
+    +crear_viaje_conductor(...)
+  }
+
+  class Trayectoria {
+    +coordenada_real(punto)
+    +calcular_trayectoria(inicio, destino)
+  }
+
+  class CalculadoraViaje {
+    +calcular_km_trayectoria(ruta)
+    +calcular_tiempos_viaje(...)
+  }
+}
+
+package "Repositorios" {
+  class RepositorioUsuario {
+    -usuarios
+    -archivo
+    +agregar(usuario)
+    +listar()
+  }
+
+  class RepositorioBilletera {
+    -billeteras
+    -archivo
+    +obtener(usuario)
+    +guardar_por_usuario(id_usuario, billetera)
+  }
+}
+
+package "Modelos principales" {
+  class Usuario {
+    +id_usuario
+    +nombre
+    +apellido
+    +correo
+    +tipo_usuario
+  }
+
+  class Pasajero
+  class Conductor
+
+  class Billetera {
+    +saldo
+    +tarjetas
+    +transacciones
+  }
+
+  class Tarjetas {
+    +numero_tarjeta
+    +saldo
+  }
+
+  class VehiculoDisponible
+  class PasajeroEncontrado
+  class Viaje
+  class ResultadoViaje
+}
+
+' Relaciones principales para explicar en presentacion
+Navegacion *-- DependenciasAplicacion
+Navegacion *-- NavegadorRutas
+NavegadorRutas --> VistaInicioSesion
+NavegadorRutas --> VistaRegistro
+NavegadorRutas --> VistaMenu
+NavegadorRutas --> VistaBilletera
+NavegadorRutas --> VistaViaje
+
+VistaInicioSesion --> ControladorInicioSesion
+VistaRegistro --> ControladorRegistro
+VistaBilletera --> ControladorBilletera
+VistaViaje --> VistaViajePasajero
+VistaViaje --> VistaViajeConductor
+VistaViajePasajero --> ControladorViajePasajero
+VistaViajeConductor --> ControladorViajeConductor
+
+ControladorInicioSesion --> ServicioAutenticacion
+ControladorRegistro --> ServicioRegistro
+ControladorBilletera --> ServicioBilletera
+ControladorBilletera --> ServicioTarjeta
+ControladorViajePasajero --> ServicioViaje
+ControladorViajeConductor --> ServicioViaje
+
+ServicioAutenticacion --> RepositorioUsuario
+ServicioRegistro --> RepositorioUsuario
+ServicioRegistro --> FabricaUsuario
+ServicioBilletera --> RepositorioBilletera
+ServicioTarjeta --> RepositorioBilletera
+ServicioBilletera o-- OperacionBilletera
+OperacionBilletera <|-- OperacionPago
+OperacionBilletera <|-- OperacionMovimientoTarjeta
+
+ServicioViaje *-- ServicioViajePasajero
+ServicioViaje *-- ServicioViajeConductor
+ServicioViaje *-- ServicioViajeComun
+ServicioViaje *-- ServicioPagoViaje
+ServicioViajeComun *-- Trayectoria
+ServicioViajeComun *-- CalculadoraViaje
+ServicioViajeComun *-- FabricaViaje
+ServicioPagoViaje --> ServicioBilletera
+FabricaViaje --> VehiculoDisponible
+FabricaViaje --> PasajeroEncontrado
+FabricaViaje --> Viaje
+ServicioViajePasajero --> ResultadoViaje
+ServicioViajeConductor --> ResultadoViaje
+
+Usuario <|-- Pasajero
+Usuario <|-- Conductor
+Usuario --> Billetera
+Billetera o-- Tarjetas
+
+@enduml

@@ -1,0 +1,110 @@
+@startuml
+skinparam classAttributeIconSize 0
+title UML flujo app - maximo 10 clases
+
+class Navegacion {
+  -usuario_actual
+  -dependencias
+  -navegador
+  +iniciar()
+  +navegar(destino)
+  +establecer_usuario_actual(usuario)
+  +obtener_usuario_actual()
+}
+
+class DependenciasAplicacion {
+  -repositorios
+  -servicios
+  -controladores
+  +__init__()
+}
+
+class Vista {
+  -controlador
+  -usuario_actual
+  +mostrar_pantalla()
+  +capturar_datos()
+  +mostrar_resultado()
+}
+
+class Controlador {
+  -servicio
+  +procesar_accion()
+  +devolver_resultado()
+}
+
+class ServicioUsuario {
+  -repositorio_usuario
+  -fabrica_usuario
+  -validaciones
+  +iniciar_sesion(correo, contrasena)
+  +registrar_pasajero(datos)
+  +registrar_conductor(datos)
+}
+
+class ServicioBilletera {
+  -repositorio_billetera
+  -operaciones
+  +obtener_billetera(usuario)
+  +agregar_tarjeta(...)
+  +mover_saldo(...)
+  +ejecutar(nombre_operacion, usuario, monto)
+}
+
+class ServicioViaje <<Facade>> {
+  -servicio_pasajero
+  -servicio_conductor
+  -servicio_comun
+  -servicio_pagos
+  +buscar_vehiculos(...)
+  +confirmar_viaje_pasajero(...)
+  +buscar_pasajeros(...)
+  +iniciar_viaje_conductor(...)
+}
+
+class Repositorio {
+  -archivo
+  -datos
+  +cargar()
+  +guardar()
+  +listar()
+  +obtener()
+}
+
+class Modelo {
+  +datos
+}
+
+class Validaciones {
+  +validar_usuario()
+  +validar_billetera()
+  +validar_viaje()
+}
+
+Navegacion *-- DependenciasAplicacion
+Navegacion --> Vista : muestra pantallas
+DependenciasAplicacion *-- Controlador
+DependenciasAplicacion *-- ServicioUsuario
+DependenciasAplicacion *-- ServicioBilletera
+DependenciasAplicacion *-- ServicioViaje
+DependenciasAplicacion *-- Repositorio
+
+Vista --> Controlador : envia acciones del usuario
+Controlador --> ServicioUsuario : login / registro
+Controlador --> ServicioBilletera : tarjetas / saldo
+Controlador --> ServicioViaje : busqueda / viaje
+
+ServicioUsuario --> Repositorio : guarda y consulta usuarios
+ServicioBilletera --> Repositorio : guarda y consulta billeteras
+ServicioViaje --> ServicioBilletera : cobra / abona pagos
+
+ServicioUsuario --> Validaciones
+ServicioBilletera --> Validaciones
+ServicioViaje --> Validaciones
+
+Repositorio --> Modelo : persiste objetos
+ServicioUsuario --> Modelo : crea usuarios
+ServicioBilletera --> Modelo : crea billeteras / tarjetas
+ServicioViaje --> Modelo : crea viajes / resultados
+
+@enduml
