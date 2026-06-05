@@ -1,5 +1,5 @@
 """Controlador simple para manejar el flujo entre pantallas."""
-
+"""vista llama aca y navegacion busca la ruta entre los diccionarios!"""
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
