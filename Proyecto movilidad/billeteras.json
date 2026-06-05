@@ -1,364 +1,430 @@
 [
     {
-        "saldo": 61100.0,
+        "saldo": 182200,
         "tarjetas": [
             {
                 "titular": "adolfo",
                 "numero_tarjeta": "4507 9900 0000 4905",
                 "vencimiento": "12/27",
-                "saldo": 5448.0
+                "saldo": 5448
             },
             {
                 "titular": "hardy",
                 "numero_tarjeta": "4111111111111116",
                 "vencimiento": "12/29",
-                "saldo": 131920.0
+                "saldo": 1920
             }
         ],
         "transacciones": [
             {
                 "id_transaccion": "TRX0001",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12000.0,
+                "monto": 12000,
                 "fecha": "03-06-2026 21:43"
             },
             {
                 "id_transaccion": "TRX0002",
                 "tipo": "Pago",
-                "monto": 3900.0,
+                "monto": 3900,
                 "fecha": "03-06-2026 21:43"
             },
             {
                 "id_transaccion": "TRX0003",
                 "tipo": "Pago",
-                "monto": 4500.0,
+                "monto": 4500,
                 "fecha": "04-06-2026 11:32"
             },
             {
                 "id_transaccion": "TRX0004",
                 "tipo": "Carga desde tarjeta",
-                "monto": 1000.0,
+                "monto": 1000,
                 "fecha": "04-06-2026 12:23"
             },
             {
                 "id_transaccion": "TRX0005",
                 "tipo": "Carga desde tarjeta",
-                "monto": 1000.0,
+                "monto": 1000,
                 "fecha": "04-06-2026 12:23"
             },
             {
                 "id_transaccion": "TRX0006",
                 "tipo": "Carga desde tarjeta",
-                "monto": 10000.0,
+                "monto": 10000,
                 "fecha": "04-06-2026 12:23"
             },
             {
                 "id_transaccion": "TRX0007",
                 "tipo": "Carga desde tarjeta",
-                "monto": 10000.0,
+                "monto": 10000,
                 "fecha": "04-06-2026 12:23"
             },
             {
                 "id_transaccion": "TRX0008",
                 "tipo": "Pago",
-                "monto": 4000.0,
+                "monto": 4000,
                 "fecha": "04-06-2026 12:23"
             },
             {
                 "id_transaccion": "TRX0009",
                 "tipo": "Pago",
-                "monto": 3600.0,
+                "monto": 3600,
                 "fecha": "04-06-2026 15:09"
             },
             {
                 "id_transaccion": "TRX0010",
                 "tipo": "Pago",
-                "monto": 4300.0,
+                "monto": 4300,
                 "fecha": "04-06-2026 15:10"
             },
             {
                 "id_transaccion": "TRX0011",
                 "tipo": "Pago",
-                "monto": 4500.0,
+                "monto": 4500,
                 "fecha": "04-06-2026 15:47"
             },
             {
                 "id_transaccion": "TRX0012",
                 "tipo": "Pago",
-                "monto": 4100.0,
+                "monto": 4100,
                 "fecha": "04-06-2026 16:43"
             },
             {
                 "id_transaccion": "TRX0013",
                 "tipo": "Pago",
-                "monto": 4000.0,
+                "monto": 4000,
                 "fecha": "04-06-2026 19:29"
             },
             {
                 "id_transaccion": "TRX0014",
                 "tipo": "Carga desde tarjeta",
-                "monto": 60000.0,
+                "monto": 60000,
                 "fecha": "05-06-2026 09:38"
+            },
+            {
+                "id_transaccion": "TRX0015",
+                "tipo": "Carga desde tarjeta",
+                "monto": 100000,
+                "fecha": "05-06-2026 11:06"
+            },
+            {
+                "id_transaccion": "TRX0016",
+                "tipo": "Pago",
+                "monto": 4500,
+                "fecha": "05-06-2026 11:17"
+            },
+            {
+                "id_transaccion": "TRX0017",
+                "tipo": "Pago",
+                "monto": 4400,
+                "fecha": "05-06-2026 11:18"
+            },
+            {
+                "id_transaccion": "TRX0018",
+                "tipo": "Carga desde tarjeta",
+                "monto": 10000,
+                "fecha": "05-06-2026 11:18"
+            },
+            {
+                "id_transaccion": "TRX0019",
+                "tipo": "Carga desde tarjeta",
+                "monto": 20000,
+                "fecha": "05-06-2026 11:19"
             }
         ],
         "id_usuario": "USR0001"
     },
     {
-        "saldo": 71208.0,
+        "saldo": 349508,
         "tarjetas": [
             {
                 "titular": "adolfo",
                 "numero_tarjeta": "4532 1111 1111 1112",
                 "vencimiento": "12/27",
-                "saldo": 23138.0
+                "saldo": 23138
             },
             {
                 "titular": "123",
                 "numero_tarjeta": "4000 0015 2000 0001",
                 "vencimiento": "12/27",
-                "saldo": 283184.0
+                "saldo": 13184
             }
         ],
         "transacciones": [
             {
                 "id_transaccion": "TRX0001",
                 "tipo": "Pago recibido",
-                "monto": 4500.0,
+                "monto": 4500,
                 "fecha": "01-06-2026 20:04"
             },
             {
                 "id_transaccion": "TRX0002",
                 "tipo": "Pago recibido",
-                "monto": 4200.0,
+                "monto": 4200,
                 "fecha": "01-06-2026 20:19"
             },
             {
                 "id_transaccion": "TRX0003",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0004",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0005",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0006",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0007",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0008",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0009",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0010",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0011",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0012",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0013",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0014",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0015",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0016",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0017",
                 "tipo": "Carga desde tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0018",
                 "tipo": "Retiro a tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0019",
                 "tipo": "Retiro a tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0020",
                 "tipo": "Retiro a tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0021",
                 "tipo": "Retiro a tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0022",
                 "tipo": "Retiro a tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0023",
                 "tipo": "Retiro a tarjeta",
-                "monto": 12.0,
+                "monto": 12,
                 "fecha": "01-06-2026 20:26"
             },
             {
                 "id_transaccion": "TRX0024",
                 "tipo": "Pago recibido",
-                "monto": 3900.0,
+                "monto": 3900,
                 "fecha": "01-06-2026 20:27"
             },
             {
                 "id_transaccion": "TRX0025",
                 "tipo": "Pago recibido",
-                "monto": 3900.0,
+                "monto": 3900,
                 "fecha": "02-06-2026 17:40"
             },
             {
                 "id_transaccion": "TRX0026",
                 "tipo": "Pago recibido",
-                "monto": 3600.0,
+                "monto": 3600,
                 "fecha": "02-06-2026 19:18"
             },
             {
                 "id_transaccion": "TRX0027",
                 "tipo": "Pago recibido",
-                "monto": 4100.0,
+                "monto": 4100,
                 "fecha": "02-06-2026 19:19"
             },
             {
                 "id_transaccion": "TRX0028",
                 "tipo": "Carga desde tarjeta",
-                "monto": 2000.0,
+                "monto": 2000,
                 "fecha": "03-06-2026 00:27"
             },
             {
                 "id_transaccion": "TRX0029",
                 "tipo": "Carga desde tarjeta",
-                "monto": 2000.0,
+                "monto": 2000,
                 "fecha": "03-06-2026 00:27"
             },
             {
                 "id_transaccion": "TRX0030",
                 "tipo": "Carga desde tarjeta",
-                "monto": 2000.0,
+                "monto": 2000,
                 "fecha": "03-06-2026 00:27"
             },
             {
                 "id_transaccion": "TRX0031",
                 "tipo": "Pago recibido",
-                "monto": 3900.0,
+                "monto": 3900,
                 "fecha": "03-06-2026 21:34"
             },
             {
                 "id_transaccion": "TRX0032",
                 "tipo": "Pago recibido",
-                "monto": 3900.0,
+                "monto": 3900,
                 "fecha": "03-06-2026 21:36"
             },
             {
                 "id_transaccion": "TRX0033",
                 "tipo": "Pago recibido",
-                "monto": 4500.0,
+                "monto": 4500,
                 "fecha": "03-06-2026 21:56"
             },
             {
                 "id_transaccion": "TRX0034",
                 "tipo": "Pago recibido",
-                "monto": 4200.0,
+                "monto": 4200,
                 "fecha": "04-06-2026 11:32"
             },
             {
                 "id_transaccion": "TRX0035",
                 "tipo": "Pago recibido",
-                "monto": 3600.0,
+                "monto": 3600,
                 "fecha": "04-06-2026 15:11"
             },
             {
                 "id_transaccion": "TRX0036",
                 "tipo": "Pago recibido",
-                "monto": 4100.0,
+                "monto": 4100,
                 "fecha": "04-06-2026 15:12"
             },
             {
                 "id_transaccion": "TRX0037",
                 "tipo": "Pago recibido",
-                "monto": 3900.0,
+                "monto": 3900,
                 "fecha": "04-06-2026 15:13"
             },
             {
                 "id_transaccion": "TRX0038",
                 "tipo": "Pago recibido",
-                "monto": 4200.0,
+                "monto": 4200,
                 "fecha": "04-06-2026 16:44"
             },
             {
                 "id_transaccion": "TRX0039",
                 "tipo": "Pago recibido",
-                "monto": 4500.0,
+                "monto": 4500,
                 "fecha": "04-06-2026 16:46"
             },
             {
                 "id_transaccion": "TRX0040",
                 "tipo": "Pago recibido",
-                "monto": 4100.0,
+                "monto": 4100,
                 "fecha": "05-06-2026 09:34"
+            },
+            {
+                "id_transaccion": "TRX0041",
+                "tipo": "Pago recibido",
+                "monto": 4100,
+                "fecha": "05-06-2026 11:08"
+            },
+            {
+                "id_transaccion": "TRX0042",
+                "tipo": "Carga desde tarjeta",
+                "monto": 200000,
+                "fecha": "05-06-2026 11:09"
+            },
+            {
+                "id_transaccion": "TRX0043",
+                "tipo": "Carga desde tarjeta",
+                "monto": 10000,
+                "fecha": "05-06-2026 11:15"
+            },
+            {
+                "id_transaccion": "TRX0044",
+                "tipo": "Carga desde tarjeta",
+                "monto": 70000,
+                "fecha": "05-06-2026 11:15"
+            },
+            {
+                "id_transaccion": "TRX0045",
+                "tipo": "Retiro a tarjeta",
+                "monto": 10000,
+                "fecha": "05-06-2026 11:15"
+            },
+            {
+                "id_transaccion": "TRX0046",
+                "tipo": "Pago recibido",
+                "monto": 4200,
+                "fecha": "05-06-2026 11:16"
             }
         ],
         "id_usuario": "USR0002"

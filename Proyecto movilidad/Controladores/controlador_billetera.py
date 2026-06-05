@@ -42,16 +42,16 @@ class ControladorMovimientosBilletera:
         self.servicio_billetera = servicio_billetera
 
     def pagar(self, usuario, monto):
-        return self.servicio_billetera.ejecutar("pagar", usuario, float(monto))
+        return self.servicio_billetera.ejecutar("pagar", usuario, monto)
 
     def recibir(self, usuario, monto):
-        return self.servicio_billetera.ejecutar("recibir", usuario, float(monto))
+        return self.servicio_billetera.ejecutar("recibir", usuario, monto)
 
     def cargar_desde_tarjeta(self, usuario, numero_tarjeta, monto):
         return self.servicio_billetera.ejecutar(
             "cargar",
             usuario,
-            float(monto),
+            monto,
             numero_tarjeta,
         )
 
@@ -59,14 +59,20 @@ class ControladorMovimientosBilletera:
         return self.servicio_billetera.ejecutar(
             "retirar",
             usuario,
-            float(monto),
+            monto,
             numero_tarjeta,
         )
 
     def mover_saldo(self, usuario, numero_tarjeta, direccion, monto):
         return self.servicio_billetera.ejecutar(
-            self.OPERACIONES_MOVIMIENTO[direccion],
+            self._operacion_por_direccion(direccion),
             usuario,
-            float(monto),
+            monto,
             numero_tarjeta,
         )
+
+    def _operacion_por_direccion(self, direccion):
+        operacion = self.OPERACIONES_MOVIMIENTO.get(direccion)
+        if operacion is None:
+            raise ValueError("Direccion de movimiento invalida.")
+        return operacion

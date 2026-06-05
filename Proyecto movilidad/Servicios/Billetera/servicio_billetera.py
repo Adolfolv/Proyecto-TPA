@@ -19,7 +19,9 @@ class ServicioBilletera:
     def ejecutar(self, nombre_operacion, usuario, monto, numero_tarjeta=None):
         # Patron Strategy/Command: cada nombre apunta a un objeto operacion distinto.
         # El nombre recibido elige una estrategia concreta: pagar, recibir, cargar o retirar.
-        operacion = self.operaciones[nombre_operacion]
+        operacion = self.operaciones.get(nombre_operacion)
+        if operacion is None:
+            raise ValueError("Operacion de billetera invalida.")
         solicitud = SolicitudOperacionBilletera(
             usuario,
             normalizar_monto_entero(monto),

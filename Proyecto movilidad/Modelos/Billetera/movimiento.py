@@ -5,6 +5,7 @@ from Validaciones.billetera import (
     ValidadorMontoPositivo,
     ValidadorSaldoSuficiente,
     normalizar_monto_entero,
+    normalizar_saldo_entero,
 )
 
 # Archivo para manejar las operaciones relacionadas con 
@@ -21,7 +22,7 @@ class AdicionMonto:
         self.validador_monto_positivo.validar(monto)
         monto = normalizar_monto_entero(monto)
         # objeto puede ser una billetera o una tarjeta; ambos tienen atributo saldo.
-        objeto.saldo += monto
+        objeto.saldo = normalizar_saldo_entero(getattr(objeto, "saldo", 0)) + monto
         return True
 
 
@@ -29,7 +30,7 @@ class AdicionMonto:
         # Antes de descontar se comprueba que el origen tenga saldo suficiente.
         self.validador_saldo_suficiente.validar((billetera, monto))
         monto = normalizar_monto_entero(monto)
-        billetera.saldo -= monto
+        billetera.saldo = normalizar_saldo_entero(getattr(billetera, "saldo", 0)) - monto
         return True
 
 

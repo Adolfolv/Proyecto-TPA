@@ -1,28 +1,48 @@
-from abstracciones import Validador
 from datetime import date
+
+from abstracciones import Validador
 from Validaciones.registro import ValidadorNombre
 
 
 def normalizar_numero_tarjeta(numero):
-    return str(numero or "").replace(" ", "").replace("-", "")
+    return str(numero or "").strip().replace(" ", "").replace("-", "")
+
+
+def _mensaje_entero(nombre, permite_cero):
+    minimo = "mayor o igual a 0" if permite_cero else "mayor a 0"
+    return f"El {nombre} debe ser un numero entero {minimo}."
+
+
+def _normalizar_entero(valor, nombre, permite_cero=False):
+    if isinstance(valor, bool):
+        raise ValueError(_mensaje_entero(nombre, permite_cero))
+
+    if isinstance(valor, int):
+        numero = valor
+    elif isinstance(valor, float):
+        if not valor.is_integer():
+            raise ValueError(_mensaje_entero(nombre, permite_cero))
+        numero = int(valor)
+    else:
+        texto = str(valor or "").strip()
+        if texto.endswith(".0"):
+            texto = texto[:-2]
+        if not texto.isdigit():
+            raise ValueError(_mensaje_entero(nombre, permite_cero))
+        numero = int(texto)
+
+    if numero < 0 or (numero == 0 and not permite_cero):
+        raise ValueError(_mensaje_entero(nombre, permite_cero))
+
+    return numero
 
 
 def normalizar_monto_entero(valor):
-    if isinstance(valor, bool):
-        raise ValueError("El monto debe ser un número entero mayor a 0.")
+    return _normalizar_entero(valor, "monto", False)
 
-    if isinstance(valor, int):
-        monto = valor
-    else:
-        texto = str(valor or "").strip()
-        if not texto.isdigit():
-            raise ValueError("El monto debe ser un número entero mayor a 0.")
-        monto = int(texto)
 
-    if monto <= 0:
-        raise ValueError("El monto debe ser un número entero mayor a 0.")
-
-    return monto
+def normalizar_saldo_entero(valor):
+    return _normalizar_entero(valor, "saldo", True)
 
 
 class ValidadorMontoPositivo(Validador):
@@ -37,11 +57,12 @@ class ValidadorSaldoSuficiente(Validador):
 
     def validar(self, datos):
         objeto, monto = datos
-
         self.validador_monto.validar(monto)
+
+        saldo = normalizar_saldo_entero(getattr(objeto, "saldo", 0))
         monto = normalizar_monto_entero(monto)
 
-        if getattr(objeto, "saldo", 0) < monto:
+        if saldo < monto:
             raise ValueError("Saldo insuficiente.")
 
         return True
@@ -57,9 +78,9 @@ class ValidadorTarjetaEncontrada(Validador):
 
 class ValidadorTarjetaNoDuplicada(Validador):
     def validar(self, datos):
-        origen, tarjeta = datos
+        origen, numero = datos
         billetera = getattr(origen, "billetera", origen)
-        numero_tarjeta = normalizar_numero_tarjeta(tarjeta.numero_tarjeta)
+        numero_tarjeta = normalizar_numero_tarjeta(numero)
 
         for tarjeta_guardada in billetera.tarjetas:
             numero_guardado = normalizar_numero_tarjeta(
@@ -73,7 +94,10 @@ class ValidadorTarjetaNoDuplicada(Validador):
 
 class ValidadorSaldoDefinido(Validador):
     def validar(self, valor):
-        return hasattr(valor, "saldo") and valor.saldo is not None
+        if not hasattr(valor, "saldo") or valor.saldo is None:
+            raise ValueError("Saldo no disponible.")
+        normalizar_saldo_entero(valor.saldo)
+        return True
 
 
 class ValidadorFechaVencimientoTarjeta(Validador):
@@ -146,21 +170,20 @@ class ValidadorNumeroTarjetaAmericanExpress(Validador):
 
 
 class ValidacionesTarjeta:
-
     def __init__(self, tipos_tarjeta):
         self.tipos_tarjeta = tipos_tarjeta
         self.validador_titular = ValidadorNombre()
         self.validador_fecha_vencimiento = ValidadorFechaVencimientoTarjeta()
         self.validador_tarjeta_no_duplicada = ValidadorTarjetaNoDuplicada()
 
-    def validar(self,titular, billetera, tarjeta, tipo, numero, vencimiento, cvv):
+    def validar(self, titular, billetera, tipo, numero, vencimiento, cvv):
         clase_tarjeta = self._obtener_clase_tarjeta(tipo)
         tarjeta_validadora = clase_tarjeta()
         self.validador_titular.validar(titular)
         tarjeta_validadora.numero_valido(numero)
         self._validar_cvv(tarjeta_validadora, cvv)
         self.validador_fecha_vencimiento.validar(vencimiento)
-        self.validador_tarjeta_no_duplicada.validar((billetera, tarjeta))
+        self.validador_tarjeta_no_duplicada.validar((billetera, numero))
 
     def _obtener_clase_tarjeta(self, tipo):
         clase_tarjeta = self.tipos_tarjeta.get(tipo)
@@ -171,7 +194,8 @@ class ValidacionesTarjeta:
         return clase_tarjeta
 
     def _validar_cvv(self, tarjeta_validadora, cvv):
-        if len(str(cvv)) != tarjeta_validadora.longitud_cvv:
+        cvv = str(cvv or "").strip()
+        if len(cvv) != tarjeta_validadora.longitud_cvv or not cvv.isdigit():
             raise ValueError("CVV invalido para el tipo de tarjeta seleccionado.")
 
         return True

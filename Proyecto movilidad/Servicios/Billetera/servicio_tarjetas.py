@@ -59,19 +59,17 @@ class ServicioTarjeta:
     def agregar_tarjeta(self, usuario, tipo, titular, numero, vencimiento, cvv):
         billetera = self._obtener_billetera(usuario)
 
-        # Primero se crea el objeto tarjeta y luego se valida contra la billetera.
-        tarjeta = self.fabrica_tarjeta.crear(titular, numero, vencimiento, cvv)
-
+        # El saldo aleatorio solo se genera cuando la tarjeta ya paso validaciones.
         self.validaciones_tarjeta.validar(
             titular,
             billetera,
-            tarjeta,
             tipo,
             numero,
             vencimiento,
             cvv,
         )
 
+        tarjeta = self.fabrica_tarjeta.crear(titular, numero, vencimiento, cvv)
         billetera.tarjetas.append(tarjeta)
         # Se persiste toda la billetera porque las tarjetas viven dentro de ella.
         self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)

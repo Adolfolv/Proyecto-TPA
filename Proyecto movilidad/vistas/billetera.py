@@ -1,9 +1,9 @@
 """Pantalla de billetera separada por responsabilidades.."""
 
 import tkinter as tk
-from tkinter import messagebox
 
 from .estilizacion import tema
+from .estilizacion.decoraciones import crear_panel_mensaje_registro
 from .estilizacion.widgets import Moldes
 
 
@@ -143,19 +143,25 @@ class PanelBilletera:
         self.moldes = moldes
         self.acciones = acciones
         self.numeros_tarjetas = []
+        self.mostrar_mensaje = None
 
     def crear(self):
-        self.panel_principal = self.moldes.crear_frame(self.padre, tema.PANEL, tema.BORDE, 1, 22, 22, llenar="both", expandir=True, margen_x=24, margen_y=24, columnas_peso=((0, 1),), filas_peso=((2, 1),))
+        self.panel_principal = self.moldes.crear_frame(self.padre, tema.PANEL, tema.BORDE, 1, 22, 22, llenar="both", expandir=True, margen_x=24, margen_y=24, columnas_peso=((0, 1),), filas_peso=((3, 1),))
         self.cabecera = CabeceraBilletera(self)
         self.resumen = ResumenBilletera(self)
         self.tarjetas = PanelTarjetasBilletera(self)
         self.movimiento = PanelMovimientoBilletera(self)
         self.cabecera.crear()
         self.resumen.crear()
+        self.crear_mensaje()
         self.crear_gestion()
 
+    def crear_mensaje(self):
+        area_mensaje = self.moldes.crear_frame(self.panel_principal, tema.PANEL, fila=2, columna=0, sticky="ew", margen_y=(0, 8))
+        self.mostrar_mensaje = crear_panel_mensaje_registro(area_mensaje, compacto=True)
+
     def crear_gestion(self):
-        gestion = self.moldes.crear_frame(self.panel_principal, tema.PANEL, fila=2, columna=0, sticky="nsew", margen_y=(0, 8), columnas_peso=((0, 1), (1, 1)), filas_peso=((0, 1),))
+        gestion = self.moldes.crear_frame(self.panel_principal, tema.PANEL, fila=3, columna=0, sticky="nsew", margen_y=(0, 8), columnas_peso=((0, 1), (1, 1)), filas_peso=((0, 1),))
         gestion.grid_columnconfigure(0, weight=1, uniform="gestion")
         gestion.grid_columnconfigure(1, weight=1, uniform="gestion")
         self.tarjetas.crear(gestion)
@@ -241,9 +247,9 @@ class VistaBilletera(tk.Frame):
         try:
             accion()
             self.actualizar_vista()
-            messagebox.showinfo("Billetera", mensaje_exito)
+            self.panel.mostrar_mensaje(mensaje_exito, True)
         except ValueError as error:
-            messagebox.showerror("Billetera", f"Revisa este dato: {error}")
+            self.panel.mostrar_mensaje(f"Revisa este dato: {error}")
 
     def actualizar_vista(self):
         if self.usuario is None:

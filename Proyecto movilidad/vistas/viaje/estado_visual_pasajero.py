@@ -8,6 +8,7 @@ class EstadoVisualPasajero:
     def reiniciar_busqueda(self):
         self.vista.panel_confirmacion.grid_remove()
         self.vista.boton_pagar.grid_remove()
+        self._habilitar_datos_busqueda()
 
     def vehiculo_seleccionado(self):
         # Estado donde ya existe un vehiculo elegido y se puede pasar al pago.
@@ -17,6 +18,7 @@ class EstadoVisualPasajero:
     def confirmando_pago(self):
         # Muestra el panel de confirmacion sin iniciar todavia el viaje.
         self.vista.panel_confirmacion.grid()
+        self._bloquear_datos_busqueda()
 
     def viaje_en_proceso(self):
         # Estado bloqueante: evita cambiar datos mientras corre la animacion del viaje.
@@ -37,3 +39,19 @@ class EstadoVisualPasajero:
     def viaje_finalizado(self):
         # Estado final: informa cierre del viaje y habilita reiniciar el flujo.
         self.vista.boton_buscar_otro_viaje.grid()
+
+    def _bloquear_datos_busqueda(self):
+        self.vista.selector_ubicacion_inicial.config(state="disabled")
+        self.vista.selector_ubicacion_final.config(state="disabled")
+        self.vista.entrada_usuarios.config(state="disabled")
+        self.vista.boton_buscar_vehiculos.config(state="disabled", cursor="arrow")
+        self.vista.boton_pagar.config(state="disabled", cursor="arrow")
+        self.vista.tabla_vehiculos.config(selectmode="none")
+
+    def _habilitar_datos_busqueda(self):
+        self.vista.selector_ubicacion_inicial.config(state="readonly")
+        self.vista.selector_ubicacion_final.config(state="readonly")
+        self.vista.entrada_usuarios.config(state="normal")
+        self.vista.boton_buscar_vehiculos.config(state="normal", cursor="hand2")
+        self.vista.boton_pagar.config(state="normal", cursor="hand2")
+        self.vista.tabla_vehiculos.config(selectmode="browse")
