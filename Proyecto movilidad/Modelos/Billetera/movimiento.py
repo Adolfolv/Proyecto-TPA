@@ -1,7 +1,11 @@
 from datetime import datetime
 
 from Modelos.Billetera.datos_billetera import Transaccion
-from Validaciones.billetera import ValidadorMontoPositivo, ValidadorSaldoSuficiente
+from Validaciones.billetera import (
+    ValidadorMontoPositivo,
+    ValidadorSaldoSuficiente,
+    normalizar_monto_entero,
+)
 
 # Archivo para manejar las operaciones relacionadas con 
 # el movimiento de saldo entre la billetera y las tarjetas, ,
@@ -15,7 +19,7 @@ class AdicionMonto:
 
     def agregar_saldo(self, objeto, monto):
         self.validador_monto_positivo.validar(monto)
-        monto = float(monto)
+        monto = normalizar_monto_entero(monto)
         # objeto puede ser una billetera o una tarjeta; ambos tienen atributo saldo.
         objeto.saldo += monto
         return True
@@ -24,7 +28,7 @@ class AdicionMonto:
     def quitar_saldo(self, billetera, monto):
         # Antes de descontar se comprueba que el origen tenga saldo suficiente.
         self.validador_saldo_suficiente.validar((billetera, monto))
-        monto = float(monto)
+        monto = normalizar_monto_entero(monto)
         billetera.saldo -= monto
         return True
 
@@ -59,7 +63,7 @@ class HistorialTransacciones:
         transaccion = Transaccion(
             id_transaccion=self._generar_id(billetera),
             tipo=tipo,
-            monto=float(monto),
+            monto=normalizar_monto_entero(monto),
             fecha=datetime.now().strftime("%d-%m-%Y %H:%M"),
         )
         billetera.transacciones.append(transaccion)

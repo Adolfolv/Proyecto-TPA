@@ -346,9 +346,23 @@
         "id_usuario": "USR0002"
     },
     {
-        "saldo": 0.0,
-        "tarjetas": [],
-        "transacciones": [],
+        "saldo": 5,
+        "tarjetas": [
+            {
+                "titular": "asdasd",
+                "numero_tarjeta": "4345111111111",
+                "vencimiento": "12/27",
+                "saldo": 392630
+            }
+        ],
+        "transacciones": [
+            {
+                "id_transaccion": "TRX0001",
+                "tipo": "Carga desde tarjeta",
+                "monto": 5,
+                "fecha": "05-06-2026 08:52"
+            }
+        ],
         "id_usuario": "USR0003"
     }
 ]

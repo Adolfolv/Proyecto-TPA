@@ -68,6 +68,7 @@ class DependenciasAplicacion:
             self.buscador_tarjeta,
             fabrica_tarjeta=self.fabrica_tarjeta,
         )
+        # Patron Strategy/Command: cada clave selecciona una operacion concreta de billetera.
         self.operaciones_billetera = {
             "pagar": OperacionPago(
                 self.repositorio_billetera,

@@ -1,12 +1,15 @@
 from Modelos.Billetera.datos_billetera import SolicitudOperacionBilletera
+from Validaciones.billetera import normalizar_monto_entero
 
 
 #archivo para manejar la lógica de negocio relacionada con la billetera, 
 # incluyendo la gestión de tarjetas, movimientos de saldo, pagos y recepciones.  
 # realizar pagos, recibir pagos, cargar o retirar fondos, y consultar el saldo a la billetera del usuario..
 class ServicioBilletera:
+    # Patron Service/Fachada: ofrece una entrada simple para operaciones de billetera.
 
     def __init__(self, repositorio_billetera, operaciones):
+        # Inyeccion de dependencias: recibe el repositorio y las operaciones ya armadas.
         self.repositorio_billetera = repositorio_billetera
         self.operaciones = operaciones
 
@@ -14,9 +17,14 @@ class ServicioBilletera:
         return self.repositorio_billetera.obtener(usuario)
 
     def ejecutar(self, nombre_operacion, usuario, monto, numero_tarjeta=None):
+        # Patron Strategy/Command: cada nombre apunta a un objeto operacion distinto.
         # El nombre recibido elige una estrategia concreta: pagar, recibir, cargar o retirar.
         operacion = self.operaciones[nombre_operacion]
-        solicitud = SolicitudOperacionBilletera(usuario, monto, numero_tarjeta)
+        solicitud = SolicitudOperacionBilletera(
+            usuario,
+            normalizar_monto_entero(monto),
+            numero_tarjeta,
+        )
         # No es recursion: se delega al ejecutar de la operacion seleccionada.
         return operacion.ejecutar(solicitud)
 

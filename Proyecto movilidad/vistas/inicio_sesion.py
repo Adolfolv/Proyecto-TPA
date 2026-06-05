@@ -1,4 +1,4 @@
-"""Pantalla de inicio de sesion.."""
+"""Pantalla de inicio de sesión.."""
 
 import tkinter as tk
 from tkinter import messagebox
@@ -29,18 +29,18 @@ class VistaInicioSesion(tk.Frame):
         boton_volver.configure(font=tema.FUENTE_BOTON, padx=12, pady=6)
         boton_volver.place(relx=1.0, x=-24, y=0, anchor="ne", width=120, height=36)
 
-        self.moldes.crear_label(panel, "Iniciar sesion", tema.FUENTE_LOGIN_TITULO, tema.TEXTO, tema.PANEL).grid(row=0, column=0, sticky="w", padx=24, pady=(0, 6))
+        self.moldes.crear_label(panel, "Iniciar sesión", tema.FUENTE_LOGIN_TITULO, tema.TEXTO, tema.PANEL).grid(row=0, column=0, sticky="w", padx=24, pady=(0, 6))
         self.moldes.crear_label(panel, "Ingresa tus datos para continuar", tema.FUENTE_LOGIN_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 560, "left").grid(row=1, column=0, sticky="w", padx=24, pady=(0, 36))
         self.moldes.crear_label(panel, "Correo", tema.FUENTE_LOGIN_CAMPO, tema.TEXTO, tema.PANEL).grid(row=2, column=0, sticky="w", padx=24, pady=(0, 8))
         self.entrada_correo = self.moldes.crear_entrada(panel)
         self.entrada_correo.configure(font=tema.FUENTE_LOGIN_ENTRADA)
         self.entrada_correo.grid(row=3, column=0, sticky="ew", padx=24, pady=(0, 22), ipady=9)
-        self.moldes.crear_label(panel, "Contrasena", tema.FUENTE_LOGIN_CAMPO, tema.TEXTO, tema.PANEL).grid(row=4, column=0, sticky="w", padx=24, pady=(0, 8))
+        self.moldes.crear_label(panel, "Contraseña", tema.FUENTE_LOGIN_CAMPO, tema.TEXTO, tema.PANEL).grid(row=4, column=0, sticky="w", padx=24, pady=(0, 8))
         self.entrada_contrasena = self.moldes.crear_entrada(panel, mostrar="*")
         self.entrada_contrasena.configure(font=tema.FUENTE_LOGIN_ENTRADA)
         self.entrada_contrasena.grid(row=5, column=0, sticky="ew", padx=24, pady=(0, 18), ipady=9)
-        tk.Checkbutton(panel, text="Mostrar contrasena", variable=self.mostrar_contrasena, command=self.actualizar_visibilidad_contrasena, bg=tema.PANEL, fg=tema.TEXTO, activebackground=tema.PANEL, activeforeground=tema.TEXTO, selectcolor=tema.PANEL, cursor="hand2", font=tema.FUENTE_LOGIN_TEXTO).grid(row=6, column=0, sticky="w", padx=24, pady=(0, 24))
-        boton_inicio = self.moldes.crear_boton(panel, "Iniciar sesion", True, 16, self.iniciar_sesion)
+        tk.Checkbutton(panel, text="Mostrar contraseña", variable=self.mostrar_contrasena, command=self.actualizar_visibilidad_contrasena, bg=tema.PANEL, fg=tema.TEXTO, activebackground=tema.PANEL, activeforeground=tema.TEXTO, selectcolor=tema.PANEL, cursor="hand2", font=tema.FUENTE_LOGIN_TEXTO).grid(row=6, column=0, sticky="w", padx=24, pady=(0, 24))
+        boton_inicio = self.moldes.crear_boton(panel, "Iniciar sesión", True, 16, self.iniciar_sesion)
         boton_inicio.configure(font=tema.FUENTE_LOGIN_BOTON, padx=14, pady=8)
         boton_inicio.grid(row=7, column=0, pady=(0, 14))
         self.moldes.crear_label(panel, "", tema.FUENTE_LOGIN_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 460, "center").grid(row=8, column=0, pady=(0, 4))
@@ -56,7 +56,7 @@ class VistaInicioSesion(tk.Frame):
         )
 
         if usuario is None:
-            messagebox.showerror("Inicio de sesion", "Correo o contrasena incorrectos.")
+            messagebox.showerror("Inicio de sesión", "Correo o contraseña incorrectos.")
             return
 
         if self.al_iniciar is not None:

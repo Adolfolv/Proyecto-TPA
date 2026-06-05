@@ -12,6 +12,7 @@ from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 
 class ServicioTarjeta:
 
+    # Patron Strategy simple: el tipo de tarjeta decide que validador/regla se usa.
     TIPOS_TARJETA = {
         "Visa": TarjetaVisa,
         "Mastercard": TarjetaMastercard,
@@ -26,6 +27,7 @@ class ServicioTarjeta:
         fabrica_tarjeta=None,
         generador_saldo_tarjeta=None,
     ):
+        # Inyeccion de dependencias: recibe repositorio, buscador y fabrica desde afuera.
         self.repositorio_billetera = repositorio_billetera
         self.buscador_tarjeta = buscador_tarjeta
         self.validaciones_tarjeta = (
