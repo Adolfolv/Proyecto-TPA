@@ -73,7 +73,7 @@ class VistaInicioSesion(tk.Frame):
         self.entrada_correo.grid(row=3, column=0, sticky="ew", padx=24, pady=(0, 22), ipady=9)
         self.moldes.crear_label(
             panel,
-            "Contrasena",
+            "Contraseña",
             tema.FUENTE_LOGIN_CAMPO,
             tema.TEXTO,
             tema.PANEL,
