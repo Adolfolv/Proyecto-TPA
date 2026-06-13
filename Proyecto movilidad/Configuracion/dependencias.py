@@ -5,6 +5,7 @@ from Controladores.controlador_billetera import (
     ControladorResumenBilletera,
     ControladorTarjetas,
 )
+from Controladores.controlador_admin import ControladorAdmin
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_registro import ControladorRegistro
 from Controladores.controlador_viaje import (
@@ -21,6 +22,7 @@ from Servicios.Billetera.fabrica_billetera import FabricaBilletera
 from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Billetera.servicio_tarjetas import ServicioTarjeta
+from Servicios.Admin.servicio_admin import ServicioAdmin
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
 from Servicios.Usuario.buscador import (
     BuscadorTarjeta,
@@ -63,6 +65,13 @@ class DependenciasAplicacion:
             self.buscador_usuario_por_correo,
             self.fabrica_usuario,
         )
+        # Servicio exclusivo para consultas del panel administrador.
+        # Comparte el mismo repositorio de usuarios para no duplicar datos
+        # ni alterar el flujo actual de registro, login, billetera o viaje.
+        self.servicio_admin = ServicioAdmin(
+            self.repositorio_usuario,
+        )
+        
         self.servicio_tarjeta = ServicioTarjeta(
             self.repositorio_billetera,
             self.buscador_tarjeta,
@@ -106,6 +115,11 @@ class DependenciasAplicacion:
         )
         self.controlador_registro = ControladorRegistro(
             self.servicio_registro,
+        )
+        # Controlador del panel admin: evita que la vista llame directo a
+        # servicios o repositorios cuando congela/elimina cuentas.
+        self.controlador_admin = ControladorAdmin(
+            self.servicio_admin,
         )
         self.controlador_resumen_billetera = ControladorResumenBilletera(
             self.servicio_billetera,

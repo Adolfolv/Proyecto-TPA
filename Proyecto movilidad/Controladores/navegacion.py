@@ -3,6 +3,7 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
+from vistas.admin.panel_admin import VistaPanelAdmin
 from vistas.billetera import VistaBilletera
 from vistas.inicio_sesion import VistaInicioSesion
 from vistas.menu import VistaMenu
@@ -32,7 +33,11 @@ class Navegacion:
         self.navegador.navegar(destino)
 
     def establecer_usuario_actual(self, usuario):
-        self.dependencias.servicio_billetera.obtener_billetera(usuario)
+        # Los administradores no usan billetera en este flujo. Esta condicion
+        # evita crear datos innecesarios y mantiene intacto el flujo normal
+        # de pasajeros y conductores.
+        if getattr(usuario, "tipo_usuario", "") != "administrador":
+            self.dependencias.servicio_billetera.obtener_billetera(usuario)
         self.usuario_actual = usuario
         return self.usuario_actual
 
@@ -61,7 +66,13 @@ class RutaInicioSesion(RutaNavegacion):
 
     def inicio_sesion_exitoso(self, usuario):
         self.navegacion.establecer_usuario_actual(usuario)
-        self.navegacion.navegar("menu")
+
+        # Despues de autenticar, el tipo de usuario decide el destino:
+        # administradores al panel admin, pasajeros/conductores al menu actual.
+        if getattr(usuario, "tipo_usuario", "") == "administrador":
+            self.navegacion.navegar("panel_admin")
+        else:
+            self.navegacion.navegar("menu")
 
 
 class RutaRegistro(RutaNavegacion):
@@ -87,6 +98,23 @@ class RutaMenu(RutaNavegacion):
 
     def ejecutar(self):
         self.mostrar(VistaMenu, "Menu principal")
+
+
+class RutaPanelAdmin(RutaNavegacion):
+    destino = "panel_admin"
+
+    def ejecutar(self):
+        usuario_actual = self.navegacion.obtener_usuario_actual()
+
+        # Esta ruta queda separada del menu normal para no mezclar el flujo
+        # de pasajeros/conductores con las herramientas del administrador.
+        if getattr(usuario_actual, "tipo_usuario", "") != "administrador":
+            self.navegacion.navegar("menu")
+            return
+
+        self.limpiar_pantalla()
+        self.navegacion.ventana.title("Panel administrador")
+        VistaPanelAdmin(self.navegacion.ventana, self.navegacion.navegar, self.navegacion.dependencias.controlador_admin, usuario_actual)
 
 
 class RutaBilletera(RutaNavegacion):

@@ -119,14 +119,18 @@ class VistaInicioSesion(tk.Frame):
             self.entrada_contrasena.config(show="" if self.mostrar_contrasena.get() else "*")
 
     def iniciar_sesion(self):
-        usuario = self.controlador.iniciar_sesion(
+        resultado = self.controlador.iniciar_sesion(
             self.entrada_correo.get(),
             self.entrada_contrasena.get(),
         )
 
-        if usuario is None:
+        if resultado.error == "bloqueada":
+            self.mostrar_mensaje("Esta cuenta esta bloqueada.")
+            return
+
+        if not resultado.exitoso:
             self.mostrar_mensaje("Revisa este dato: correo o contrasena incorrectos.")
             return
 
         if self.al_iniciar is not None:
-            self.al_iniciar(usuario)
+            self.al_iniciar(resultado.usuario)
