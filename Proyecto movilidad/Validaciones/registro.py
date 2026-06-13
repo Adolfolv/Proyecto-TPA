@@ -7,18 +7,20 @@ from Validaciones.comunes import es_numero
 
 class ValidadorNombre(Validador):
     def validar(self, valor):
-        if not valor:
+        nombre = str(valor or "").strip()
+        if not nombre:
             raise ValueError("El nombre es obligatorio y debe contener letras.")
-        if es_numero(valor):
+        if not re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúÑñ ]+", nombre):
             raise ValueError("El nombre es obligatorio y debe contener letras.")
         return True
 
 
 class ValidadorApellido(Validador):
     def validar(self, valor):
-        if not valor:
+        apellido = str(valor or "").strip()
+        if not apellido:
             raise ValueError("El apellido es obligatorio y debe contener letras.")
-        if es_numero(valor):
+        if not re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúÑñ ]+", apellido):
             raise ValueError("El apellido es obligatorio y debe contener letras.")
         return True
 

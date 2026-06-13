@@ -4,9 +4,9 @@ from pathlib import Path
 
 from PIL import Image, ImageTk
 
-from vistas.estilizacion import tema
-from vistas.estilizacion.decoraciones import crear_logo_admin
-from vistas.estilizacion.widgets import Moldes
+from ..estilizacion import tema
+from ..estilizacion.decoraciones import crear_logo_admin
+from ..estilizacion.widgets import Moldes
 
 
 class VistaPanelAdmin(tk.Frame):

@@ -7,6 +7,7 @@ from Controladores.controlador_billetera import (
 )
 from Controladores.controlador_admin import ControladorAdmin
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
+from Controladores.controlador_perfil import ControladorPerfil
 from Controladores.controlador_registro import ControladorRegistro
 from Controladores.controlador_viaje import (
     ControladorViajeConductor,
@@ -30,6 +31,7 @@ from Servicios.Usuario.buscador import (
     BuscadorUsuarioPorCorreo,
 )
 from Servicios.Usuario.fabrica_usuario import FabricaUsuario
+from Servicios.Usuario.perfil import ServicioPerfil
 from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 
@@ -64,6 +66,10 @@ class DependenciasAplicacion:
             self.repositorio_usuario,
             self.buscador_usuario_por_correo,
             self.fabrica_usuario,
+        )
+        self.servicio_perfil = ServicioPerfil(
+            self.repositorio_usuario,
+            self.buscador_usuario_por_correo,
         )
         # Servicio exclusivo para consultas del panel administrador.
         # Comparte el mismo repositorio de usuarios para no duplicar datos
@@ -115,6 +121,9 @@ class DependenciasAplicacion:
         )
         self.controlador_registro = ControladorRegistro(
             self.servicio_registro,
+        )
+        self.controlador_perfil = ControladorPerfil(
+            self.servicio_perfil,
         )
         # Controlador del panel admin: evita que la vista llame directo a
         # servicios o repositorios cuando congela/elimina cuentas.

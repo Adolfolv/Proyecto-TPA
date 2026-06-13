@@ -58,6 +58,12 @@ class RepositorioUsuario:
 
         return self.usuarios
 
+    def actualizar(self, usuario_actualizado):
+        usuario_guardado = self.guardar_usuario(usuario_actualizado)
+        if usuario_guardado is None:
+            raise ValueError("No se encontro el usuario para actualizar.")
+        return usuario_guardado
+
     def guardar_usuario(self, usuario_actualizado):
         # Persiste cambios hechos sobre un usuario existente, como congelar
         # la cuenta desde el panel administrador.

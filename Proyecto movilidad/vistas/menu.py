@@ -21,7 +21,7 @@ class VistaMenu(tk.Frame):
 
         cabecera = self.moldes.crear_frame(panel, tema.PANEL, fila=0, columna=0, sticky="ew", margen_y=(0, 16), columnas_peso=((0, 1), (1, 2), (2, 1)))
 
-        self.moldes.crear_boton(cabecera, "Perfil", False, None, None, metodo="grid", fila=0, columna=0, sticky="w")
+        self.moldes.crear_boton(cabecera, "Perfil", False, None, lambda: self.navegar("perfil"), metodo="grid", fila=0, columna=0, sticky="w")
         textos = self.moldes.crear_frame(cabecera, tema.PANEL, fila=0, columna=1, sticky="")
         self.moldes.crear_label(textos, "Menú principal", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL).pack()
         self.moldes.crear_boton(cabecera, "Cerrar sesión", False, None, lambda: self.navegar("pantalla_inicial"), metodo="grid", fila=0, columna=2, sticky="e")

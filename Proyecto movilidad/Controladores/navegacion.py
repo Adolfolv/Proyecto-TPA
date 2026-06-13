@@ -3,13 +3,14 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
-from vistas.admin.panel_admin import VistaPanelAdmin
-from vistas.billetera import VistaBilletera
-from vistas.inicio_sesion import VistaInicioSesion
-from vistas.menu import VistaMenu
-from vistas.pantalla_inicial import VistaPantallaInicial
-from vistas.registro import VistaRegistro
-from vistas.viaje import VistaViaje
+from Vistas.admin.panel_admin import VistaPanelAdmin
+from Vistas.billetera import VistaBilletera
+from Vistas.inicio_sesion import VistaInicioSesion
+from Vistas.menu import VistaMenu
+from Vistas.pantalla_inicial import VistaPantallaInicial
+from Vistas.registro import VistaRegistro
+from Vistas.viaje import VistaViaje
+from Vistas.perfil import VistaPerfil
 from abstracciones import NavegadorAbstracto, RutaNavegacion
 
 class Navegacion:
@@ -98,6 +99,20 @@ class RutaMenu(RutaNavegacion):
 
     def ejecutar(self):
         self.mostrar(VistaMenu, "Menu principal")
+
+
+class RutaPerfil(RutaNavegacion):
+    destino = "perfil"
+
+    def ejecutar(self):
+        self.limpiar_pantalla()
+        self.navegacion.ventana.title("Perfil")
+        VistaPerfil(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+            self.navegacion.dependencias.controlador_perfil,
+            self.navegacion.obtener_usuario_actual(),
+        )
 
 
 class RutaPanelAdmin(RutaNavegacion):
