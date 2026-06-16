@@ -1,100 +1,73 @@
 import tkinter as tk
-from tkinter import messagebox
 from pathlib import Path
+from tkinter import messagebox
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageOps, ImageTk
 
 from ..estilizacion import tema
 from ..estilizacion.decoraciones import crear_logo_admin
 from ..estilizacion.widgets import Moldes
 
 
-class VistaPanelAdmin(tk.Frame):
-    """Pantalla principal para usuarios con tipo_usuario administrador."""
+class PanelInicioAdmin:
+    """Pantalla inicial con accesos a pasajeros y conductores."""
 
-    COLOR_PANEL = "#16202f"
-    COLOR_TARJETA = "#223044"
-    COLOR_BORDE = "#5b6b80"
-    COLOR_TEXTO = "#f8fafc"
-    COLOR_TEXTO_SUAVE = "#d5dde8"
-    COLOR_ACCION = "#0f766e"
-    COLOR_BORRAR = "#be123c"
-    TAMANO_CUADRADO = 142
-    SECCIONES = (
-        ("pasajero", "Pasajeros", "#2dd4bf", "Revisa cuentas de usuarios que solicitan viajes."),
-        ("conductor", "Conductores", "#f59e0b", "Consulta conductores, licencias y datos del vehiculo."),
-    )
+    def __init__(self, vista):
+        self.vista = vista
+        self.moldes = vista.moldes
 
-    def __init__(self, padre, navegar, controlador_admin, usuario_actual):
-        self.navegar = navegar
-        self.controlador_admin = controlador_admin
-        self.usuario_actual = usuario_actual
-        self.moldes = Moldes()
-        self.imagenes_usuario = []
-        self.ancho_tarjeta = 700
-        self.tipo_actual = None
-        self.titulo_actual = None
-
-        super().__init__(padre, bg=tema.FONDO)
-        self.pack(fill="both", expand=True)
-        self.crear_widgets()
-
-    def crear_widgets(self):
-        self.configure(bg=self.COLOR_PANEL)
-        self.panel = self.moldes.crear_frame(self, self.COLOR_PANEL, self.COLOR_BORDE, 1, 16, 16, llenar="both", expandir=True, margen_x=18, margen_y=18, columnas_peso=((0, 1),), filas_peso=((1, 1),))
-        self.cabecera = self.moldes.crear_frame(self.panel, self.COLOR_PANEL, fila=0, columna=0, sticky="ew", columnas_peso=((0, 1), (1, 1)))
-        self.titulo_cabecera = self.moldes.crear_label(self.cabecera, "Panel administrador", tema.FUENTE_TITULO, self.COLOR_TEXTO, self.COLOR_PANEL, metodo="grid", row=0, column=0, sticky="w")
-        self.boton_cabecera = None
-        self.contenido = self.moldes.crear_frame(self.panel, self.COLOR_PANEL, fila=1, columna=0, sticky="nsew", columnas_peso=((0, 1),), filas_peso=((0, 1),))
-        self.mostrar_inicio()
-
-    def configurar_cabecera(self, titulo, texto_boton, comando_boton):
-        self.titulo_cabecera.config(text=titulo)
-        if self.boton_cabecera is not None:
-            self.boton_cabecera.destroy()
-        self.boton_cabecera = self.moldes.crear_boton(self.cabecera, texto_boton, False, None, comando_boton, metodo="grid", row=0, column=1, sticky="e")
-
-    def limpiar_contenido(self):
-        for widget in self.contenido.winfo_children():
-            widget.destroy()
-        self.contenido.grid_rowconfigure(0, weight=0)
-        self.contenido.grid_rowconfigure(1, weight=0)
-        self.imagenes_usuario = []
-
-    def mostrar_inicio(self):
-        self.limpiar_contenido()
-        self.configurar_cabecera("Panel administrador", "Cerrar sesion", lambda: self.navegar("pantalla_inicial"))
-        self.contenido.grid_rowconfigure(0, weight=1)
-        conteo = self.controlador_admin.contar_por_tipo()
-        centro = self.moldes.crear_frame(self.contenido, self.COLOR_PANEL, fila=0, columna=0, sticky="nsew", columnas_peso=((0, 1), (1, 1)), filas_peso=((0, 1),))
+    def crear(self):
+        vista = self.vista
+        vista.limpiar_contenido()
+        vista.configurar_cabecera("Panel administrador", "Cerrar sesion", vista.acciones.presionar_boton_cerrar_sesion, tema.texto_boton(), vista.acciones.presionar_boton_cambiar_tema)
+        vista.contenido.grid_rowconfigure(0, weight=1)
+        conteo = vista.controlador_admin.contar_por_tipo()
+        centro = self.moldes.crear_frame(vista.contenido, tema.PANEL, fila=0, columna=0, sticky="nsew", columnas_peso=((0, 1), (1, 1)), filas_peso=((0, 1),))
 
         # La pantalla inicial separa las secciones administrativas sin tocar
         # el menu normal de pasajeros/conductores.
-        for columna, (tipo, titulo, color, descripcion) in enumerate(self.SECCIONES):
-            tarjeta = self.moldes.crear_frame(centro, self.COLOR_TARJETA, self.COLOR_BORDE, 1, 24, 24, fila=0, columna=columna, sticky="nsew", margen_x=10, margen_y=28, columnas_peso=((0, 1),), filas_peso=((0, 1), (1, 0), (2, 1)))
-            contenido = self.moldes.crear_frame(tarjeta, self.COLOR_TARJETA, fila=1, columna=0, sticky="ew", columnas_peso=((0, 1),))
-            crear_logo_admin(contenido, tipo, color, self.COLOR_TARJETA).grid(row=0, column=0, pady=(0, 18))
-            self.moldes.crear_label(contenido, titulo, ("Arial", 26, "bold"), self.COLOR_TEXTO, self.COLOR_TARJETA, metodo="grid", row=1, column=0, sticky="")
-            self.moldes.crear_label(contenido, "registrados", ("Arial", 16, "bold"), self.COLOR_TEXTO_SUAVE, self.COLOR_TARJETA, metodo="grid", row=2, column=0, sticky="", pady=(22, 0))
-            self.moldes.crear_label(contenido, str(conteo.get(tipo, 0)), ("Arial", 58, "bold"), color, self.COLOR_TARJETA, metodo="grid", row=3, column=0, sticky="")
-            self.moldes.crear_label(contenido, descripcion, ("Arial", 13), self.COLOR_TEXTO_SUAVE, self.COLOR_TARJETA, 260, "center", metodo="grid", row=4, column=0, sticky="ew", pady=(22, 28))
-            boton = self.moldes.crear_boton(contenido, "Abrir", True, 18, lambda tipo=tipo, titulo=titulo: self.mostrar_listado(tipo, titulo))
-            boton.configure(font=("Arial", 15, "bold"), bg=color, activebackground=color, padx=28, pady=16)
-            boton.grid(row=5, column=0, ipadx=28, ipady=6)
+        secciones = (
+            ("pasajero", "Pasajeros", "#2dd4bf", "Revisa cuentas de usuarios que solicitan viajes."),
+            ("conductor", "Conductores", "#f59e0b", "Consulta conductores, licencias y datos del vehiculo."),
+        )
+        for columna, (tipo, titulo, color, descripcion) in enumerate(secciones):
+            self.crear_tarjeta_seccion(centro, columna, tipo, titulo, color, descripcion, conteo)
 
-    def mostrar_listado(self, tipo_usuario, titulo):
-        self.limpiar_contenido()
-        self.tipo_actual = tipo_usuario
-        self.titulo_actual = titulo
-        self.configurar_cabecera(titulo, "Volver", self.mostrar_inicio)
-        self.contenido.grid_rowconfigure(0, weight=0)
-        self.contenido.grid_rowconfigure(1, weight=1)
-        usuarios = self.controlador_admin.listar_por_tipo(tipo_usuario)
+    def crear_tarjeta_seccion(self, padre, columna, tipo, titulo, color, descripcion, conteo):
+        vista = self.vista
+        tarjeta = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 24, 24, fila=0, columna=columna, sticky="nsew", margen_x=10, margen_y=28, columnas_peso=((0, 1),), filas_peso=((0, 1), (1, 0), (2, 1)))
+        contenido = self.moldes.crear_frame(tarjeta, tema.PANEL_SUAVE, fila=1, columna=0, sticky="ew", columnas_peso=((0, 1),))
+        crear_logo_admin(contenido, tipo, color, tema.PANEL_SUAVE).grid(row=0, column=0, pady=(0, 18))
+        self.moldes.crear_label(contenido, titulo, ("Arial", 26, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", row=1, column=0, sticky="")
+        self.moldes.crear_label(contenido, "registrados", ("Arial", 16, "bold"), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", row=2, column=0, sticky="", pady=(22, 0))
+        self.moldes.crear_label(contenido, str(conteo.get(tipo, 0)), ("Arial", 58, "bold"), color, tema.PANEL_SUAVE, metodo="grid", row=3, column=0, sticky="")
+        self.moldes.crear_label(contenido, descripcion, ("Arial", 13), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, 260, "center", metodo="grid", row=4, column=0, sticky="ew", pady=(22, 28))
+        boton = self.moldes.crear_boton(contenido, "Abrir", True, 18, lambda: vista.acciones.presionar_boton_abrir_seccion(tipo, titulo))
+        boton.configure(font=("Arial", 15, "bold"), bg=color, activebackground=color, padx=28, pady=16)
+        boton.grid(row=5, column=0, ipadx=28, ipady=6)
 
-        zona = self.moldes.crear_frame(self.contenido, self.COLOR_PANEL, fila=1, columna=0, sticky="nsew", margen_y=(8, 0), columnas_peso=((0, 1),), filas_peso=((0, 1),))
-        canvas = tk.Canvas(zona, bg=self.COLOR_PANEL, highlightthickness=0)
+
+class PanelListadoAdmin:
+    """Listado scrolleable de usuarios de una seccion."""
+
+    def __init__(self, vista):
+        self.vista = vista
+        self.moldes = vista.moldes
+
+    def crear(self, tipo_usuario, titulo):
+        vista = self.vista
+        vista.limpiar_contenido()
+        vista.tipo_actual = tipo_usuario
+        vista.titulo_actual = titulo
+        vista.configurar_cabecera(titulo, "Volver", vista.acciones.presionar_boton_volver)
+        vista.contenido.grid_rowconfigure(0, weight=0)
+        vista.contenido.grid_rowconfigure(1, weight=1)
+        usuarios = vista.controlador_admin.listar_por_tipo(tipo_usuario)
+
+        zona = self.moldes.crear_frame(vista.contenido, tema.PANEL, fila=1, columna=0, sticky="nsew", margen_y=(8, 0), columnas_peso=((0, 1),), filas_peso=((0, 1),))
+        canvas = tk.Canvas(zona, bg=tema.PANEL, highlightthickness=0)
         scroll = tk.Scrollbar(zona, orient="vertical", command=canvas.yview)
-        listado = self.moldes.crear_frame(canvas, self.COLOR_PANEL, columnas_peso=((0, 1),))
+        listado = self.moldes.crear_frame(canvas, tema.PANEL, columnas_peso=((0, 1),))
         ventana_listado = canvas.create_window((0, 0), window=listado, anchor="nw")
         listado.bind("<Configure>", lambda evento: canvas.configure(scrollregion=canvas.bbox("all")))
         canvas.bind("<Configure>", lambda evento: self.ajustar_ancho_listado(canvas, ventana_listado, evento.width))
@@ -103,92 +76,102 @@ class VistaPanelAdmin(tk.Frame):
         scroll.grid(row=0, column=1, sticky="ns")
 
         if not usuarios:
-            self.moldes.crear_label(listado, "No hay usuarios registrados en esta seccion.", tema.FUENTE_TEXTO, self.COLOR_TEXTO_SUAVE, self.COLOR_PANEL, metodo="grid", row=0, column=0, sticky="w")
+            self.moldes.crear_label(listado, "No hay usuarios registrados en esta seccion.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, metodo="grid", row=0, column=0, sticky="w")
             return
 
         # Cada usuario se muestra como tarjeta para dejar espacio a imagen y
         # datos, parecido a las tarjetas visuales usadas en el flujo de viaje.
+        tarjeta_usuario = TarjetaUsuarioAdmin(vista)
         for fila, usuario in enumerate(usuarios):
-            self.crear_tarjeta_usuario(listado, usuario, fila)
-
-    def crear_tarjeta_usuario(self, padre, usuario, fila):
-        tarjeta = self.moldes.crear_frame(padre, self.COLOR_TARJETA, self.COLOR_BORDE, 1, 14, 14, fila=fila, columna=0, sticky="ew", margen_y=(0, 12), columnas_peso=((1, 1),), filas_peso=((0, 1),))
-        self.crear_imagen_usuario(tarjeta, usuario).grid(row=0, column=0, sticky="n", padx=(0, 16))
-        cuerpo = self.moldes.crear_frame(tarjeta, self.COLOR_TARJETA, fila=0, columna=1, sticky="nsew", columnas_peso=((0, 1),), filas_peso=((1, 1),))
-        nombre = f"{usuario.nombre} {usuario.apellido}"
-        self.moldes.crear_label(cuerpo, nombre, ("Arial", 24, "bold"), self.COLOR_TEXTO, self.COLOR_TARJETA, max(400, self.ancho_tarjeta - 610), "center", metodo="grid", row=0, column=0, sticky="ew", pady=(0, 10))
-        self.crear_grilla_datos(cuerpo, usuario).grid(row=1, column=0, sticky="nsew")
-        acciones = self.moldes.crear_frame(tarjeta, self.COLOR_TARJETA, fila=0, columna=2, sticky="n", margen_x=(16, 0))
-        # Estos botones ya llaman al controlador; el servicio valida y persiste.
-        cuenta_congelada = getattr(usuario, "cuenta_congelada", False)
-        texto_estado = "Descongelar\ncuenta" if cuenta_congelada else "Congelar\ncuenta"
-        accion_estado = self.descongelar_cuenta if cuenta_congelada else self.congelar_cuenta
-        self.crear_boton_cuadrado(acciones, texto_estado, self.COLOR_ACCION, lambda usuario=usuario: accion_estado(usuario), 0, (0, 8))
-        self.crear_boton_cuadrado(acciones, "Borrar\ncuenta", self.COLOR_BORRAR, lambda usuario=usuario: self.eliminar_cuenta(usuario), 1, (8, 0))
-
-    def crear_grilla_datos(self, padre, usuario):
-        grilla = self.moldes.crear_frame(padre, self.COLOR_TARJETA, columnas_peso=((0, 1), (1, 1)))
-        for indice, (etiqueta, valor) in enumerate(self.datos_usuario(usuario)):
-            fila = indice // 2
-            columna = indice % 2
-            celda = self.moldes.crear_frame(grilla, self.COLOR_TARJETA, fila=fila, columna=columna, sticky="ew", margen_x=(0, 14) if columna == 0 else (14, 0), margen_y=(0, 10), columnas_peso=((0, 1),))
-            tk.Label(celda, text=f"{etiqueta}:", font=("Arial", 17, "bold"), fg=self.COLOR_TEXTO_SUAVE, bg=self.COLOR_TARJETA).pack(side="left", anchor="w")
-            tk.Label(celda, text=str(valor), font=("Arial", 17), fg=self.COLOR_TEXTO, bg=self.COLOR_TARJETA, wraplength=max(240, (self.ancho_tarjeta - 560) // 2), justify="left").pack(side="left", anchor="w", padx=(6, 0))
-        return grilla
-
-    def crear_boton_cuadrado(self, padre, texto, color, comando, columna, margen_x):
-        contenedor = self.crear_cuadrado_fijo(padre, self.COLOR_BORDE)
-        contenedor.grid(row=0, column=columna, sticky="n", padx=margen_x)
-        boton = tk.Button(contenedor, text=texto, command=comando, font=("Arial", 14, "bold"), bg=color, fg="#ffffff", activebackground=color, activeforeground="#ffffff", relief="flat", bd=0, cursor="hand2")
-        boton.pack(fill="both", expand=True, padx=2, pady=2)
-        return boton
-
-    def crear_cuadrado_fijo(self, padre, color):
-        # Frame cuadrado real: grid no debe modificar su ancho ni alto.
-        cuadrado = tk.Frame(padre, bg=color, width=self.TAMANO_CUADRADO, height=self.TAMANO_CUADRADO)
-        cuadrado.grid_propagate(False)
-        cuadrado.pack_propagate(False)
-        return cuadrado
-
-    def congelar_cuenta(self, usuario):
-        # La vista solo dispara la accion y refresca la seccion actual.
-        self.controlador_admin.congelar_cuenta(usuario.id_usuario)
-        self.mostrar_listado(self.tipo_actual, self.titulo_actual)
-
-    def descongelar_cuenta(self, usuario):
-        # La vista solo dispara la accion y refresca la seccion actual.
-        self.controlador_admin.descongelar_cuenta(usuario.id_usuario)
-        self.mostrar_listado(self.tipo_actual, self.titulo_actual)
-
-    def eliminar_cuenta(self, usuario):
-        # Confirmacion visual antes de borrar; el borrado real sigue en servicio.
-        nombre = f"{usuario.nombre} {usuario.apellido}"
-        if not messagebox.askyesno("Borrar cuenta", f"¿Borrar la cuenta de {nombre}?"):
-            return
-
-        self.controlador_admin.eliminar_cuenta(usuario.id_usuario)
-        self.mostrar_listado(self.tipo_actual, self.titulo_actual)
+            tarjeta_usuario.crear(listado, usuario, fila)
 
     def ajustar_ancho_listado(self, canvas, ventana_listado, ancho):
-        self.ancho_tarjeta = max(360, ancho - 18)
-        canvas.itemconfigure(ventana_listado, width=self.ancho_tarjeta)
+        self.vista.ancho_tarjeta = max(360, ancho - 18)
+        canvas.itemconfigure(ventana_listado, width=self.vista.ancho_tarjeta)
+
+
+class TarjetaUsuarioAdmin:
+    """Tarjeta individual con foto, datos y acciones administrativas."""
+
+    def __init__(self, vista):
+        self.vista = vista
+        self.moldes = vista.moldes
+
+    def crear(self, padre, usuario, fila):
+        tarjeta = self.crear_contenedor(padre, fila)
+        self.crear_imagen_usuario(tarjeta, usuario).grid(row=0, column=0, sticky="nsew")
+        cuerpo = self.moldes.crear_frame(tarjeta, tema.PANEL_SUAVE, fila=0, columna=1, sticky="nsew", margen_x=12, margen_y=8, columnas_peso=((0, 1),), filas_peso=((1, 1),))
+        self.crear_nombre(cuerpo, usuario)
+        self.crear_datos(cuerpo, usuario).grid(row=1, column=0, sticky="nsew")
+        self.crear_acciones(tarjeta, usuario)
+
+    def crear_contenedor(self, padre, fila):
+        tarjeta = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, fila=fila, columna=0, sticky="ew", margen_y=(0, 12), alto_fijo=188, columnas_peso=((1, 1),), filas_peso=((0, 1),))
+        tarjeta.grid_propagate(False)
+        tarjeta.grid_columnconfigure(0, minsize=188)
+        tarjeta.grid_columnconfigure(1, weight=1)
+        tarjeta.grid_columnconfigure(2, minsize=378)
+        return tarjeta
+
+    def crear_nombre(self, padre, usuario):
+        nombre_completo = " ".join(parte for parte in (getattr(usuario, "nombre", ""), getattr(usuario, "apellido", "")) if parte)
+        self.moldes.crear_label(padre, f"Nombre: {nombre_completo}", ("Arial", 17, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", row=0, column=0, sticky="ew", pady=(0, 4))
+
+    def crear_datos(self, padre, usuario):
+        contenedor = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, columnas_peso=((0, 1),))
+        grilla = self.moldes.crear_frame(contenedor, tema.PANEL_SUAVE)
+        grilla.grid(row=0, column=0, sticky="n", pady=(0, 0))
+        ancho_valor = max(190, (self.vista.ancho_tarjeta - 188 - 378 - 88) // 2)
+        for indice, (etiqueta, valor) in enumerate(self.vista.controlador_admin.datos_usuario(usuario)):
+            self.crear_dato(grilla, indice, etiqueta, valor, ancho_valor)
+        return contenedor
+
+    def crear_dato(self, padre, indice, etiqueta, valor, ancho_valor):
+        fila = indice // 2
+        columna = indice % 2
+        margen_x = (0, 38) if columna == 0 else (38, 0)
+        celda = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=fila, columna=columna, sticky="ew", margen_x=margen_x, margen_y=(0, 4), columnas_peso=((0, 1),))
+        self.moldes.crear_label(celda, f"{etiqueta}:", ("Arial", 12, "bold"), tema.TEXTO_SUAVE, tema.PANEL_SUAVE).pack(side="left", anchor="w")
+        self.moldes.crear_label(celda, str(valor), ("Arial", 12), tema.TEXTO, tema.PANEL_SUAVE, ancho_valor, "left").pack(side="left", anchor="w", padx=(4, 0))
+
+    def crear_acciones(self, padre, usuario):
+        acciones = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=0, columna=2, sticky="nsew", ancho_fijo=378, alto_fijo=188, columnas_peso=((0, 1), (1, 1)), filas_peso=((0, 1),))
+        acciones.grid_propagate(False)
+        cuenta_congelada = getattr(usuario, "cuenta_congelada", False)
+        texto_estado = "Descongelar\ncuenta" if cuenta_congelada else "Congelar\ncuenta"
+        accion_estado = self.vista.acciones.presionar_boton_descongelar_cuenta if cuenta_congelada else self.vista.acciones.presionar_boton_congelar_cuenta
+        self.crear_boton_accion(acciones, texto_estado, "#1e3a5f", "#274766", lambda usuario=usuario: accion_estado(usuario), 0, (0, 1))
+        self.crear_boton_accion(acciones, "Borrar\ncuenta", "#5f1f2d", "#70283a", lambda usuario=usuario: self.vista.acciones.presionar_boton_eliminar_cuenta(usuario), 1, (1, 0))
+
+    def crear_boton_accion(self, padre, texto, color, color_activo, comando, columna, margen_x):
+        contenedor = self.moldes.crear_frame(padre, tema.BORDE, ancho_fijo=188, alto_fijo=188, fila=0, columna=columna, sticky="nsew", margen_x=margen_x)
+        contenedor.grid_propagate(False)
+        contenedor.pack_propagate(False)
+        boton = self.moldes.crear_boton(contenedor, texto, False, None, comando, llenar="both", expandir=True, margen_x=2, margen_y=2)
+        boton.configure(font=("Arial", 11, "bold"), bg=color, fg=tema.PRIMARIO_TEXTO, activebackground=color_activo, activeforeground=tema.PRIMARIO_TEXTO, wraplength=176, justify="center")
+        return boton
 
     def crear_imagen_usuario(self, padre, usuario):
-        contenedor = self.crear_cuadrado_fijo(padre, self.COLOR_PANEL)
+        contenedor = self.moldes.crear_frame(padre, tema.FONDO, ancho_fijo=188, alto_fijo=188)
+        contenedor.grid_propagate(False)
+        contenedor.pack_propagate(False)
         ruta = self.ruta_imagen_usuario(usuario)
-        if ruta is not None:
-            try:
-                imagen = Image.open(ruta)
-                imagen.thumbnail((self.TAMANO_CUADRADO - 10, self.TAMANO_CUADRADO - 10))
-                foto = ImageTk.PhotoImage(imagen)
-                self.imagenes_usuario.append(foto)
-                tk.Label(contenedor, image=foto, bg=self.COLOR_PANEL).place(relx=0.5, rely=0.5, anchor="center")
-                return contenedor
-            except (OSError, ValueError):
-                pass
+        if ruta is not None and self.mostrar_imagen(contenedor, ruta):
+            return contenedor
 
-        tk.Label(contenedor, text="X", font=("Arial", 42, "bold"), fg=self.COLOR_TEXTO_SUAVE, bg=self.COLOR_PANEL).place(relx=0.5, rely=0.5, anchor="center")
+        self.moldes.crear_label(contenedor, "Sin\nfoto", ("Arial", 16, "bold"), tema.TEXTO_SUAVE, tema.FONDO, metodo="place", relx=0.5, rely=0.5, anchor="center")
         return contenedor
+
+    def mostrar_imagen(self, padre, ruta):
+        try:
+            imagen = Image.open(ruta)
+            imagen = ImageOps.fit(imagen, (188, 188), method=Image.LANCZOS)
+            foto = ImageTk.PhotoImage(imagen)
+            self.vista.imagenes_usuario.append(foto)
+            tk.Label(padre, image=foto, bg=tema.FONDO, bd=0).pack(fill="both", expand=True)
+            return True
+        except (OSError, ValueError):
+            return False
 
     def ruta_imagen_usuario(self, usuario):
         imagen = getattr(usuario, "selfie", "") or getattr(usuario, "imagen", "")
@@ -207,24 +190,99 @@ class VistaPanelAdmin(tk.Frame):
 
         return None
 
-    def datos_usuario(self, usuario):
-        tipo = getattr(usuario, "tipo_usuario", "usuario")
-        datos = [
-            ("ID", usuario.id_usuario),
-            ("Tipo", tipo),
-            ("Correo", usuario.correo),
-            ("Telefono", usuario.telefono),
-            ("Edad", usuario.edad),
-            ("Estado", "Congelada" if getattr(usuario, "cuenta_congelada", False) else "Activa"),
-        ]
+class AccionesBotonesAdmin:
+    """Acciones de botones del panel admin, separadas del armado visual."""
 
-        if tipo == "pasajero":
-            datos.append(("Direccion", getattr(usuario, "direccion", "")))
+    def __init__(self, vista):
+        self.vista = vista
 
-        if tipo == "conductor":
-            auto = getattr(usuario, "auto", None)
-            datos.append(("Licencia", f"{getattr(usuario, 'tipo_licencia', '')} | {getattr(usuario, 'licencia_conducir', '')}"))
-            if auto is not None:
-                datos.append(("Auto", f"{auto.marca} {auto.modelo} | {auto.ano} | Patente: {auto.patente}"))
+    def presionar_boton_cerrar_sesion(self):
+        self.vista.navegar("pantalla_inicial")
 
-        return datos
+    def presionar_boton_cambiar_tema(self):
+        # FLUJO TEMA 1: Lo llama el boton de tema en el inicio del panel admin.
+        # Siguiente paso: tema.alternar_tema() en vistas/estilizacion/tema.py.
+        tema.alternar_tema()
+
+        # FLUJO TEMA 3: Despues del cambio, vuelve a navegacion.py para
+        # reconstruir VistaPanelAdmin desde su pantalla inicial.
+        self.vista.navegar("panel_admin")
+
+    def presionar_boton_abrir_seccion(self, tipo_usuario, titulo):
+        PanelListadoAdmin(self.vista).crear(tipo_usuario, titulo)
+
+    def presionar_boton_volver(self):
+        PanelInicioAdmin(self.vista).crear()
+
+    def presionar_boton_congelar_cuenta(self, usuario):
+        # La vista solo dispara la accion y refresca la seccion actual.
+        self.vista.controlador_admin.congelar_cuenta(usuario.id_usuario)
+        self.refrescar_listado()
+
+    def presionar_boton_descongelar_cuenta(self, usuario):
+        # La vista solo dispara la accion y refresca la seccion actual.
+        self.vista.controlador_admin.descongelar_cuenta(usuario.id_usuario)
+        self.refrescar_listado()
+
+    def presionar_boton_eliminar_cuenta(self, usuario):
+        # Confirmacion visual antes de borrar; el borrado real sigue en servicio.
+        nombre = f"{usuario.nombre} {usuario.apellido}"
+        if not messagebox.askyesno("Borrar cuenta", f"Borrar la cuenta de {nombre}?"):
+            return
+
+        self.vista.controlador_admin.eliminar_cuenta(usuario.id_usuario)
+        self.refrescar_listado()
+
+    def refrescar_listado(self):
+        if self.vista.tipo_actual is None or self.vista.titulo_actual is None:
+            return
+        PanelListadoAdmin(self.vista).crear(self.vista.tipo_actual, self.vista.titulo_actual)
+
+
+class VistaPanelAdmin(tk.Frame):
+    """Pantalla principal para usuarios con tipo_usuario administrador."""
+
+    def __init__(self, padre, navegar, controlador_admin, usuario_actual):
+        self.navegar = navegar
+        self.controlador_admin = controlador_admin
+        self.usuario_actual = usuario_actual
+        self.moldes = Moldes()
+        self.imagenes_usuario = []
+        self.ancho_tarjeta = 700
+        self.tipo_actual = None
+        self.titulo_actual = None
+        self.acciones = AccionesBotonesAdmin(self)
+
+        super().__init__(padre, bg=tema.FONDO)
+        self.pack(fill="both", expand=True)
+        self.crear_widgets()
+
+    def crear_widgets(self):
+        self.configure(bg=tema.PANEL)
+        self.panel = self.moldes.crear_frame(self, tema.PANEL, tema.BORDE, 1, 16, 16, llenar="both", expandir=True, margen_x=18, margen_y=18, columnas_peso=((0, 1),), filas_peso=((1, 1),))
+        self.cabecera = self.moldes.crear_frame(self.panel, tema.PANEL, fila=0, columna=0, sticky="ew", columnas_peso=((0, 1), (1, 1)))
+        self.titulo_cabecera = self.moldes.crear_label(self.cabecera, "Panel administrador", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", row=0, column=0, sticky="w")
+        self.acciones_cabecera = None
+        self.contenido = self.moldes.crear_frame(self.panel, tema.PANEL, fila=1, columna=0, sticky="nsew", columnas_peso=((0, 1),), filas_peso=((0, 1),))
+        PanelInicioAdmin(self).crear()
+
+    def configurar_cabecera(self, titulo, texto_boton, comando_boton, texto_boton_secundario=None, comando_boton_secundario=None):
+        self.titulo_cabecera.config(text=titulo)
+        if self.acciones_cabecera is not None:
+            self.acciones_cabecera.destroy()
+
+        self.acciones_cabecera = self.moldes.crear_frame(self.cabecera, tema.PANEL, fila=0, columna=1, sticky="e")
+
+        # FLUJO TEMA 0: PanelInicioAdmin.crear() pide este boton secundario.
+        # El boton llama AccionesBotonesAdmin.presionar_boton_cambiar_tema().
+        if texto_boton_secundario is not None and comando_boton_secundario is not None:
+            self.moldes.crear_boton(self.acciones_cabecera, texto_boton_secundario, False, None, comando_boton_secundario, lado="left", margen_x=(0, 8))
+
+        self.moldes.crear_boton(self.acciones_cabecera, texto_boton, False, None, comando_boton, lado="left")
+
+    def limpiar_contenido(self):
+        for widget in self.contenido.winfo_children():
+            widget.destroy()
+        self.contenido.grid_rowconfigure(0, weight=0)
+        self.contenido.grid_rowconfigure(1, weight=0)
+        self.imagenes_usuario = []

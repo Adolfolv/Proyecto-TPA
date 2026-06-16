@@ -16,6 +16,15 @@ class VistaMenu(tk.Frame):
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 
+    def cambiar_tema(self):
+        # FLUJO TEMA 1: Lo llama el boton "Cambiar modo" del menu principal.
+        # Siguiente paso: tema.alternar_tema() en vistas/estilizacion/tema.py.
+        tema.alternar_tema()
+
+        # FLUJO TEMA 3: Despues del cambio, vuelve a navegacion.py para
+        # reconstruir VistaMenu con las constantes nuevas.
+        self.navegar("menu")
+
     def crear_widgets(self):
         panel = self.moldes.crear_frame(self, tema.PANEL, tema.BORDE, 1, 22, 22, llenar="both", expandir=True, margen_x=24, margen_y=24, columnas_peso=((0, 1),), filas_peso=((1, 1),))
 
@@ -47,5 +56,5 @@ class VistaMenu(tk.Frame):
         pie = self.moldes.crear_frame(panel, tema.PANEL, fila=2, columna=0, sticky="ew", margen_y=(16, 0), columnas_peso=((0, 1),))
         acciones = self.moldes.crear_frame(pie, tema.PANEL, fila=0, columna=0, sticky="")
         self.moldes.crear_boton(acciones, "Ayuda", False, None, None, lado="left", margen_x=5)
-        self.moldes.crear_boton(acciones, "Cambiar modo", False, None, None, lado="left", margen_x=5)
+        self.moldes.crear_boton(acciones, tema.texto_boton(), False, None, self.cambiar_tema, lado="left", margen_x=5)
         self.moldes.crear_label(pie, "Selecciona una opción para continuar.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 900, "center", metodo="grid", fila=1, columna=0, margen_y=(10, 0))

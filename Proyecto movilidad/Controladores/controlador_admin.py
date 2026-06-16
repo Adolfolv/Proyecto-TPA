@@ -12,6 +12,9 @@ class ControladorAdmin:
         # Mantiene a la vista separada del repositorio y del formato JSON.
         return self.servicio_admin.listar_por_tipo(tipo_usuario)
 
+    def datos_usuario(self, usuario):
+        return self.servicio_admin.datos_usuario(usuario)
+
     def congelar_cuenta(self, id_usuario):
         # Accion administrativa real: el servicio valida y persiste el cambio.
         return self.servicio_admin.congelar_cuenta(id_usuario)

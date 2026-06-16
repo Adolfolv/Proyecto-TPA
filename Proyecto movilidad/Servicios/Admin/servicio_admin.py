@@ -33,6 +33,28 @@ class ServicioAdmin:
 
         return conteo
 
+    def datos_usuario(self, usuario):
+        tipo = getattr(usuario, "tipo_usuario", "usuario")
+        datos = [
+            ("ID", usuario.id_usuario),
+            ("Tipo", tipo),
+            ("Correo", usuario.correo),
+            ("Telefono", usuario.telefono),
+            ("Edad", usuario.edad),
+            ("Estado", "Congelada" if getattr(usuario, "cuenta_congelada", False) else "Activa"),
+        ]
+
+        if tipo == "pasajero":
+            datos.append(("Direccion", getattr(usuario, "direccion", "")))
+
+        if tipo == "conductor":
+            auto = getattr(usuario, "auto", None)
+            datos.append(("Licencia", f"{getattr(usuario, 'tipo_licencia', '')} | {getattr(usuario, 'licencia_conducir', '')}"))
+            if auto is not None:
+                datos.append(("Auto", f"{auto.marca} {auto.modelo} | {auto.ano} | Patente: {auto.patente}"))
+
+        return datos
+
     def congelar_cuenta(self, id_usuario):
         # La regla de negocio queda aqui: el panel solo puede congelar cuentas
         # operativas, no cuentas administradoras.

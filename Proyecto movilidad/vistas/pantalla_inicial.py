@@ -15,11 +15,20 @@ class VistaPantallaInicial(tk.Frame):
         self.pack(fill="both", expand=True)
         self.crear_widgets()
 
+    def cambiar_tema(self):
+        # FLUJO TEMA 1: Lo llama el boton "Tema" de esta pantalla.
+        # Siguiente paso: tema.alternar_tema() en vistas/estilizacion/tema.py.
+        tema.alternar_tema()
+
+        # FLUJO TEMA 3: Despues del cambio, vuelve a navegacion.py para
+        # reconstruir VistaPantallaInicial con las constantes nuevas.
+        self.navegar("pantalla_inicial")
+
     def crear_widgets(self):
         panel_central = self.moldes.crear_frame(self, tema.PANEL, tema.BORDE, 1, 28, 24, relx=0.5, rely=0.5, ancla="center", ancho=560, alto=430)
 
         barra_superior = self.moldes.crear_frame(panel_central, tema.PANEL, llenar="x")
-        self.moldes.crear_boton(barra_superior, "Tema", lado="left", margen_x=4)
+        self.moldes.crear_boton(barra_superior, tema.texto_boton(), comando=self.cambiar_tema, lado="left", margen_x=4)
         self.moldes.crear_boton(barra_superior, "Salir", comando=lambda: self.navegar("salir"), lado="right", margen_x=4)
         self.moldes.crear_label(panel_central, "Bienvenido a Movilidad", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, margen_y=(34, 10))
         self.moldes.crear_label(panel_central, "Gestiona tus viajes, tu perfil y tu billetera desde una sola pantalla.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 430, "center", margen_y=(0, 22))
