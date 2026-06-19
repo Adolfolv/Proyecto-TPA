@@ -33,6 +33,14 @@ class TemaOscuro(Tema):
             "ERROR_FONDO": "#3b1f2a",
             "EXITO": "#22c55e",
             "EXITO_FONDO": "#1d3a2a",
+            "ADMIN_PASAJERO": "#2dd4bf",
+            "ADMIN_CONDUCTOR": "#fbbf24",
+            "ADMIN_ACCION": "#2563eb",
+            "ADMIN_ACCION_ACTIVO": "#1d4ed8",
+            "ADMIN_PELIGRO": "#dc2626",
+            "ADMIN_PELIGRO_ACTIVO": "#b91c1c",
+            "ADMIN_ACENTO_TEXTO": "#0f172a",
+            "ADMIN_ACCION_TEXTO": "#ffffff",
         }
 
 
@@ -54,6 +62,14 @@ class TemaClaro(Tema):
             "ERROR_FONDO": "#fee2e2",
             "EXITO": "#15803d",
             "EXITO_FONDO": "#dcfce7",
+            "ADMIN_PASAJERO": "#0f766e",
+            "ADMIN_CONDUCTOR": "#b45309",
+            "ADMIN_ACCION": "#2563eb",
+            "ADMIN_ACCION_ACTIVO": "#1d4ed8",
+            "ADMIN_PELIGRO": "#dc2626",
+            "ADMIN_PELIGRO_ACTIVO": "#b91c1c",
+            "ADMIN_ACENTO_TEXTO": "#ffffff",
+            "ADMIN_ACCION_TEXTO": "#ffffff",
         }
 
 
@@ -75,6 +91,14 @@ class TemaAzul(Tema):
             "ERROR_FONDO": "#450a0a",
             "EXITO": "#4ade80",
             "EXITO_FONDO": "#052e16",
+            "ADMIN_PASAJERO": "#67e8f9",
+            "ADMIN_CONDUCTOR": "#facc15",
+            "ADMIN_ACCION": "#38bdf8",
+            "ADMIN_ACCION_ACTIVO": "#0ea5e9",
+            "ADMIN_PELIGRO": "#fb7185",
+            "ADMIN_PELIGRO_ACTIVO": "#f43f5e",
+            "ADMIN_ACENTO_TEXTO": "#082f49",
+            "ADMIN_ACCION_TEXTO": "#082f49",
         }
 
 
@@ -109,12 +133,7 @@ def nombre_actual():
 
 
 def texto_boton():
-    indice_siguiente = _indice_tema + 1
-
-    if indice_siguiente >= len(_temas):
-        indice_siguiente = 0
-
-    return f"Tema {_temas[indice_siguiente].nombre}"
+    return "Cambiar Tema"
 
 
 _actualizar_constantes()

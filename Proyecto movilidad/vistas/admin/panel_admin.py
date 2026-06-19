@@ -1,11 +1,10 @@
 import tkinter as tk
 from pathlib import Path
-from tkinter import messagebox
 
 from PIL import Image, ImageOps, ImageTk
 
 from ..estilizacion import tema
-from ..estilizacion.decoraciones import crear_logo_admin
+from ..estilizacion.decoraciones import crear_logo_admin, crear_panel_confirmacion_admin
 from ..estilizacion.widgets import Moldes
 
 
@@ -27,8 +26,8 @@ class PanelInicioAdmin:
         # La pantalla inicial separa las secciones administrativas sin tocar
         # el menu normal de pasajeros/conductores.
         secciones = (
-            ("pasajero", "Pasajeros", "#2dd4bf", "Revisa cuentas de usuarios que solicitan viajes."),
-            ("conductor", "Conductores", "#f59e0b", "Consulta conductores, licencias y datos del vehiculo."),
+            ("pasajero", "Pasajeros", tema.ADMIN_PASAJERO, "Revisa cuentas de usuarios que solicitan viajes."),
+            ("conductor", "Conductores", tema.ADMIN_CONDUCTOR, "Consulta conductores, licencias y datos del vehiculo."),
         )
         for columna, (tipo, titulo, color, descripcion) in enumerate(secciones):
             self.crear_tarjeta_seccion(centro, columna, tipo, titulo, color, descripcion, conteo)
@@ -43,7 +42,7 @@ class PanelInicioAdmin:
         self.moldes.crear_label(contenido, str(conteo.get(tipo, 0)), ("Arial", 58, "bold"), color, tema.PANEL_SUAVE, metodo="grid", row=3, column=0, sticky="")
         self.moldes.crear_label(contenido, descripcion, ("Arial", 13), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, 260, "center", metodo="grid", row=4, column=0, sticky="ew", pady=(22, 28))
         boton = self.moldes.crear_boton(contenido, "Abrir", True, 18, lambda: vista.acciones.presionar_boton_abrir_seccion(tipo, titulo))
-        boton.configure(font=("Arial", 15, "bold"), bg=color, activebackground=color, padx=28, pady=16)
+        boton.configure(font=("Arial", 15, "bold"), bg=color, fg=tema.ADMIN_ACENTO_TEXTO, activebackground=color, activeforeground=tema.ADMIN_ACENTO_TEXTO, padx=28, pady=16)
         boton.grid(row=5, column=0, ipadx=28, ipady=6)
 
 
@@ -62,6 +61,8 @@ class PanelListadoAdmin:
         vista.configurar_cabecera(titulo, "Volver", vista.acciones.presionar_boton_volver)
         vista.contenido.grid_rowconfigure(0, weight=0)
         vista.contenido.grid_rowconfigure(1, weight=1)
+        vista.contenido.grid_rowconfigure(2, weight=0)
+        vista.mostrar_confirmacion = crear_panel_confirmacion_admin(vista.contenido, fila=2)
         usuarios = vista.controlador_admin.listar_por_tipo(tipo_usuario)
 
         zona = self.moldes.crear_frame(vista.contenido, tema.PANEL, fila=1, columna=0, sticky="nsew", margen_y=(8, 0), columnas_peso=((0, 1),), filas_peso=((0, 1),))
@@ -135,20 +136,23 @@ class TarjetaUsuarioAdmin:
         self.moldes.crear_label(celda, str(valor), ("Arial", 12), tema.TEXTO, tema.PANEL_SUAVE, ancho_valor, "left").pack(side="left", anchor="w", padx=(4, 0))
 
     def crear_acciones(self, padre, usuario):
+        for widget in padre.grid_slaves(row=0, column=2):
+            widget.destroy()
+
         acciones = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=0, columna=2, sticky="nsew", ancho_fijo=378, alto_fijo=188, columnas_peso=((0, 1), (1, 1)), filas_peso=((0, 1),))
         acciones.grid_propagate(False)
         cuenta_congelada = getattr(usuario, "cuenta_congelada", False)
         texto_estado = "Descongelar\ncuenta" if cuenta_congelada else "Congelar\ncuenta"
         accion_estado = self.vista.acciones.presionar_boton_descongelar_cuenta if cuenta_congelada else self.vista.acciones.presionar_boton_congelar_cuenta
-        self.crear_boton_accion(acciones, texto_estado, "#1e3a5f", "#274766", lambda usuario=usuario: accion_estado(usuario), 0, (0, 1))
-        self.crear_boton_accion(acciones, "Borrar\ncuenta", "#5f1f2d", "#70283a", lambda usuario=usuario: self.vista.acciones.presionar_boton_eliminar_cuenta(usuario), 1, (1, 0))
+        self.crear_boton_accion(acciones, texto_estado, tema.ADMIN_ACCION, tema.ADMIN_ACCION_ACTIVO, lambda usuario=usuario, tarjeta=padre: accion_estado(usuario, tarjeta), 0, (0, 1))
+        self.crear_boton_accion(acciones, "Borrar\ncuenta", tema.ADMIN_PELIGRO, tema.ADMIN_PELIGRO_ACTIVO, lambda usuario=usuario, tarjeta=padre: self.vista.acciones.presionar_boton_eliminar_cuenta(usuario, tarjeta), 1, (1, 0))
 
     def crear_boton_accion(self, padre, texto, color, color_activo, comando, columna, margen_x):
         contenedor = self.moldes.crear_frame(padre, tema.BORDE, ancho_fijo=188, alto_fijo=188, fila=0, columna=columna, sticky="nsew", margen_x=margen_x)
         contenedor.grid_propagate(False)
         contenedor.pack_propagate(False)
         boton = self.moldes.crear_boton(contenedor, texto, False, None, comando, llenar="both", expandir=True, margen_x=2, margen_y=2)
-        boton.configure(font=("Arial", 11, "bold"), bg=color, fg=tema.PRIMARIO_TEXTO, activebackground=color_activo, activeforeground=tema.PRIMARIO_TEXTO, wraplength=176, justify="center")
+        boton.configure(font=("Arial", 11, "bold"), bg=color, fg=tema.ADMIN_ACCION_TEXTO, activebackground=color_activo, activeforeground=tema.ADMIN_ACCION_TEXTO, wraplength=176, justify="center")
         return boton
 
     def crear_imagen_usuario(self, padre, usuario):
@@ -214,24 +218,31 @@ class AccionesBotonesAdmin:
     def presionar_boton_volver(self):
         PanelInicioAdmin(self.vista).crear()
 
-    def presionar_boton_congelar_cuenta(self, usuario):
-        # La vista solo dispara la accion y refresca la seccion actual.
-        self.vista.controlador_admin.congelar_cuenta(usuario.id_usuario)
-        self.refrescar_listado()
-
-    def presionar_boton_descongelar_cuenta(self, usuario):
-        # La vista solo dispara la accion y refresca la seccion actual.
-        self.vista.controlador_admin.descongelar_cuenta(usuario.id_usuario)
-        self.refrescar_listado()
-
-    def presionar_boton_eliminar_cuenta(self, usuario):
-        # Confirmacion visual antes de borrar; el borrado real sigue en servicio.
+    def presionar_boton_congelar_cuenta(self, usuario, tarjeta):
         nombre = f"{usuario.nombre} {usuario.apellido}"
-        if not messagebox.askyesno("Borrar cuenta", f"Borrar la cuenta de {nombre}?"):
-            return
+        self.vista.mostrar_confirmacion(f"Confirmar congelar la cuenta de {nombre}?", lambda: self.confirmar_congelar_cuenta(usuario, tarjeta))
 
+    def confirmar_congelar_cuenta(self, usuario, tarjeta):
+        self.vista.controlador_admin.congelar_cuenta(usuario.id_usuario)
+        usuario.cuenta_congelada = True
+        TarjetaUsuarioAdmin(self.vista).crear_acciones(tarjeta, usuario)
+
+    def presionar_boton_descongelar_cuenta(self, usuario, tarjeta):
+        nombre = f"{usuario.nombre} {usuario.apellido}"
+        self.vista.mostrar_confirmacion(f"Confirmar descongelar la cuenta de {nombre}?", lambda: self.confirmar_descongelar_cuenta(usuario, tarjeta))
+
+    def confirmar_descongelar_cuenta(self, usuario, tarjeta):
+        self.vista.controlador_admin.descongelar_cuenta(usuario.id_usuario)
+        usuario.cuenta_congelada = False
+        TarjetaUsuarioAdmin(self.vista).crear_acciones(tarjeta, usuario)
+
+    def presionar_boton_eliminar_cuenta(self, usuario, tarjeta):
+        nombre = f"{usuario.nombre} {usuario.apellido}"
+        self.vista.mostrar_confirmacion(f"Confirmar borrar la cuenta de {nombre}?", lambda: self.confirmar_eliminar_cuenta(usuario, tarjeta))
+
+    def confirmar_eliminar_cuenta(self, usuario, tarjeta):
         self.vista.controlador_admin.eliminar_cuenta(usuario.id_usuario)
-        self.refrescar_listado()
+        tarjeta.destroy()
 
     def refrescar_listado(self):
         if self.vista.tipo_actual is None or self.vista.titulo_actual is None:
@@ -251,6 +262,7 @@ class VistaPanelAdmin(tk.Frame):
         self.ancho_tarjeta = 700
         self.tipo_actual = None
         self.titulo_actual = None
+        self.mostrar_confirmacion = None
         self.acciones = AccionesBotonesAdmin(self)
 
         super().__init__(padre, bg=tema.FONDO)
@@ -258,7 +270,7 @@ class VistaPanelAdmin(tk.Frame):
         self.crear_widgets()
 
     def crear_widgets(self):
-        self.configure(bg=tema.PANEL)
+        self.configure(bg=tema.FONDO)
         self.panel = self.moldes.crear_frame(self, tema.PANEL, tema.BORDE, 1, 16, 16, llenar="both", expandir=True, margen_x=18, margen_y=18, columnas_peso=((0, 1),), filas_peso=((1, 1),))
         self.cabecera = self.moldes.crear_frame(self.panel, tema.PANEL, fila=0, columna=0, sticky="ew", columnas_peso=((0, 1), (1, 1)))
         self.titulo_cabecera = self.moldes.crear_label(self.cabecera, "Panel administrador", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", row=0, column=0, sticky="w")
