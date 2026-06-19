@@ -35,5 +35,5 @@ class VistaPantallaInicial(tk.Frame):
         self.moldes.crear_label(panel_central, "Accesos disponibles", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL, margen_y=(0, 8))
         self.moldes.crear_boton(panel_central, "Registrarse", True, 28, lambda: self.navegar("registro"), margen_y=6)
         self.moldes.crear_boton(panel_central, "Iniciar sesión", False, 28, lambda: self.navegar("inicio_sesion"), margen_y=6)
-        self.moldes.crear_boton(panel_central, "Ayuda", False, 28, margen_y=6)
+        self.moldes.crear_boton(panel_central, "Ayuda", False, 28, lambda: self.navegar("ayuda"), margen_y=6)
         self.moldes.crear_label(panel_central, "Selecciona una opción para continuar.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 430, "center", lado="bottom", margen_y=(10, 2))

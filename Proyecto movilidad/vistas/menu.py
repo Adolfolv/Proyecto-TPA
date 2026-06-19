@@ -55,6 +55,6 @@ class VistaMenu(tk.Frame):
 
         pie = self.moldes.crear_frame(panel, tema.PANEL, fila=2, columna=0, sticky="ew", margen_y=(16, 0), columnas_peso=((0, 1),))
         acciones = self.moldes.crear_frame(pie, tema.PANEL, fila=0, columna=0, sticky="")
-        self.moldes.crear_boton(acciones, "Ayuda", False, None, None, lado="left", margen_x=5)
+        self.moldes.crear_boton(acciones, "Ayuda", False, None, lambda: self.navegar("ayuda"), lado="left", margen_x=5)
         self.moldes.crear_boton(acciones, tema.texto_boton(), False, None, self.cambiar_tema, lado="left", margen_x=5)
         self.moldes.crear_label(pie, "Selecciona una opción para continuar.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, 900, "center", metodo="grid", fila=1, columna=0, margen_y=(10, 0))

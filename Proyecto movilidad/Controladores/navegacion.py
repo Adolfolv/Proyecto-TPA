@@ -4,6 +4,7 @@ import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
 from vistas.admin.panel_admin import VistaPanelAdmin
+from vistas.ayuda import VistaAyuda
 from vistas.billetera import VistaBilletera
 from vistas.inicio_sesion import VistaInicioSesion
 from vistas.menu import VistaMenu
@@ -99,6 +100,17 @@ class RutaMenu(RutaNavegacion):
 
     def ejecutar(self):
         self.mostrar(VistaMenu, "Menu principal")
+
+
+class RutaAyuda(RutaNavegacion):
+    destino = "ayuda"
+
+    def ejecutar(self):
+        self.limpiar_pantalla()
+        self.navegacion.ventana.title("Ayuda")
+        usuario_actual = self.navegacion.obtener_usuario_actual()
+        destino_volver = "menu" if usuario_actual is not None else "pantalla_inicial"
+        VistaAyuda(self.navegacion.ventana, self.navegacion.navegar, self.navegacion.dependencias.controlador_ayuda, usuario_actual, destino_volver)
 
 
 class RutaPerfil(RutaNavegacion):

@@ -6,6 +6,7 @@ from Controladores.controlador_billetera import (
     ControladorTarjetas,
 )
 from Controladores.controlador_admin import ControladorAdmin
+from Controladores.controlador_ayuda import ControladorAyuda
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_perfil import ControladorPerfil
 from Controladores.controlador_registro import ControladorRegistro
@@ -24,6 +25,9 @@ from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Billetera.servicio_tarjetas import ServicioTarjeta
 from Servicios.Admin.servicio_admin import ServicioAdmin
+from Servicios.Ayuda.cliente_gemini import ClienteGemini
+from Servicios.Ayuda.contenido_ayuda import ContenidoAyuda
+from Servicios.Ayuda.servicio_ayuda import ServicioAyuda
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
 from Servicios.Usuario.buscador import (
     BuscadorTarjeta,
@@ -77,6 +81,9 @@ class DependenciasAplicacion:
         self.servicio_admin = ServicioAdmin(
             self.repositorio_usuario,
         )
+        self.contenido_ayuda = ContenidoAyuda()
+        self.cliente_gemini = ClienteGemini()
+        self.servicio_ayuda = ServicioAyuda(self.contenido_ayuda, self.cliente_gemini)
         
         self.servicio_tarjeta = ServicioTarjeta(
             self.repositorio_billetera,
@@ -130,6 +137,7 @@ class DependenciasAplicacion:
         self.controlador_admin = ControladorAdmin(
             self.servicio_admin,
         )
+        self.controlador_ayuda = ControladorAyuda(self.servicio_ayuda)
         self.controlador_resumen_billetera = ControladorResumenBilletera(
             self.servicio_billetera,
         )
