@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-
+# PATRÓN DE DISEÑO: DTO
+# Usamos esta clase pura para empaquetar y transportar la respuesta
+# de forma estandarizada hacia la interfaz gráfica, separando los datos de la lógica.
 @dataclass
 class ResultadoRegistro:
     usuario: object = None
@@ -12,10 +14,11 @@ class ResultadoRegistro:
 
 
 class ControladorRegistro:
-
+    # PRINCIPIO SOLID: DIP 
+    # No instanciamos el Servicio aquí adentro. Lo inyectamos por parámetro 
+    # para no depender de una implementación rígida y evitar el acoplamiento fuerte
     def __init__(self, servicio_registro):
         self.servicio_registro = servicio_registro
-
     def registrar_pasajero(
         self,
         nombre,
@@ -27,6 +30,7 @@ class ControladorRegistro:
         direccion,
         confirmar_contrasena
     ):
+        
         datos = {
             "nombre": nombre,
             "apellido": apellido,
@@ -83,7 +87,12 @@ class ControladorRegistro:
             datos,
             confirmar_contrasena,
         )
-
+    def _registrar(self, registrar, datos, confirmar_contrasena):
+        try:
+            usuario_registrado = registrar(datos, confirmar_contrasena)
+            return ResultadoRegistro(usuario=usuario_registrado)
+        except ValueError as error:
+            return ResultadoRegistro(error=str(error))
     def _registrar(self, registrar, datos, confirmar_contrasena):
         try:
             usuario_registrado = registrar(

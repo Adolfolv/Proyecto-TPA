@@ -248,5 +248,97 @@
         "tarjetas": [],
         "transacciones": [],
         "id_usuario": "USR0003"
+    },
+    {
+        "saldo": 181300.0,
+        "tarjetas": [
+            {
+                "titular": "adolfo loncomilla",
+                "numero_tarjeta": "43458475887467",
+                "vencimiento": "09/26",
+                "saldo": 94467.0
+            }
+        ],
+        "transacciones": [
+            {
+                "id_transaccion": "TRX0001",
+                "tipo": "Carga desde tarjeta",
+                "monto": 1000.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0002",
+                "tipo": "Carga desde tarjeta",
+                "monto": 1000.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0003",
+                "tipo": "Carga desde tarjeta",
+                "monto": 1000.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0004",
+                "tipo": "Carga desde tarjeta",
+                "monto": 1000.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0005",
+                "tipo": "Carga desde tarjeta",
+                "monto": 1000.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0006",
+                "tipo": "Carga desde tarjeta",
+                "monto": 100000.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0007",
+                "tipo": "Carga desde tarjeta",
+                "monto": 100000.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0008",
+                "tipo": "Pago",
+                "monto": 4200.0,
+                "fecha": "03-06-2026 23:59"
+            },
+            {
+                "id_transaccion": "TRX0009",
+                "tipo": "Pago",
+                "monto": 4700.0,
+                "fecha": "04-06-2026 00:01"
+            },
+            {
+                "id_transaccion": "TRX0010",
+                "tipo": "Pago",
+                "monto": 3600.0,
+                "fecha": "04-06-2026 00:03"
+            },
+            {
+                "id_transaccion": "TRX0011",
+                "tipo": "Pago",
+                "monto": 3600.0,
+                "fecha": "04-06-2026 00:04"
+            },
+            {
+                "id_transaccion": "TRX0012",
+                "tipo": "Pago",
+                "monto": 3600.0,
+                "fecha": "04-06-2026 00:04"
+            },
+            {
+                "id_transaccion": "TRX0013",
+                "tipo": "Pago",
+                "monto": 4000.0,
+                "fecha": "04-06-2026 00:05"
+            }
+        ],
+        "id_usuario": "USR0004"
     }
 ]

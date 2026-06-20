@@ -1,6 +1,5 @@
 import json
 
-
 def cargar_json(archivo):
     try:
         with open(archivo, "r", encoding="utf-8") as f:

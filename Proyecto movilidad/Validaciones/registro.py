@@ -3,7 +3,11 @@ from datetime import datetime, date
 
 from abstracciones import Validador
 from Validaciones.comunes import es_numero
-#-
+# [PRINCIPIO SOLID: OCP
+# El sistema de validación está CERRADO a modificaciones (no tocamos lo que ya funciona), 
+# pero ABIERTO a extensión (si necesitamos validar el color del auto, simplemente 
+# creamos una nueva clase 'ValidadorColor' sin riesgo de romper el sistema).
+
 
 class ValidadorNombre(Validador):
     def validar(self, valor):
@@ -22,7 +26,10 @@ class ValidadorApellido(Validador):
             raise ValueError("El apellido es obligatorio y debe contener letras.")
         return True
 
-
+ #PATRÓN DE DISEÑO: STRATEGY
+# Cada clase Validador es una "Estrategia" diferente y encapsulada. 
+# Esto nos permite tener algoritmos distintos (ej. Regex vs Matemáticas) 
+# sin mezclarlos en un solo archivo con condicionales if/else gigantes.
 class ValidadorCorreo(Validador):
     def validar(self, valor):
         if not bool(
@@ -195,7 +202,6 @@ class ValidadorConfirmacionContrasena(Validador):
             raise ValueError("Las contrasenas no coinciden. Escribe la misma contrasena en ambos campos.")
 
         return True
-    
 class ValidacionesUsuario:
 
     def __init__(self, buscador_usuarios):

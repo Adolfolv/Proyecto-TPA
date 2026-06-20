@@ -41,6 +41,12 @@ class RepositorioUsuario:
         return usuario
 
     def listar(self):
+        #PATRÓN DE DISEÑO: lazy initialization
+        #Leer el disco duro (el archivo JSON) es una operación 
+        # costosa para el procesador. El patrón de Inicialización Perezosa retrasa 
+        # esta acción pesada hasta el último momento posible, es decir, hasta que 
+        # alguien realmente necesite ver la lista. Si 'self.usuarios' ya tiene datos, 
+        # se salta la lectura y devuelve la memoria caché (RAM), optimizando el sistema.
         if not self.usuarios:
             self.cargar()
 

@@ -41,5 +41,16 @@
         "contrasena": "123456",
         "direccion": "",
         "tipo_usuario": "pasajero"
+    },
+    {
+        "id_usuario": "USR0004",
+        "nombre": "joirge",
+        "apellido": "vargas",
+        "correo": "jorgevramirez23@gmail.com",
+        "edad": "19",
+        "telefono": "+56 941578831",
+        "contrasena": "123456",
+        "direccion": "las lumas ruta 215",
+        "tipo_usuario": "pasajero"
     }
 ]

@@ -5,7 +5,6 @@ from Validaciones.registro import ValidacionesUsuario, ValidacionesConductor
 #.
 
 class ServicioRegistro:
-
     def __init__(self, repositorio_usuario, buscador_usuario, fabrica_usuario):
 
         self.repositorio_usuario = repositorio_usuario
@@ -21,7 +20,9 @@ class ServicioRegistro:
     def registrar_conductor(self, datos, confirmar_contrasena=None):
         usuario = self.fabrica_usuario.crear_conductor(datos)
         return self.registrar_usuario(usuario, confirmar_contrasena)
-
+    # PRINCIPIO SOLID: SRP
+    # Esta función es puramente orquestadora. Delega la creación a la fábrica, 
+    # la revisión a los validadores, y el guardado al repositorio.
     def registrar_usuario(self, usuario, confirmar_contrasena=None):
 
         self.validaciones_usuario.validar(usuario, confirmar_contrasena)
