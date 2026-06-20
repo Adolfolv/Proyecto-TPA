@@ -1,2 +1,0 @@
-Pillow==12.2.0
-tkintermapview==1.29

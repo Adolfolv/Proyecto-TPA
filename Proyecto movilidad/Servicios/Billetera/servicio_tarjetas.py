@@ -12,6 +12,7 @@ from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 
 class ServicioTarjeta:
 
+    # Patron Strategy simple: el tipo de tarjeta decide que validador/regla se usa.
     TIPOS_TARJETA = {
         "Visa": TarjetaVisa,
         "Mastercard": TarjetaMastercard,
@@ -26,6 +27,7 @@ class ServicioTarjeta:
         fabrica_tarjeta=None,
         generador_saldo_tarjeta=None,
     ):
+        # Inyeccion de dependencias: recibe repositorio, buscador y fabrica desde afuera.
         self.repositorio_billetera = repositorio_billetera
         self.buscador_tarjeta = buscador_tarjeta
         self.validaciones_tarjeta = (
@@ -37,43 +39,47 @@ class ServicioTarjeta:
         )
         self.validador_tarjeta_encontrada = ValidadorTarjetaEncontrada()
 
-    def obtener_tarjetas(self, usuario):
-        billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
-        usuario.billetera = billetera
-        return billetera.tarjetas
+    def _obtener_billetera(self, usuario):
+        # El repositorio tambien enlaza la billetera al usuario actual.
+        return self.repositorio_billetera.obtener(usuario)
 
-    def obtener_tarjeta(self, usuario, numero_tarjeta):
-        billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
-        usuario.billetera = billetera
+    def _buscar_tarjeta(self, billetera, numero_tarjeta):
         tarjeta = self.buscador_tarjeta.buscar(billetera, numero_tarjeta)
+        # Si no existe, la validacion lanza ValueError para que la vista lo muestre.
         self.validador_tarjeta_encontrada.validar(tarjeta)
         return tarjeta
 
+    def obtener_tarjetas(self, usuario):
+        return self._obtener_billetera(usuario).tarjetas
+
+    def obtener_tarjeta(self, usuario, numero_tarjeta):
+        billetera = self._obtener_billetera(usuario)
+        return self._buscar_tarjeta(billetera, numero_tarjeta)
+
     def agregar_tarjeta(self, usuario, tipo, titular, numero, vencimiento, cvv):
-        billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
-        usuario.billetera = billetera
+        billetera = self._obtener_billetera(usuario)
 
-        tarjeta = self.fabrica_tarjeta.crear(titular, numero, vencimiento, cvv)
-
+        # El saldo aleatorio solo se genera cuando la tarjeta ya paso validaciones.
         self.validaciones_tarjeta.validar(
             titular,
             billetera,
-            tarjeta,
             tipo,
             numero,
             vencimiento,
             cvv,
         )
 
+        tarjeta = self.fabrica_tarjeta.crear(titular, numero, vencimiento, cvv)
         billetera.tarjetas.append(tarjeta)
+        # Se persiste toda la billetera porque las tarjetas viven dentro de ella.
         self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
 
         return True
 
     def eliminar_tarjeta(self, usuario, numero_tarjeta):
-        billetera = self.repositorio_billetera.obtener_por_usuario(usuario.id_usuario)
-        usuario.billetera = billetera
-        tarjeta = self.obtener_tarjeta(usuario, numero_tarjeta)
+        billetera = self._obtener_billetera(usuario)
+        tarjeta = self._buscar_tarjeta(billetera, numero_tarjeta)
         billetera.tarjetas.remove(tarjeta)
+        # Al eliminar tambien se guarda la billetera completa actualizada.
         self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
         return True

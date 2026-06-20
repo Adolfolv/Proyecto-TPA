@@ -1,6 +1,20 @@
 """Constantes compartidas por las vistas.."""
 
 
+# --- fuentes compartidas por las vistas ---
+
+FUENTE_TITULO = ("Arial", 22, "bold")
+FUENTE_SUBTITULO = ("Arial", 13, "bold")
+FUENTE_TEXTO = ("Arial", 11)
+FUENTE_BOTON = ("Arial", 10, "bold")
+
+FUENTE_LOGIN_TITULO = ("Arial", 26, "bold")
+FUENTE_LOGIN_TEXTO = ("Arial", 12)
+FUENTE_LOGIN_CAMPO = ("Arial", 13, "bold")
+FUENTE_LOGIN_ENTRADA = ("Arial", 14)
+FUENTE_LOGIN_BOTON = ("Arial", 11, "bold")
+
+
 # --- constantes archivo registro.py ---
 
 CATEGORIAS_LICENCIA = ("Categoria A1", "Categoria A2", "Categoria A3", "Categoria B")

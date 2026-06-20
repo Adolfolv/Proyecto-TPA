@@ -5,7 +5,10 @@ from Controladores.controlador_billetera import (
     ControladorResumenBilletera,
     ControladorTarjetas,
 )
+from Controladores.controlador_admin import ControladorAdmin
+from Controladores.controlador_ayuda import ControladorAyuda
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
+from Controladores.controlador_perfil import ControladorPerfil
 from Controladores.controlador_registro import ControladorRegistro
 from Controladores.controlador_viaje import (
     ControladorViajeConductor,
@@ -14,15 +17,17 @@ from Controladores.controlador_viaje import (
 from Repositorios.repositorio_billetera import RepositorioBilletera
 from Repositorios.repositorio_usuario import RepositorioUsuario
 from Servicios.Billetera.operaciones_billetera import (
-    OperacionCargaTarjeta,
     OperacionPago,
-    OperacionPagoRecibido,
-    OperacionRetiroTarjeta,
+    OperacionMovimientoTarjeta,
 )
 from Servicios.Billetera.fabrica_billetera import FabricaBilletera
 from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Billetera.servicio_tarjetas import ServicioTarjeta
+from Servicios.Admin.servicio_admin import ServicioAdmin
+from Servicios.Ayuda.cliente_gemini import ClienteGemini
+from Servicios.Ayuda.contenido_ayuda import ContenidoAyuda
+from Servicios.Ayuda.servicio_ayuda import ServicioAyuda
 from Servicios.Usuario.autenticacion import ServicioAutenticacion
 from Servicios.Usuario.buscador import (
     BuscadorTarjeta,
@@ -30,6 +35,7 @@ from Servicios.Usuario.buscador import (
     BuscadorUsuarioPorCorreo,
 )
 from Servicios.Usuario.fabrica_usuario import FabricaUsuario
+from Servicios.Usuario.perfil import ServicioPerfil
 from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 
@@ -65,21 +71,47 @@ class DependenciasAplicacion:
             self.buscador_usuario_por_correo,
             self.fabrica_usuario,
         )
+        self.servicio_perfil = ServicioPerfil(
+            self.repositorio_usuario,
+            self.buscador_usuario_por_correo,
+        )
+        # Servicio exclusivo para consultas del panel administrador.
+        # Comparte el mismo repositorio de usuarios para no duplicar datos
+        # ni alterar el flujo actual de registro, login, billetera o viaje.
+        self.servicio_admin = ServicioAdmin(
+            self.repositorio_usuario,
+        )
+        self.contenido_ayuda = ContenidoAyuda()
+        self.cliente_gemini = ClienteGemini()
+        self.servicio_ayuda = ServicioAyuda(self.contenido_ayuda, self.cliente_gemini)
+        
         self.servicio_tarjeta = ServicioTarjeta(
             self.repositorio_billetera,
             self.buscador_tarjeta,
             fabrica_tarjeta=self.fabrica_tarjeta,
         )
+        # Patron Strategy/Command: cada clave selecciona una operacion concreta de billetera.
         self.operaciones_billetera = {
-            "pagar": OperacionPago(self.repositorio_billetera),
-            "recibir": OperacionPagoRecibido(self.repositorio_billetera),
-            "cargar": OperacionCargaTarjeta(
+            "pagar": OperacionPago(
                 self.repositorio_billetera,
-                self.servicio_tarjeta,
+                "Pago",
+                "pagar",
             ),
-            "retirar": OperacionRetiroTarjeta(
+            "recibir": OperacionPago(
+                self.repositorio_billetera,
+                "Pago recibido",
+                "recibir_pago",
+            ),
+            "cargar": OperacionMovimientoTarjeta(
                 self.repositorio_billetera,
                 self.servicio_tarjeta,
+                "Carga desde tarjeta",
+            ),
+            "retirar": OperacionMovimientoTarjeta(
+                self.repositorio_billetera,
+                self.servicio_tarjeta,
+                "Retiro a tarjeta",
+                origen_es_billetera=True,
             ),
         }
         self.servicio_billetera = ServicioBilletera(
@@ -97,6 +129,15 @@ class DependenciasAplicacion:
         self.controlador_registro = ControladorRegistro(
             self.servicio_registro,
         )
+        self.controlador_perfil = ControladorPerfil(
+            self.servicio_perfil,
+        )
+        # Controlador del panel admin: evita que la vista llame directo a
+        # servicios o repositorios cuando congela/elimina cuentas.
+        self.controlador_admin = ControladorAdmin(
+            self.servicio_admin,
+        )
+        self.controlador_ayuda = ControladorAyuda(self.servicio_ayuda)
         self.controlador_resumen_billetera = ControladorResumenBilletera(
             self.servicio_billetera,
         )

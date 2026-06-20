@@ -14,6 +14,9 @@ class ServicioViajeComun:
         self.calculadora = CalculadoraViaje(self.trayectoria)
         self.fabrica = FabricaViaje(self.trayectoria, self.calculadora)
 
+    def obtener_lugares_disponibles(self):
+        return tuple(LUGARES_OSORNO)
+
     def obtener_punto_lugar(self, nombre_lugar):
         return LUGARES_OSORNO[nombre_lugar]
 

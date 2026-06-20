@@ -97,6 +97,16 @@ class ResultadoBusquedaVehiculos:
     ruta_busqueda: RutaReal | None = None
 
 
+@dataclass(frozen=True)
+class ResultadoBusquedaPasajero:
+    """Respuesta del caso de uso de busqueda del conductor."""
+
+    exitoso: bool
+    error: str = ""
+    pasajero: PasajeroEncontrado | None = None
+    ruta_pasajero: RutaReal | None = None
+
+
 @dataclass
 class Viaje:
     """Registro de un viaje creado durante el flujo actual."""

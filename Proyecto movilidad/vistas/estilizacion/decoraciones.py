@@ -44,6 +44,77 @@ def crear_panel_mensaje_registro(padre, compacto=False):
     return mostrar
 
 
+def crear_panel_confirmacion_admin(padre, fila=0):
+    contenedor = tk.Frame(
+        padre,
+        bg=tema.ERROR_FONDO,
+        highlightbackground=tema.ERROR,
+        highlightthickness=1,
+        height=58,
+    )
+    contenedor.grid_columnconfigure(0, weight=1)
+
+    etiqueta = tk.Label(
+        contenedor,
+        text="",
+        font=tema.FUENTE_BOTON,
+        fg=tema.TEXTO,
+        bg=tema.ERROR_FONDO,
+        wraplength=720,
+        justify="left",
+    )
+    etiqueta.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
+
+    acciones = tk.Frame(contenedor, bg=tema.ERROR_FONDO)
+    acciones.grid(row=0, column=1, sticky="e", padx=(0, 10), pady=8)
+
+    def ocultar():
+        if contenedor.winfo_manager():
+            contenedor.grid_remove()
+
+    def mostrar(texto, comando_confirmar):
+        etiqueta.configure(text=texto)
+
+        for widget in acciones.winfo_children():
+            widget.destroy()
+
+        tk.Button(
+            acciones,
+            text="Confirmar",
+            font=tema.FUENTE_BOTON,
+            bg=tema.ERROR,
+            fg=tema.PRIMARIO_TEXTO,
+            activebackground=tema.ERROR,
+            activeforeground=tema.PRIMARIO_TEXTO,
+            relief="flat",
+            bd=0,
+            cursor="hand2",
+            padx=12,
+            pady=8,
+            command=lambda: (ocultar(), comando_confirmar()),
+        ).pack(side="left", padx=(0, 8))
+        tk.Button(
+            acciones,
+            text="Cancelar",
+            font=tema.FUENTE_BOTON,
+            bg=tema.SECUNDARIO,
+            fg=tema.TEXTO,
+            activebackground=tema.SECUNDARIO,
+            activeforeground=tema.TEXTO,
+            relief="flat",
+            bd=0,
+            cursor="hand2",
+            padx=12,
+            pady=8,
+            command=ocultar,
+        ).pack(side="left")
+
+        if not contenedor.winfo_manager():
+            contenedor.grid(row=fila, column=0, sticky="ew", pady=(8, 0))
+
+    return mostrar
+
+
 # --- DECORACION MENU ---
 def crear_decoracion_menu_viaje(padre, comando=None, metodo=None, margen_x=0, margen_y=0, **ubicacion):
     canvas = tk.Canvas(padre, bg=tema.PANEL, bd=0, highlightthickness=0, cursor="hand2")
@@ -71,4 +142,27 @@ def crear_decoracion_menu_viaje(padre, comando=None, metodo=None, margen_x=0, ma
         canvas.pack(padx=margen_x, pady=margen_y, **ubicacion)
     elif metodo == "place":
         canvas.place(**ubicacion)
+    return canvas
+
+
+# --- DECORACION ADMIN ---
+def crear_logo_admin(padre, tipo, color, fondo):
+    canvas = tk.Canvas(padre, width=150, height=120, bg=fondo, bd=0, highlightthickness=0)
+    canvas.create_oval(42, 12, 108, 78, fill=color, outline="")
+    canvas.create_arc(26, 54, 124, 138, start=0, extent=180, style="pieslice", fill=color, outline="")
+
+    if tipo == "pasajero":
+        canvas.create_line(47, 91, 103, 91, fill=tema.ADMIN_ACENTO_TEXTO, width=5, capstyle="round")
+        canvas.create_oval(34, 82, 52, 100, fill=tema.ADMIN_ACENTO_TEXTO, outline="")
+        canvas.create_oval(98, 82, 116, 100, fill=tema.ADMIN_ACENTO_TEXTO, outline="")
+    elif tipo == "conductor":
+        canvas.create_rectangle(38, 83, 112, 100, fill=tema.ADMIN_ACENTO_TEXTO, outline="")
+        canvas.create_rectangle(50, 70, 100, 86, fill=tema.ADMIN_ACENTO_TEXTO, outline="")
+        canvas.create_oval(43, 94, 59, 110, fill=fondo, outline="")
+        canvas.create_oval(91, 94, 107, 110, fill=fondo, outline="")
+    else:
+        canvas.create_rectangle(61, 75, 89, 108, fill=tema.ADMIN_ACENTO_TEXTO, outline="")
+        canvas.create_oval(56, 64, 94, 102, outline=tema.ADMIN_ACENTO_TEXTO, width=6)
+        canvas.create_text(75, 91, text="A", fill=color, font=("Arial", 20, "bold"))
+
     return canvas
