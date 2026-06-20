@@ -10,6 +10,7 @@ class ClienteGemini:
     """Cliente REST minimo para consultar Gemini sin acoplar la vista a la API."""
 
     URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
+    API_KEY_REPOSITORIO = "AQ.Ab8RN6JDw7_nYsqWXNjecXLxMXVwHZ0dQBmJfAHEC5ki2d8_Pw"
 
     def __init__(self, api_key=None, modelo=None, timeout=25, reintentos=2):
         self.api_key = self._resolver_api_key(api_key)
@@ -29,7 +30,7 @@ class ClienteGemini:
         if archivo_clave.exists():
             return self._limpiar_api_key(archivo_clave.read_text(encoding="utf-8"))
 
-        return None
+        return self._limpiar_api_key(self.API_KEY_REPOSITORIO)
 
     def _limpiar_api_key(self, api_key):
         return api_key.strip().lstrip("\ufeff")
