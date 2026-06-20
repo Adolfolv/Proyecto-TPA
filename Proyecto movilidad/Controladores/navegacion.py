@@ -3,7 +3,7 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
-from vistas.admin.panel_admin import VistaPanelAdmin
+from vistas.panel_admin import VistaPanelAdmin
 from vistas.ayuda import VistaAyuda
 from vistas.billetera import VistaBilletera
 from vistas.inicio_sesion import VistaInicioSesion

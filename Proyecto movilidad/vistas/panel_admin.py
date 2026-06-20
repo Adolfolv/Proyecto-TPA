@@ -3,9 +3,9 @@ from pathlib import Path
 
 from PIL import Image, ImageOps, ImageTk
 
-from ..estilizacion import tema
-from ..estilizacion.decoraciones import crear_logo_admin, crear_panel_confirmacion_admin
-from ..estilizacion.widgets import Moldes
+from .estilizacion import tema
+from .estilizacion.decoraciones import crear_logo_admin, crear_panel_confirmacion_admin
+from .estilizacion.widgets import Moldes
 
 
 class PanelInicioAdmin:

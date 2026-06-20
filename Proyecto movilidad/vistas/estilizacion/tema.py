@@ -108,7 +108,7 @@ _tema_actual = _temas[_indice_tema]
 
 
 # FLUJO TEMA 2: Llega desde los botones de pantalla_inicial.py, menu.py o
-# admin/panel_admin.py. Actualiza estas constantes; el siguiente paso vuelve
+# panel_admin.py. Actualiza estas constantes; el siguiente paso vuelve
 # a navegacion para reconstruir la pantalla que llamo al cambio.
 def _actualizar_constantes():
     globals().update(_tema_actual.colores())

@@ -124,7 +124,7 @@ class PanelAsistenteAyuda:
         tk.Frame(contenedor, bg=tema.PRIMARIO, height=2).pack(fill="x")
         controles = tk.Frame(contenedor, bg=tema.PANEL_SUAVE, padx=12, pady=10)
         controles.pack(fill="x")
-        self.entrada = tk.Entry(controles, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, insertbackground=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO, relief="flat", bd=0, highlightbackground=tema.BORDE, highlightcolor=tema.PRIMARIO, highlightthickness=1)
+        self.entrada = tk.Entry(controles, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, disabledbackground=tema.SECUNDARIO, disabledforeground=tema.TEXTO, insertbackground=tema.TEXTO, selectbackground=tema.PRIMARIO, selectforeground=tema.PRIMARIO_TEXTO, relief="flat", bd=0, highlightbackground=tema.BORDE, highlightcolor=tema.PRIMARIO, highlightthickness=1)
         self.entrada.pack(side="left", fill="x", expand=True, padx=(0, 8), ipady=9)
         self.entrada.bind("<Return>", self.enviar_con_teclado)
         self.boton_enviar = tk.Button(controles, text="Preguntar", command=self.enviar, font=tema.FUENTE_BOTON, bg=tema.PRIMARIO, fg=tema.PRIMARIO_TEXTO, activebackground=tema.PRIMARIO, activeforeground=tema.PRIMARIO_TEXTO, relief="flat", bd=0, padx=12, pady=9, cursor="hand2")
