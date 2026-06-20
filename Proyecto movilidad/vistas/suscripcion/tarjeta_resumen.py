@@ -8,31 +8,8 @@ class TarjetaResumenSuscripcion:
     def __init__(self, padre, moldes, acciones):
         self.moldes = moldes
         self.valores = {}
-        self.panel = self.moldes.crear_frame(
-            padre,
-            tema.PANEL_SUAVE,
-            tema.BORDE,
-            1,
-            22,
-            22,
-            fila=0,
-            columna=0,
-            sticky="nsew",
-            columnas_peso=((0, 1), (1, 2)),
-        )
-        self.moldes.crear_label(
-            self.panel,
-            "Resumen de la suscripcion",
-            tema.FUENTE_SUBTITULO,
-            tema.TEXTO,
-            tema.PANEL_SUAVE,
-            metodo="grid",
-            fila=0,
-            columna=0,
-            columnas=2,
-            sticky="w",
-            margen_y=(0, 14),
-        )
+        self.panel = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 22, 22, fila=0, columna=0, sticky="nsew", columnas_peso=((0, 1), (1, 2)))
+        self.moldes.crear_label(self.panel, "Resumen de la suscripcion", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 14))
         campos = (
             ("Ruta", "ruta"),
             ("Periodo", "periodo"),
@@ -44,76 +21,16 @@ class TarjetaResumenSuscripcion:
             ("Total a pagar", "precio_total"),
         )
         for fila, (titulo, clave) in enumerate(campos, start=1):
-            self.moldes.crear_label(
-                self.panel,
-                titulo,
-                tema.FUENTE_BOTON,
-                tema.TEXTO_SUAVE,
-                tema.PANEL_SUAVE,
-                metodo="grid",
-                fila=fila,
-                columna=0,
-                sticky="w",
-                margen_y=5,
-            )
+            self.moldes.crear_label(self.panel, titulo, tema.FUENTE_BOTON, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=fila, columna=0, sticky="w", margen_y=5)
             fuente = tema.FUENTE_SUBTITULO if clave == "precio_total" else tema.FUENTE_TEXTO
             color = tema.PRIMARIO if clave == "precio_total" else tema.TEXTO
-            self.valores[clave] = self.moldes.crear_label(
-                self.panel,
-                "-",
-                fuente,
-                color,
-                tema.PANEL_SUAVE,
-                300,
-                "right",
-                metodo="grid",
-                fila=fila,
-                columna=1,
-                sticky="e",
-                margen_y=5,
-            )
+            self.valores[clave] = self.moldes.crear_label(self.panel, "-", fuente, color, tema.PANEL_SUAVE, 300, "right", metodo="grid", fila=fila, columna=1, sticky="e", margen_y=5)
 
-        self.area_acciones = self.moldes.crear_frame(
-            self.panel,
-            tema.PANEL_SUAVE,
-            fila=len(campos) + 1,
-            columna=0,
-            columnas=2,
-            sticky="ew",
-            margen_y=(18, 0),
-        )
-        self.boton_editar = self.moldes.crear_boton(
-            self.area_acciones,
-            "Editar datos",
-            False,
-            None,
-            acciones["editar"],
-            lado="left",
-            margen_x=(0, 5),
-        )
-        self.boton_pagar = self.moldes.crear_boton(
-            self.area_acciones,
-            "Pagar",
-            True,
-            None,
-            acciones["pagar"],
-            lado="right",
-            margen_x=(5, 0),
-        )
-        self.boton_confirmar = self.moldes.crear_boton(
-            self.area_acciones,
-            "Confirmar",
-            True,
-            None,
-            acciones["confirmar"],
-        )
-        self.boton_cancelar = self.moldes.crear_boton(
-            self.area_acciones,
-            "Cancelar suscripcion",
-            False,
-            None,
-            acciones["cancelar"],
-        )
+        self.area_acciones = self.moldes.crear_frame(self.panel, tema.PANEL_SUAVE, fila=len(campos) + 1, columna=0, columnas=2, sticky="ew", margen_y=(18, 0))
+        self.boton_editar = self.moldes.crear_boton(self.area_acciones, "Editar datos", False, None, acciones["editar"], lado="left", margen_x=(0, 5))
+        self.boton_pagar = self.moldes.crear_boton(self.area_acciones, "Pagar", True, None, acciones["pagar"], lado="right", margen_x=(5, 0))
+        self.boton_confirmar = self.moldes.crear_boton(self.area_acciones, "Confirmar", True, None, acciones["confirmar"])
+        self.boton_cancelar = self.moldes.crear_boton(self.area_acciones, "Cancelar suscripcion", False, None, acciones["cancelar"])
         self.panel.grid_remove()
 
     def actualizar(self, resumen):
@@ -154,10 +71,5 @@ class TarjetaResumenSuscripcion:
         self.boton_cancelar.configure(state=estado, cursor=cursor)
 
     def _ocultar_botones(self):
-        for boton in (
-            self.boton_editar,
-            self.boton_pagar,
-            self.boton_confirmar,
-            self.boton_cancelar,
-        ):
+        for boton in (self.boton_editar, self.boton_pagar, self.boton_confirmar, self.boton_cancelar):
             boton.pack_forget()
