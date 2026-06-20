@@ -42,7 +42,17 @@ class VistaMenu(tk.Frame):
 
         izquierda = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=0, margen_x=(0, 16), columnas_peso=((0, 1),), filas_peso=((0, 1), (1, 1)))
 
-        self.moldes.crear_tarjeta_acceso_menu(izquierda, "Servicios", "Gestiona solicitudes y opciones disponibles.", metodo="grid", fila=0, columna=0, sticky="nsew", margen_y=(0, 8))
+        self.moldes.crear_tarjeta_acceso_menu(
+            izquierda,
+            "Suscripcion de viaje",
+            "Programa viajes recurrentes durante un periodo.",
+            comando=lambda: self.navegar("suscripcion"),
+            metodo="grid",
+            fila=0,
+            columna=0,
+            sticky="nsew",
+            margen_y=(0, 8),
+        )
         self.moldes.crear_tarjeta_acceso_menu(izquierda, "Billetera", "Revisa saldo, pagos y movimientos recientes.", comando=lambda: self.navegar("billetera"), metodo="grid", fila=1, columna=0, sticky="nsew", margen_y=(8, 0))
 
         centro = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=1, columnas_peso=((0, 1),), filas_peso=((0, 1),))

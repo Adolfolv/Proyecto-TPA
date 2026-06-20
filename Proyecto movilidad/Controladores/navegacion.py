@@ -10,9 +10,11 @@ from vistas.inicio_sesion import VistaInicioSesion
 from vistas.menu import VistaMenu
 from vistas.pantalla_inicial import VistaPantallaInicial
 from vistas.registro import VistaRegistro
+from vistas.suscripcion_viaje import VistaSuscripcionViaje
 from vistas.viaje import VistaViaje
 from vistas.perfil import VistaPerfil
 from abstracciones import NavegadorAbstracto, RutaNavegacion
+from Servicios.Suscripciones.planificador_suscripciones import PlanificadorSuscripciones
 
 class Navegacion:
     def __init__(self, dependencias=None):
@@ -26,9 +28,14 @@ class Navegacion:
         # clase se concentre en cambiar pantallas y mantener el usuario actual.
         self.dependencias = dependencias or DependenciasAplicacion()
         self.navegador = NavegadorRutas(self)
+        self.planificador_suscripciones = PlanificadorSuscripciones(
+            self.ventana,
+            self.dependencias.servicio_suscripcion,
+        )
 
     def iniciar(self):
         self.navegar("pantalla_inicial")
+        self.planificador_suscripciones.iniciar()
         self.ventana.mainloop()
 
     def navegar(self, destino):
@@ -157,6 +164,21 @@ class RutaBilletera(RutaNavegacion):
             self.navegacion.dependencias.controlador_tarjetas,
             self.navegacion.dependencias.controlador_movimientos_billetera,
             self.navegacion.obtener_usuario_actual(),
+        )
+
+
+class RutaSuscripcion(RutaNavegacion):
+    destino = "suscripcion"
+
+    def ejecutar(self):
+        self.limpiar_pantalla()
+        self.navegacion.ventana.title("Suscripcion de viaje")
+        VistaSuscripcionViaje(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+            self.navegacion.dependencias.controlador_suscripcion,
+            self.navegacion.obtener_usuario_actual(),
+            self.navegacion.dependencias.controlador_viaje_pasajero,
         )
 
 #1, se manda a vistaviaje(archivo init de viajes los datos necesarios

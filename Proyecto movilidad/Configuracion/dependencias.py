@@ -10,11 +10,13 @@ from Controladores.controlador_ayuda import ControladorAyuda
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_perfil import ControladorPerfil
 from Controladores.controlador_registro import ControladorRegistro
+from Controladores.controlador_suscripcion import ControladorSuscripcion
 from Controladores.controlador_viaje import (
     ControladorViajeConductor,
     ControladorViajePasajero,
 )
 from Repositorios.repositorio_billetera import RepositorioBilletera
+from Repositorios.repositorio_suscripcion import RepositorioSuscripcion
 from Repositorios.repositorio_usuario import RepositorioUsuario
 from Servicios.Billetera.operaciones_billetera import (
     OperacionPago,
@@ -37,6 +39,7 @@ from Servicios.Usuario.buscador import (
 from Servicios.Usuario.fabrica_usuario import FabricaUsuario
 from Servicios.Usuario.perfil import ServicioPerfil
 from Servicios.Usuario.registro import ServicioRegistro
+from Servicios.Suscripciones.servicio_suscripcion import ServicioSuscripcion
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 
 
@@ -53,6 +56,7 @@ class DependenciasAplicacion:
         self.repositorio_billetera = RepositorioBilletera(
             fabrica=self.fabrica_billetera
         )
+        self.repositorio_suscripcion = RepositorioSuscripcion()
 
         # Buscadores compartidos por servicios de usuario y billetera.
         self.buscador_usuario = BuscadorUsuario(self.repositorio_usuario)
@@ -121,6 +125,11 @@ class DependenciasAplicacion:
         self.servicio_viaje = ServicioViaje(
             servicio_billetera=self.servicio_billetera,
         )
+        self.servicio_suscripcion = ServicioSuscripcion(
+            self.repositorio_suscripcion,
+            self.repositorio_usuario,
+            self.servicio_viaje,
+        )
 
         # Controladores: adaptan lo que pide la vista hacia los servicios.
         self.controlador_inicio_sesion = ControladorInicioSesion(
@@ -152,4 +161,7 @@ class DependenciasAplicacion:
         )
         self.controlador_viaje_conductor = ControladorViajeConductor(
             self.servicio_viaje,
+        )
+        self.controlador_suscripcion = ControladorSuscripcion(
+            self.servicio_suscripcion,
         )
