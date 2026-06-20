@@ -10,7 +10,7 @@ from vistas.inicio_sesion import VistaInicioSesion
 from vistas.menu import VistaMenu
 from vistas.pantalla_inicial import VistaPantallaInicial
 from vistas.registro import VistaRegistro
-from vistas.suscripcion_viaje import VistaSuscripcionViaje
+from vistas.suscripcion import VistaSuscripcionViaje
 from vistas.viaje import VistaViaje
 from vistas.perfil import VistaPerfil
 from abstracciones import NavegadorAbstracto, RutaNavegacion

@@ -56,7 +56,7 @@ class ServicioViajePasajero:
         )
         return RutasViaje(llegada=ruta_llegada, viaje=ruta_viaje)
 
-    def confirmar_viaje(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final):
+    def confirmar_viaje(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final, cobrar=True):
         rutas_viaje = self.formar_rutas_viaje(
             vehiculo,
             ubicacion_inicial,
@@ -64,10 +64,11 @@ class ServicioViajePasajero:
         )
         viaje = self.comun.fabrica.crear_viaje_pasajero(vehiculo, usuario)
 
-        try:
-            self.pagos.cobrar_pasajero(usuario, viaje.precio)
-        except ValueError as error:
-            return ResultadoViaje(False, error=str(error))
+        if cobrar:
+            try:
+                self.pagos.cobrar_pasajero(usuario, viaje.precio)
+            except ValueError as error:
+                return ResultadoViaje(False, error=str(error))
 
         self.comun.iniciar_viaje(viaje)
         return ResultadoViaje(True, rutas_viaje=rutas_viaje, viaje=viaje)

@@ -106,6 +106,11 @@ class DependenciasAplicacion:
                 "Pago recibido",
                 "recibir_pago",
             ),
+            "reembolsar": OperacionPago(
+                self.repositorio_billetera,
+                "Reembolso suscripcion",
+                "recibir_pago",
+            ),
             "cargar": OperacionMovimientoTarjeta(
                 self.repositorio_billetera,
                 self.servicio_tarjeta,

@@ -61,6 +61,11 @@ class ServicioPagoViaje:
         self.servicio_billetera.ejecutar("pagar", usuario, monto)
         return True
 
+    def reembolsar_pasajero(self, usuario, monto):
+        self.validaciones.validar_pago_pasajero(self.servicio_billetera, usuario)
+        self.servicio_billetera.ejecutar("reembolsar", usuario, monto)
+        return True
+
     def abonar_conductor(self, usuario, monto):
         self.validaciones.validar_abono_conductor(self.servicio_billetera, usuario)
         self.servicio_billetera.ejecutar("recibir", usuario, monto)

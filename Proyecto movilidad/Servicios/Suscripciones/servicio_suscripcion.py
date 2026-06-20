@@ -11,10 +11,14 @@ from Modelos.Suscripcion.modelos_suscripcion import (
     VIAJE_CONFIRMADO,
     VIAJE_FALLIDO,
     VIAJE_PROGRAMADO,
+    ResumenSuscripcion,
     SuscripcionViaje,
     ViajeProgramado,
 )
 from Validaciones.suscripcion import ValidacionesSuscripcion
+from Servicios.Suscripciones.calculadora_cotizacion import (
+    CalculadoraCotizacionSuscripcion,
+)
 
 
 class ServicioSuscripcion:
@@ -22,22 +26,37 @@ class ServicioSuscripcion:
 
     MARGEN_ATRASO = timedelta(minutes=15)
 
-    def __init__(self, repositorio, repositorio_usuario, servicio_viaje, reloj=None):
+    def __init__(
+        self,
+        repositorio,
+        repositorio_usuario,
+        servicio_viaje,
+        reloj=None,
+        calculadora_cotizacion=None,
+    ):
         self.repositorio = repositorio
         self.repositorio_usuario = repositorio_usuario
         self.servicio_viaje = servicio_viaje
         self.validaciones = ValidacionesSuscripcion()
         self.reloj = reloj or datetime.now
+        self.calculadora_cotizacion = (
+            calculadora_cotizacion
+            or CalculadoraCotizacionSuscripcion(servicio_viaje.comun)
+        )
 
-    def crear(self, usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad):
+    def previsualizar(self, usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad):
         inicio, fin, dias, horario, pasajeros = self.validaciones.validar(
             usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad
         )
         ahora = self.reloj()
-        id_suscripcion = uuid4().hex
-        suscripcion = SuscripcionViaje(
-            id_suscripcion=id_suscripcion,
-            id_pasajero=str(usuario.id_usuario),
+        fechas = self._obtener_fechas_viaje(inicio, fin, dias, horario, ahora)
+        if not fechas:
+            raise ValueError("El periodo elegido no contiene horarios futuros para esos dias.")
+        self.validaciones.validar_dias_con_horarios_futuros(fechas, dias)
+        precio_por_viaje = self.calculadora_cotizacion.calcular_precio_por_viaje(
+            origen, destino, pasajeros
+        )
+        return ResumenSuscripcion(
             origen=origen,
             destino=destino,
             fecha_inicio=inicio.isoformat(),
@@ -45,32 +64,73 @@ class ServicioSuscripcion:
             dias_semana=dias,
             hora=horario.strftime("%H:%M"),
             cantidad_pasajeros=pasajeros,
-            creada_en=ahora.isoformat(timespec="seconds"),
+            fechas_viaje=tuple(fecha.isoformat(timespec="minutes") for fecha in fechas),
+            precio_por_viaje=precio_por_viaje,
+            precio_total=precio_por_viaje * len(fechas),
         )
-        viajes = self._generar_viajes(suscripcion, inicio, fin, horario, ahora)
-        if not viajes:
-            raise ValueError("El periodo elegido no contiene horarios futuros para esos dias.")
-        self.repositorio.agregar(suscripcion, viajes)
+
+    def confirmar(self, usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad):
+        resumen = self.previsualizar(
+            usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad
+        )
+        self.servicio_viaje.cobrar_suscripcion(usuario, resumen.precio_total)
+        ahora = self.reloj()
+        id_suscripcion = uuid4().hex
+        suscripcion = SuscripcionViaje(
+            id_suscripcion=id_suscripcion,
+            id_pasajero=str(usuario.id_usuario),
+            origen=resumen.origen,
+            destino=resumen.destino,
+            fecha_inicio=resumen.fecha_inicio,
+            fecha_fin=resumen.fecha_fin,
+            dias_semana=resumen.dias_semana,
+            hora=resumen.hora,
+            cantidad_pasajeros=resumen.cantidad_pasajeros,
+            creada_en=ahora.isoformat(timespec="seconds"),
+            cantidad_viajes=resumen.cantidad_viajes,
+            precio_por_viaje=resumen.precio_por_viaje,
+            precio_total=resumen.precio_total,
+            pagada_anticipadamente=True,
+        )
+        viajes = self._generar_viajes(suscripcion, resumen.fechas_viaje)
+        try:
+            self.repositorio.agregar(suscripcion, viajes)
+        except OSError:
+            self.servicio_viaje.reembolsar_suscripcion(usuario, resumen.precio_total)
+            raise
         return suscripcion
 
-    def _generar_viajes(self, suscripcion, inicio, fin, horario, ahora):
-        viajes = []
+    def crear(self, usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad):
+        return self.confirmar(
+            usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad
+        )
+
+    def _obtener_fechas_viaje(self, inicio, fin, dias, horario, ahora):
+        fechas = []
         fecha_actual = inicio
         while fecha_actual <= fin:
             fecha_hora = datetime.combine(fecha_actual, horario)
-            if fecha_actual.weekday() in suscripcion.dias_semana and fecha_hora > ahora:
-                viajes.append(
-                    ViajeProgramado(
-                        id_viaje_programado=uuid4().hex,
-                        id_suscripcion=suscripcion.id_suscripcion,
-                        id_pasajero=suscripcion.id_pasajero,
-                        origen=suscripcion.origen,
-                        destino=suscripcion.destino,
-                        cantidad_pasajeros=suscripcion.cantidad_pasajeros,
-                        fecha_hora=fecha_hora.isoformat(timespec="minutes"),
-                    )
-                )
+            if fecha_actual.weekday() in dias and fecha_hora > ahora:
+                fechas.append(fecha_hora)
             fecha_actual += timedelta(days=1)
+        return fechas
+
+    def _generar_viajes(self, suscripcion, fechas_viaje):
+        viajes = []
+        for fecha_hora in fechas_viaje:
+            viajes.append(
+                ViajeProgramado(
+                    id_viaje_programado=uuid4().hex,
+                    id_suscripcion=suscripcion.id_suscripcion,
+                    id_pasajero=suscripcion.id_pasajero,
+                    origen=suscripcion.origen,
+                    destino=suscripcion.destino,
+                    cantidad_pasajeros=suscripcion.cantidad_pasajeros,
+                    fecha_hora=fecha_hora,
+                    precio=suscripcion.precio_por_viaje,
+                    pagado_anticipadamente=suscripcion.pagada_anticipadamente,
+                )
+            )
         return viajes
 
     def listar_suscripciones(self, usuario):
@@ -96,6 +156,7 @@ class ServicioSuscripcion:
         if nuevo_estado == ESTADO_CANCELADA:
             for viaje in self.repositorio.listar_viajes(id_suscripcion=id_suscripcion):
                 if viaje.estado == VIAJE_PROGRAMADO:
+                    self._reembolsar_viaje(viaje, usuario)
                     viaje.estado = VIAJE_CANCELADO
                     viaje.error = "Suscripcion cancelada por el pasajero."
         self.repositorio.guardar_cambios()
@@ -113,6 +174,7 @@ class ServicioSuscripcion:
             raise ValueError("No se encontro el viaje programado.")
         if viaje.estado != VIAJE_PROGRAMADO:
             raise ValueError("Solo se pueden cancelar viajes que aun estan programados.")
+        self._reembolsar_viaje(viaje, usuario)
         viaje.estado = VIAJE_CANCELADO
         viaje.error = "Cancelado por el pasajero."
         self.repositorio.guardar_cambios()
@@ -131,6 +193,7 @@ class ServicioSuscripcion:
 
             suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
             if suscripcion is None or suscripcion.estado == ESTADO_CANCELADA:
+                self._reembolsar_viaje(viaje)
                 viaje.estado = VIAJE_CANCELADO
                 viaje.error = "La suscripcion ya no esta disponible."
                 cambios = True
@@ -138,6 +201,7 @@ class ServicioSuscripcion:
             if suscripcion.estado == ESTADO_PAUSADA:
                 continue
             if ahora - fecha_hora > self.MARGEN_ATRASO:
+                self._reembolsar_viaje(viaje)
                 viaje.estado = VIAJE_FALLIDO
                 viaje.error = "El horario vencio mientras la aplicacion estaba cerrada."
                 cambios = True
@@ -175,6 +239,7 @@ class ServicioSuscripcion:
             vehiculo,
             viaje.origen,
             viaje.destino,
+            cobrar=not viaje.pagado_anticipadamente,
         )
         if not confirmacion.exitoso:
             self._marcar_fallido(viaje, confirmacion.error)
@@ -183,12 +248,21 @@ class ServicioSuscripcion:
         viaje.estado = VIAJE_CONFIRMADO
         viaje.conductor = vehiculo.nombre_completo
         viaje.vehiculo = f"{vehiculo.vehiculo} ({vehiculo.patente})"
-        viaje.precio = float(confirmacion.viaje.precio)
         viaje.error = ""
 
     def _marcar_fallido(self, viaje, mensaje):
+        self._reembolsar_viaje(viaje)
         viaje.estado = VIAJE_FALLIDO
         viaje.error = mensaje
+
+    def _reembolsar_viaje(self, viaje, usuario=None):
+        if not viaje.pagado_anticipadamente or viaje.reembolsado or viaje.precio <= 0:
+            return
+        usuario = usuario or self._buscar_usuario(viaje.id_pasajero)
+        if usuario is None:
+            return
+        self.servicio_viaje.reembolsar_suscripcion(usuario, viaje.precio)
+        viaje.reembolsado = True
 
     def _buscar_usuario(self, id_usuario):
         return next(

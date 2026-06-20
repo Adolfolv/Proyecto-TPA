@@ -52,7 +52,19 @@ class RepositorioSuscripcion:
         self._asegurar_cargado()
         self.suscripciones.append(suscripcion)
         self.viajes_programados.extend(viajes_programados)
-        self.guardar()
+        try:
+            self.guardar()
+        except OSError:
+            self.suscripciones.remove(suscripcion)
+            ids_viajes = {
+                viaje.id_viaje_programado for viaje in viajes_programados
+            }
+            self.viajes_programados = [
+                viaje
+                for viaje in self.viajes_programados
+                if viaje.id_viaje_programado not in ids_viajes
+            ]
+            raise
         return suscripcion
 
     def listar_suscripciones(self, id_pasajero=None):
@@ -83,4 +95,3 @@ class RepositorioSuscripcion:
     def guardar_cambios(self):
         self._asegurar_cargado()
         self.guardar()
-

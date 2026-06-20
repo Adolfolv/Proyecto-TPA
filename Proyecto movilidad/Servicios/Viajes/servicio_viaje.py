@@ -22,8 +22,20 @@ class ServicioViaje:
     def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
         return self.pasajero.buscar_vehiculos(cantidad_usuarios,ubicacion_inicial,ubicacion_final)
 
-    def confirmar_viaje_pasajero(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final):
-        return self.pasajero.confirmar_viaje(usuario,vehiculo,ubicacion_inicial,ubicacion_final)
+    def confirmar_viaje_pasajero(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final, cobrar=True):
+        return self.pasajero.confirmar_viaje(
+            usuario,
+            vehiculo,
+            ubicacion_inicial,
+            ubicacion_final,
+            cobrar=cobrar,
+        )
+
+    def cobrar_suscripcion(self, usuario, monto):
+        return self.pagos.cobrar_pasajero(usuario, monto)
+
+    def reembolsar_suscripcion(self, usuario, monto):
+        return self.pagos.reembolsar_pasajero(usuario, monto)
 
     def iniciar_viaje_conductor(self, pasajero, conductor):
         return self.conductor.iniciar_viaje(pasajero, conductor)

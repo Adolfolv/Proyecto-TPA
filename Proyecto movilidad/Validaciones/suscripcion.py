@@ -56,6 +56,19 @@ class ValidacionesSuscripcion:
                 f"El periodo seleccionado no contiene estos dias marcados: {nombres}."
             )
 
+    def validar_dias_con_horarios_futuros(self, fechas, dias_seleccionados):
+        dias_futuros = {fecha.weekday() for fecha in fechas}
+        dias_faltantes = [
+            self.NOMBRES_DIAS[dia]
+            for dia in dias_seleccionados
+            if dia not in dias_futuros
+        ]
+        if dias_faltantes:
+            nombres = ", ".join(dias_faltantes)
+            raise ValueError(
+                f"No quedan horarios futuros dentro del periodo para: {nombres}."
+            )
+
     def _fecha(self, valor):
         try:
             return datetime.strptime(str(valor).strip(), self.FORMATO_FECHA).date()
