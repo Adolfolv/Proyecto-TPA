@@ -8,7 +8,7 @@ from .viaje_pasajero import VistaViajePasajero
 class VistaViaje(tk.Frame):
     def __init__(
         self,
-        padre,
+        master,
         navegar,
         tipo_usuario,
         comando_volver_menu,
@@ -16,7 +16,7 @@ class VistaViaje(tk.Frame):
         controlador_conductor,
         usuario_actual,
     ):
-        super().__init__(padre, bg=tema.FONDO)
+        super().__init__(master, bg=tema.FONDO)
         self.pack(fill="both", expand=True)
 
         if tipo_usuario == "conductor":

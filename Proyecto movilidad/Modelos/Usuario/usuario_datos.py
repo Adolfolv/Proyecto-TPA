@@ -26,9 +26,6 @@ class Usuario:
     edad: int
     telefono: str
     contrasena: str
-    # Estado administrado desde el panel admin. Es kw_only para no romper
-    # los constructores de Pasajero/Conductor, que agregan campos propios.
-    cuenta_congelada: bool = field(default=False, kw_only=True)
     billetera: Optional[Billetera] = field(default=None, init=False)
 
 @dataclass
@@ -43,11 +40,6 @@ class Conductor(Usuario):
     selfie: str
     auto: Auto
     tipo_usuario: str = field(default="conductor", init=False)
-
-#modelo administrador
-@dataclass
-class Administrador(Usuario):
-    tipo_usuario: str = field(default="administrador", init=False)
 
 """""""""""
 usuario1 = Pasajero(

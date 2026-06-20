@@ -1,5 +1,4 @@
 from abstracciones import Buscador
-from Validaciones.billetera import normalizar_numero_tarjeta
 
 #-
 class BuscadorUsuario(Buscador):
@@ -32,10 +31,9 @@ class BuscadorTarjeta(Buscador):
 
     def buscar(self, origen, numero_tarjeta):
         billetera = getattr(origen, "billetera", origen)
-        numero_buscado = normalizar_numero_tarjeta(numero_tarjeta)
 
         for tarjeta in billetera.tarjetas:
-            if normalizar_numero_tarjeta(tarjeta.numero_tarjeta) == numero_buscado:
+            if tarjeta.numero_tarjeta == numero_tarjeta:
                 return tarjeta
 
         return None

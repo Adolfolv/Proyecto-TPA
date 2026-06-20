@@ -6,18 +6,18 @@ class Tarjetas:
     numero_tarjeta: str
     vencimiento: str
     cvv: str
-    saldo: int
+    saldo: float
     
 @dataclass
 class Transaccion:
     id_transaccion: str
     tipo: str
-    monto: int
+    monto: float
     fecha: str
 
 @dataclass
 class Billetera:
-    saldo: int = 0
+    saldo: float = 0.0
     tarjetas: list[Tarjetas] = field(default_factory=list)
     transacciones: list[Transaccion] = field(default_factory=list)
 
@@ -25,7 +25,7 @@ class Billetera:
 @dataclass
 class SolicitudOperacionBilletera:
     usuario: object
-    monto: int
+    monto: float
     numero_tarjeta: str = None
 
 #.

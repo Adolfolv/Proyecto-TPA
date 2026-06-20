@@ -1,9 +1,27 @@
-"""Tema visual comun para las vistas."""
+"""Tema visual comun para las vistas.."""
 
-from abc import ABC, abstractmethod
+#colores
+FONDO = "#111827"
+PANEL = "#1f2937"
+PANEL_SUAVE = "#273449"
+TEXTO = "#f9fafb"
+TEXTO_SUAVE = "#cbd5e1"
+PRIMARIO = "#3b82f6"
+PRIMARIO_TEXTO = "#ffffff"
+SECUNDARIO = "#374151"
+BORDE = "#4b5563"
+ERROR = "#ef4444"
+ERROR_FONDO = "#3b1f2a"
+EXITO = "#22c55e"
+EXITO_FONDO = "#1d3a2a"
 
-from .constantes_vistas import (FUENTE_BOTON,FUENTE_LOGIN_BOTON,FUENTE_LOGIN_CAMPO,FUENTE_LOGIN_ENTRADA,FUENTE_LOGIN_TEXTO,FUENTE_LOGIN_TITULO,FUENTE_SUBTITULO,FUENTE_TEXTO,FUENTE_TITULO,)
+#pa registro
+FUENTE_TITULO = ("Arial", 22, "bold")
+FUENTE_SUBTITULO = ("Arial", 13, "bold")
+FUENTE_TEXTO = ("Arial", 11)
+FUENTE_BOTON = ("Arial", 10, "bold")
 
+<<<<<<< HEAD
 
 class Tema(ABC):
     """Base para agregar nuevos temas sin cambiar las vistas."""
@@ -137,3 +155,11 @@ def texto_boton():
 
 
 _actualizar_constantes()
+=======
+#pa inicio de sesion
+FUENTE_LOGIN_TITULO = ("Arial", 26, "bold")
+FUENTE_LOGIN_TEXTO = ("Arial", 12)
+FUENTE_LOGIN_CAMPO = ("Arial", 13, "bold")
+FUENTE_LOGIN_ENTRADA = ("Arial", 14)
+FUENTE_LOGIN_BOTON = ("Arial", 11, "bold")
+>>>>>>> d73ce6164f851cf655b635d75354ed658fb0de8c

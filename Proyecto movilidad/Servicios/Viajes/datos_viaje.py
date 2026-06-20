@@ -2,14 +2,27 @@ from Modelos.Viaje.modelo_viajes import (
     CalleOsorno,
     ConductorSimulado,
     PasajeroSimulado,
+    PuntoRelativo,
 )
-from Servicios.Viajes.trayectoria import (
-    OSORNO_LAT_NORTE,
-    OSORNO_LAT_SUR,
-    OSORNO_LNG_ESTE,
-    OSORNO_LNG_OESTE,
-    punto_relativo_desde_coordenada,
-)
+
+
+# Limites geograficos usados para convertir entre el mapa relativo de la
+# aplicacion y coordenadas reales de Osorno.
+OSORNO_LAT_NORTE = -40.5480
+OSORNO_LAT_SUR = -40.6050
+OSORNO_LNG_OESTE = -73.1650
+OSORNO_LNG_ESTE = -73.0850
+
+
+def punto_relativo_desde_coordenada(latitud: float, longitud: float) -> PuntoRelativo:
+    """Convierte una coordenada real a un punto normalizado entre 0 y 1."""
+
+    x = (longitud - OSORNO_LNG_OESTE) / (OSORNO_LNG_ESTE - OSORNO_LNG_OESTE)
+    y = (latitud - OSORNO_LAT_NORTE) / (OSORNO_LAT_SUR - OSORNO_LAT_NORTE)
+    return (
+        min(1.0, max(0.0, round(x, 5))),
+        min(1.0, max(0.0, round(y, 5))),
+    )
 
 
 COORDENADAS_REALES_OSORNO = {

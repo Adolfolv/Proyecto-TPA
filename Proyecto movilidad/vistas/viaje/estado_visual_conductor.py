@@ -12,14 +12,15 @@ class EstadoVisualConductor:
 
     def pasajero_encontrado(self):
         # Estado intermedio: se muestra el pasajero encontrado y se pide confirmacion.
-        self.vista.panel_pasajero.grid()
-        self.vista.panel_confirmacion.grid()
+        self.vista.frame_pasajero.grid()
+        self.vista.frame_confirmacion.grid()
         self.vista.boton_volver.config(
             command=self.vista.acciones.presionar_boton_volver_pregunta_activa
         )
 
     def viaje_en_proceso(self):
         # Estado bloqueante: evita cancelar/cambiar datos cuando el viaje ya empezo.
+        self.vista.viaje_en_proceso = True
         self.vista.boton_confirmar_viaje.config(state="disabled", cursor="arrow")
         self.vista.boton_cancelar_viaje.config(state="disabled", cursor="arrow")
         self.vista.boton_buscar_pasajeros.config(state="disabled", cursor="arrow")
@@ -30,9 +31,11 @@ class EstadoVisualConductor:
         self.vista.label_pregunta_confirmacion.grid_remove()
         self.vista.boton_confirmar_viaje.grid_remove()
         self.vista.boton_cancelar_viaje.grid_remove()
+        self.vista.label_estado_viaje.config(text="viaje en proceso")
         self.vista.label_estado_viaje.grid()
 
     def viaje_finalizado(self):
         # Estado final: restablece volver al menu y muestra la opcion de buscar otro viaje.
+        self.vista.label_estado_viaje.config(text="viaje finalizado")
         self.vista.boton_volver.config(command=self.vista.comando_volver_menu)
         self.vista.boton_buscar_otro_viaje.grid()

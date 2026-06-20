@@ -3,15 +3,17 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
+<<<<<<< HEAD
 from vistas.panel_admin import VistaPanelAdmin
 from vistas.ayuda import VistaAyuda
+=======
+>>>>>>> d73ce6164f851cf655b635d75354ed658fb0de8c
 from vistas.billetera import VistaBilletera
 from vistas.inicio_sesion import VistaInicioSesion
 from vistas.menu import VistaMenu
 from vistas.pantalla_inicial import VistaPantallaInicial
 from vistas.registro import VistaRegistro
 from vistas.viaje import VistaViaje
-from vistas.perfil import VistaPerfil
 from abstracciones import NavegadorAbstracto, RutaNavegacion
 
 class Navegacion:
@@ -35,11 +37,7 @@ class Navegacion:
         self.navegador.navegar(destino)
 
     def establecer_usuario_actual(self, usuario):
-        # Los administradores no usan billetera en este flujo. Esta condicion
-        # evita crear datos innecesarios y mantiene intacto el flujo normal
-        # de pasajeros y conductores.
-        if getattr(usuario, "tipo_usuario", "") != "administrador":
-            self.dependencias.servicio_billetera.obtener_billetera(usuario)
+        self.dependencias.servicio_billetera.obtener_billetera(usuario)
         self.usuario_actual = usuario
         return self.usuario_actual
 
@@ -68,13 +66,7 @@ class RutaInicioSesion(RutaNavegacion):
 
     def inicio_sesion_exitoso(self, usuario):
         self.navegacion.establecer_usuario_actual(usuario)
-
-        # Despues de autenticar, el tipo de usuario decide el destino:
-        # administradores al panel admin, pasajeros/conductores al menu actual.
-        if getattr(usuario, "tipo_usuario", "") == "administrador":
-            self.navegacion.navegar("panel_admin")
-        else:
-            self.navegacion.navegar("menu")
+        self.navegacion.navegar("menu")
 
 
 class RutaRegistro(RutaNavegacion):
@@ -102,48 +94,6 @@ class RutaMenu(RutaNavegacion):
         self.mostrar(VistaMenu, "Menu principal")
 
 
-class RutaAyuda(RutaNavegacion):
-    destino = "ayuda"
-
-    def ejecutar(self):
-        self.limpiar_pantalla()
-        self.navegacion.ventana.title("Ayuda")
-        usuario_actual = self.navegacion.obtener_usuario_actual()
-        destino_volver = "menu" if usuario_actual is not None else "pantalla_inicial"
-        VistaAyuda(self.navegacion.ventana, self.navegacion.navegar, self.navegacion.dependencias.controlador_ayuda, usuario_actual, destino_volver)
-
-
-class RutaPerfil(RutaNavegacion):
-    destino = "perfil"
-
-    def ejecutar(self):
-        self.limpiar_pantalla()
-        self.navegacion.ventana.title("Perfil")
-        VistaPerfil(
-            self.navegacion.ventana,
-            self.navegacion.navegar,
-            self.navegacion.dependencias.controlador_perfil,
-            self.navegacion.obtener_usuario_actual(),
-        )
-
-
-class RutaPanelAdmin(RutaNavegacion):
-    destino = "panel_admin"
-
-    def ejecutar(self):
-        usuario_actual = self.navegacion.obtener_usuario_actual()
-
-        # Esta ruta queda separada del menu normal para no mezclar el flujo
-        # de pasajeros/conductores con las herramientas del administrador.
-        if getattr(usuario_actual, "tipo_usuario", "") != "administrador":
-            self.navegacion.navegar("menu")
-            return
-
-        self.limpiar_pantalla()
-        self.navegacion.ventana.title("Panel administrador")
-        VistaPanelAdmin(self.navegacion.ventana, self.navegacion.navegar, self.navegacion.dependencias.controlador_admin, usuario_actual)
-
-
 class RutaBilletera(RutaNavegacion):
     destino = "billetera"
 
@@ -159,8 +109,7 @@ class RutaBilletera(RutaNavegacion):
             self.navegacion.obtener_usuario_actual(),
         )
 
-#1, se manda a vistaviaje(archivo init de viajes los datos necesarios
-#para cumplir sus funcionalidades 
+
 class RutaViaje(RutaNavegacion):
     destino = "viaje"
 
