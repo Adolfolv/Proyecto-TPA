@@ -30,7 +30,7 @@ class Navegacion:
         self.navegador = NavegadorRutas(self)
         self.planificador_suscripciones = PlanificadorSuscripciones(
             self.ventana,
-            self.dependencias.servicio_suscripcion,
+            self.dependencias.procesador_suscripciones,
         )
 
     def iniciar(self):
@@ -173,12 +173,14 @@ class RutaSuscripcion(RutaNavegacion):
     def ejecutar(self):
         self.limpiar_pantalla()
         self.navegacion.ventana.title("Suscripcion de viaje")
+        usuario = self.navegacion.obtener_usuario_actual()
         VistaSuscripcionViaje(
             self.navegacion.ventana,
             self.navegacion.navegar,
-            self.navegacion.dependencias.controlador_suscripcion,
-            self.navegacion.obtener_usuario_actual(),
-            self.navegacion.dependencias.controlador_viaje_pasajero,
+            usuario.tipo_usuario,
+            self.navegacion.dependencias.controlador_suscripcion_pasajero,
+            self.navegacion.dependencias.controlador_suscripcion_conductor,
+            usuario,
         )
 
 #1, se manda a vistaviaje(archivo init de viajes los datos necesarios

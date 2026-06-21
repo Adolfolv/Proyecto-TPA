@@ -2,14 +2,14 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from ..estilizacion import tema
-from ..estilizacion.widgets import Moldes
+from ...estilizacion import tema
+from ...estilizacion.widgets import Moldes
 from .estado_visual_conductor import EstadoVisualConductor
-from .mapa_viaje import MapaViajeConductor
+from ..mapa_viaje import MapaViajeConductor
 from .renderizador_conductor import RenderizadorConductor
 
 
-RUTA_IMAGENES = Path(__file__).resolve().parents[1] / "estilizacion" / "Imagenes"
+RUTA_IMAGENES = Path(__file__).resolve().parents[2] / "estilizacion" / "Imagenes"
 RUTA_IMAGENES_USUARIOS = RUTA_IMAGENES / "imagenes_usuarios"
 
 

@@ -1,18 +1,60 @@
 [
     {
-        "saldo": 173700,
+        "saldo": 1276685,
         "tarjetas": [
             {
                 "titular": "adolfo",
                 "numero_tarjeta": "4507 9900 0000 4905",
                 "vencimiento": "12/27",
-                "saldo": 5448
+                "saldo": 1448
             },
             {
                 "titular": "hardy",
                 "numero_tarjeta": "4111111111111116",
                 "vencimiento": "12/29",
                 "saldo": 1920
+            },
+            {
+                "titular": "Hardy",
+                "numero_tarjeta": "4111111111111111",
+                "vencimiento": "10/28",
+                "saldo": 32867
+            },
+            {
+                "titular": "Hardy",
+                "numero_tarjeta": "4111111111111112",
+                "vencimiento": "09/28",
+                "saldo": 28364
+            },
+            {
+                "titular": "Hardy",
+                "numero_tarjeta": "4111111111111113",
+                "vencimiento": "09/28",
+                "saldo": 33502
+            },
+            {
+                "titular": "Hardy",
+                "numero_tarjeta": "4111111111111114",
+                "vencimiento": "09/28",
+                "saldo": 288956
+            },
+            {
+                "titular": "Hardy",
+                "numero_tarjeta": "4111111111111115",
+                "vencimiento": "09/28",
+                "saldo": 42922
+            },
+            {
+                "titular": "Hardy",
+                "numero_tarjeta": "4111111111111117",
+                "vencimiento": "09/28",
+                "saldo": 312922
+            },
+            {
+                "titular": "Hardy",
+                "numero_tarjeta": "4111111111111118",
+                "vencimiento": "09/28",
+                "saldo": 10078
             }
         ],
         "transacciones": [
@@ -141,12 +183,312 @@
                 "tipo": "Pago",
                 "monto": 4000,
                 "fecha": "05-06-2026 12:13"
+            },
+            {
+                "id_transaccion": "TRX0022",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 14:12"
+            },
+            {
+                "id_transaccion": "TRX0023",
+                "tipo": "Pago",
+                "monto": 26100,
+                "fecha": "20-06-2026 14:12"
+            },
+            {
+                "id_transaccion": "TRX0024",
+                "tipo": "Pago",
+                "monto": 26100,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0025",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0026",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0027",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0028",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0029",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0030",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0031",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0032",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0033",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0034",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0035",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0036",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0037",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0038",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0039",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0040",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0041",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0042",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0043",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0044",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0045",
+                "tipo": "Reembolso suscripcion",
+                "monto": 2900,
+                "fecha": "20-06-2026 14:13"
+            },
+            {
+                "id_transaccion": "TRX0046",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 14:21"
+            },
+            {
+                "id_transaccion": "TRX0047",
+                "tipo": "Pago",
+                "monto": 58800,
+                "fecha": "20-06-2026 14:32"
+            },
+            {
+                "id_transaccion": "TRX0048",
+                "tipo": "Carga desde tarjeta",
+                "monto": 400000,
+                "fecha": "20-06-2026 15:32"
+            },
+            {
+                "id_transaccion": "TRX0049",
+                "tipo": "Carga desde tarjeta",
+                "monto": 4000,
+                "fecha": "20-06-2026 15:32"
+            },
+            {
+                "id_transaccion": "TRX0050",
+                "tipo": "Carga desde tarjeta",
+                "monto": 400000,
+                "fecha": "20-06-2026 15:32"
+            },
+            {
+                "id_transaccion": "TRX0051",
+                "tipo": "Carga desde tarjeta",
+                "monto": 400000,
+                "fecha": "20-06-2026 15:32"
+            },
+            {
+                "id_transaccion": "TRX0052",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 15:32"
+            },
+            {
+                "id_transaccion": "TRX0053",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 15:40"
+            },
+            {
+                "id_transaccion": "TRX0054",
+                "tipo": "Pago",
+                "monto": 151900,
+                "fecha": "20-06-2026 15:42"
+            },
+            {
+                "id_transaccion": "TRX0055",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 15:57"
+            },
+            {
+                "id_transaccion": "TRX0056",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 16:02"
+            },
+            {
+                "id_transaccion": "TRX0057",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 16:03"
+            },
+            {
+                "id_transaccion": "TRX0058",
+                "tipo": "Reembolso suscripcion",
+                "monto": 55860,
+                "fecha": "20-06-2026 16:09"
+            },
+            {
+                "id_transaccion": "TRX0059",
+                "tipo": "Reembolso suscripcion",
+                "monto": 57855,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0060",
+                "tipo": "Reembolso suscripcion",
+                "monto": 57855,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0061",
+                "tipo": "Reembolso suscripcion",
+                "monto": 144305,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0062",
+                "tipo": "Reembolso suscripcion",
+                "monto": 57855,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0063",
+                "tipo": "Reembolso suscripcion",
+                "monto": 57855,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0064",
+                "tipo": "Reembolso suscripcion",
+                "monto": 57855,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0065",
+                "tipo": "Reembolso suscripcion",
+                "monto": 24795,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0066",
+                "tipo": "Reembolso suscripcion",
+                "monto": 22040,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0067",
+                "tipo": "Reembolso suscripcion",
+                "monto": 57855,
+                "fecha": "20-06-2026 16:10"
+            },
+            {
+                "id_transaccion": "TRX0068",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 16:28"
+            },
+            {
+                "id_transaccion": "TRX0069",
+                "tipo": "Reembolso suscripcion",
+                "monto": 57855,
+                "fecha": "20-06-2026 16:33"
+            },
+            {
+                "id_transaccion": "TRX0070",
+                "tipo": "Pago",
+                "monto": 60900,
+                "fecha": "20-06-2026 16:37"
+            },
+            {
+                "id_transaccion": "TRX0071",
+                "tipo": "Pago",
+                "monto": 2900,
+                "fecha": "20-06-2026 16:38"
             }
         ],
         "id_usuario": "USR0001"
     },
     {
-        "saldo": 360608,
+        "saldo": 371808,
         "tarjetas": [
             {
                 "titular": "adolfo",
@@ -455,6 +797,30 @@
                 "tipo": "Pago recibido",
                 "monto": 3600,
                 "fecha": "05-06-2026 12:12"
+            },
+            {
+                "id_transaccion": "TRX0050",
+                "tipo": "Pago recibido",
+                "monto": 2320,
+                "fecha": "20-06-2026 17:31"
+            },
+            {
+                "id_transaccion": "TRX0051",
+                "tipo": "Pago recibido",
+                "monto": 2320,
+                "fecha": "20-06-2026 17:31"
+            },
+            {
+                "id_transaccion": "TRX0052",
+                "tipo": "Pago recibido",
+                "monto": 2880,
+                "fecha": "20-06-2026 17:39"
+            },
+            {
+                "id_transaccion": "TRX0053",
+                "tipo": "Pago recibido",
+                "monto": 3680,
+                "fecha": "20-06-2026 17:41"
             }
         ],
         "id_usuario": "USR0002"

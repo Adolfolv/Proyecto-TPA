@@ -240,6 +240,8 @@ class Moldes:
             bg=tema.SECUNDARIO,
             fg=tema.TEXTO,
             insertbackground=tema.TEXTO,
+            disabledbackground=tema.SECUNDARIO,
+            disabledforeground=tema.TEXTO_SUAVE,
             relief="flat",
             bd=0,
         )
@@ -274,6 +276,20 @@ class Moldes:
         if metodo is not None:
             self.ubicar(tabla, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
         return tabla
+
+    @staticmethod
+    def sincronizar_tabla(tabla, filas):
+        """Actualiza un Treeview conservando las filas existentes."""
+        existentes = set(tabla.get_children())
+        for iid in existentes - set(filas):
+            tabla.delete(iid)
+        for posicion, (iid, valores) in enumerate(filas.items()):
+            if iid in existentes:
+                if tuple(tabla.item(iid, "values")) != tuple(str(valor) for valor in valores):
+                    tabla.item(iid, values=valores)
+                tabla.move(iid, "", posicion)
+            else:
+                tabla.insert("", "end", iid=iid, values=valores)
 
     def crear_tarjeta_acceso_menu(self, padre, titulo, descripcion, comando=None, metodo=None, margen_x=0, margen_y=0, **ubicacion):
         tarjeta = self.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 16, 16)

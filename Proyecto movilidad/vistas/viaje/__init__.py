@@ -1,8 +1,8 @@
 import tkinter as tk
 
 from ..estilizacion import tema
-from .viaje_conductor import VistaViajeConductor
-from .viaje_pasajero import VistaViajePasajero
+from .conductor.viaje_conductor import VistaViajeConductor
+from .pasajero.viaje_pasajero import VistaViajePasajero
 
 
 class VistaViaje(tk.Frame):

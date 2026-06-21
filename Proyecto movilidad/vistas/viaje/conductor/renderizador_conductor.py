@@ -1,25 +1,25 @@
 from PIL import Image, ImageTk
 
+from ..temporizador_viaje import TemporizadorViaje
+
 
 class RenderizadorConductor:
     """Pinta resultados propios del flujo del conductor."""
 
     def __init__(self, vista):
         self.vista = vista
+        self.temporizador = None
 
     def actualizar_cronometro_busqueda(self, al_finalizar, duracion, segundos=0):
-        self.vista.label_cronometro.config(text=f"00:{segundos:02d}")
-
-        if segundos >= duracion:
-            al_finalizar()
-            return
-
-        self.vista.label_cronometro.after(
-            1000,
-            self.actualizar_cronometro_busqueda,
-            al_finalizar,
+        if self.temporizador is None:
+            self.temporizador = TemporizadorViaje(self.vista.label_cronometro)
+        self.temporizador.contar_ascendente(
             duracion,
-            segundos + 1,
+            lambda valor: self.vista.label_cronometro.config(
+                text=f"00:{valor:02d}"
+            ),
+            al_finalizar,
+            segundos,
         )
 
     def mostrar_pasajero_encontrado(self):

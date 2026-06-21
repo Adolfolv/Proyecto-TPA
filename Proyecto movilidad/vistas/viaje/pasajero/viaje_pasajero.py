@@ -1,9 +1,9 @@
 from tkinter import ttk
 
-from ..estilizacion import tema
-from ..estilizacion.widgets import Moldes
+from ...estilizacion import tema
+from ...estilizacion.widgets import Moldes
 from .estado_visual_pasajero import EstadoVisualPasajero
-from .mapa_viaje import MapaViajePasajero
+from ..mapa_viaje import MapaViajePasajero
 from .renderizador_pasajero import RenderizadorPasajero
 
 

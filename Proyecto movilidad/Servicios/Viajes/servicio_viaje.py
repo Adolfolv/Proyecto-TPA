@@ -37,5 +37,8 @@ class ServicioViaje:
     def reembolsar_suscripcion(self, usuario, monto):
         return self.pagos.reembolsar_pasajero(usuario, monto)
 
+    def abonar_conductor_suscripcion(self, conductor, monto):
+        return self.pagos.abonar_conductor(conductor, monto)
+
     def iniciar_viaje_conductor(self, pasajero, conductor):
         return self.conductor.iniciar_viaje(pasajero, conductor)

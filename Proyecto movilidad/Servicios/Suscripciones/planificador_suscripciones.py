@@ -1,11 +1,11 @@
 class PlanificadorSuscripciones:
-    """Adaptador de reloj para Tkinter; la logica temporal permanece en el servicio."""
+    """Conecta el ciclo de Tkinter con el procesador temporal del dominio."""
 
     INTERVALO_MS = 30_000
 
-    def __init__(self, ventana, servicio_suscripcion):
+    def __init__(self, ventana, procesador):
         self.ventana = ventana
-        self.servicio_suscripcion = servicio_suscripcion
+        self.procesador = procesador
         self.id_tarea = None
 
     def iniciar(self):
@@ -15,8 +15,7 @@ class PlanificadorSuscripciones:
     def _comprobar(self):
         self.id_tarea = None
         try:
-            self.servicio_suscripcion.procesar_pendientes()
+            self.procesador.procesar()
         finally:
             if self.ventana.winfo_exists():
                 self.id_tarea = self.ventana.after(self.INTERVALO_MS, self._comprobar)
-

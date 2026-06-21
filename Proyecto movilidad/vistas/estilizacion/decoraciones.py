@@ -1,8 +1,32 @@
 """Decoraciones visuales reutilizables.."""
 
 import tkinter as tk
+from pathlib import Path
+
+from PIL import Image, ImageTk
 
 from . import tema
+
+
+RUTA_IMAGENES = Path(__file__).resolve().parent / "Imagenes"
+RUTA_LOGO_SUSCRIPCION_PASAJERO = (
+    RUTA_IMAGENES / "suscripcion" / "logo_suscripcion_pasajero.png"
+)
+
+
+def crear_logo_suscripcion_pasajero(padre):
+    """Logo decorativo exclusivo del formulario de suscripcion del pasajero."""
+    imagen = Image.open(RUTA_LOGO_SUSCRIPCION_PASAJERO)
+    imagen.thumbnail((574, 273), Image.Resampling.LANCZOS)
+    foto = ImageTk.PhotoImage(imagen)
+    etiqueta = tk.Label(padre, image=foto, bg=tema.PANEL_SUAVE, bd=0)
+    etiqueta.imagen_logo = foto
+    return etiqueta
+
+
+def crear_logo_suscripcion_conductor(padre):
+    """Reutiliza la identidad visual de suscripciones en la agenda del conductor."""
+    return crear_logo_suscripcion_pasajero(padre)
 
 
 # --- DECORACION REGISTRO ---
