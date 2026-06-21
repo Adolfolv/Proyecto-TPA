@@ -1,3 +1,6 @@
+from datetime import datetime
+from uuid import uuid4
+
 from Modelos.Viaje.modelo_viajes import (
     PasajeroEncontrado,
     VehiculoDisponible,
@@ -8,11 +11,23 @@ from Modelos.Viaje.modelo_viajes import (
 class FabricaViaje:
     """Crea los modelos que viajan entre servicios, controladores y vistas."""
 
-    def __init__(self, trayectoria, calculadora):
+    def __init__(self, trayectoria, calculadora, generador_id=None, reloj=None):
         self.trayectoria = trayectoria
         self.calculadora = calculadora
+        self.generador_id = generador_id or (lambda: uuid4().hex)
+        self.reloj = reloj or datetime.now
 
-    def crear_viaje_pasajero(self, vehiculo, usuario):
+    def crear_viaje_pasajero(
+        self,
+        vehiculo,
+        usuario,
+        tipo_viaje="normal",
+        volumen=None,
+        peso=None,
+        tipo_material=None,
+        origen="",
+        destino="",
+    ):
         return Viaje(
             pasajero=self.nombre_usuario(usuario),
             conductor=vehiculo.nombre_completo,
@@ -20,6 +35,15 @@ class FabricaViaje:
             precio=float(vehiculo.precio),
             distancia=float(vehiculo.distancia),
             duracion=float(vehiculo.tiempo),
+            tipo=tipo_viaje,
+            volumen=self.convertir_decimal_opcional(volumen),
+            peso=self.convertir_decimal_opcional(peso),
+            tipo_material=tipo_material,
+            id_viaje=str(self.generador_id()),
+            id_pasajero=str(getattr(usuario, "id_usuario", "")),
+            origen=origen,
+            destino=destino,
+            fecha_inicio=self.reloj().isoformat(timespec="seconds"),
         )
 
     def crear_viaje_conductor(self, pasajero, conductor):
@@ -30,6 +54,11 @@ class FabricaViaje:
             precio=float(pasajero.precio),
             distancia=float(pasajero.distancia),
             duracion=float(pasajero.duracion),
+            id_viaje=str(self.generador_id()),
+            id_conductor=str(getattr(conductor, "id_usuario", "")),
+            origen=pasajero.ubicacion_inicial,
+            destino=pasajero.ubicacion_final,
+            fecha_inicio=self.reloj().isoformat(timespec="seconds"),
         )
 
     def crear_vehiculo_disponible(self, conductor, punto_conductor, distancia):
@@ -73,3 +102,9 @@ class FabricaViaje:
 
     def nombre_usuario(self, usuario):
         return f"{usuario.nombre} {usuario.apellido}".strip()
+
+    @staticmethod
+    def convertir_decimal_opcional(valor):
+        if valor is None:
+            return None
+        return float(str(valor).replace(",", "."))

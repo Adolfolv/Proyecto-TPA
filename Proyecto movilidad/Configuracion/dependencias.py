@@ -10,6 +10,7 @@ from Controladores.controlador_billetera import (
 from Controladores.controlador_admin import ControladorAdmin
 from Controladores.controlador_ayuda import ControladorAyuda
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
+from Controladores.controlador_historial import ControladorHistorial
 from Controladores.controlador_perfil import ControladorPerfil
 from Controladores.controlador_registro import ControladorRegistro
 from Controladores.controlador_reputacion import ControladorReputacion
@@ -22,6 +23,7 @@ from Controladores.controlador_viaje import (
     ControladorViajePasajero,
 )
 from Repositorios.repositorio_billetera import RepositorioBilletera
+from Repositorios.repositorio_historial import RepositorioHistorial
 from Repositorios.repositorio_suscripcion import RepositorioSuscripcion
 from Repositorios.repositorio_usuario import RepositorioUsuario
 from Repositorios.repositorio_reputacion import RepositorioReputacion
@@ -33,6 +35,7 @@ from Servicios.Billetera.fabrica_billetera import FabricaBilletera
 from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Billetera.servicio_tarjetas import ServicioTarjeta
+from Servicios.Historial.servicio_historial import FabricaHistorial, ServicioHistorial
 from Servicios.Admin.servicio_admin import ServicioAdmin
 from Servicios.Ayuda.cliente_gemini import ClienteGemini
 from Servicios.Ayuda.contenido_ayuda import ContenidoAyuda
@@ -92,6 +95,7 @@ class DependenciasAplicacion:
         )
         self.repositorio_suscripcion = RepositorioSuscripcion()
         self.repositorio_reputacion = RepositorioReputacion()
+        self.repositorio_historial = RepositorioHistorial()
 
         # Buscadores compartidos por servicios de usuario y billetera.
         self.buscador_usuario = BuscadorUsuario(self.repositorio_usuario)
@@ -166,8 +170,14 @@ class DependenciasAplicacion:
             self.repositorio_billetera,
             self.operaciones_billetera,
         )
+        self.fabrica_historial = FabricaHistorial()
+        self.servicio_historial = ServicioHistorial(
+            self.repositorio_historial,
+            self.fabrica_historial,
+        )
         self.servicio_viaje = ServicioViaje(
             servicio_billetera=self.servicio_billetera,
+            servicio_historial=self.servicio_historial,
         )
         # Construcción del dominio de suscripciones.
         self.calculadora_cotizacion_suscripcion = CalculadoraCotizacionSuscripcion(
@@ -217,6 +227,7 @@ class DependenciasAplicacion:
             self.politica_horarios_suscripcion,
             self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
+            self.servicio_historial,
         )
         self.estado_suscripcion_pasajero = ServicioEstadoSuscripcionPasajero(
             self.repositorio_suscripcion,
@@ -249,6 +260,7 @@ class DependenciasAplicacion:
             self.politica_suscripcion_conductor,
             self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
+            self.servicio_historial,
         )
         self.servicio_suscripcion = ServicioSuscripcion(
             self.alta_suscripcion_pasajero,
@@ -299,6 +311,9 @@ class DependenciasAplicacion:
         )
         self.controlador_suscripcion_pasajero = ControladorSuscripcionPasajero(
             self.servicio_suscripcion,
+        )
+        self.controlador_historial = ControladorHistorial(
+            self.servicio_historial
         )
         self.controlador_suscripcion_conductor = ControladorSuscripcionConductor(
             self.servicio_suscripcion,

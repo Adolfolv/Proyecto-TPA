@@ -22,11 +22,24 @@ class ServicioViajePasajero:
         self.validaciones = ValidacionesViaje()
         self.randomizador = Random()
 
-    def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
+    def buscar_vehiculos(
+        self,
+        cantidad_usuarios,
+        ubicacion_inicial,
+        ubicacion_final,
+        tipo_viaje="normal",
+        volumen=None,
+        peso=None,
+        tipo_material=None,
+    ):
         valido, error = self.validaciones.validar_busqueda_vehiculos(
             cantidad_usuarios,
             ubicacion_inicial,
             ubicacion_final,
+            tipo_viaje,
+            volumen,
+            peso,
+            tipo_material,
         )
 
         if not valido:
@@ -56,13 +69,33 @@ class ServicioViajePasajero:
         )
         return RutasViaje(llegada=ruta_llegada, viaje=ruta_viaje)
 
-    def confirmar_viaje(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final, cobrar=True):
+    def confirmar_viaje(
+        self,
+        usuario,
+        vehiculo,
+        ubicacion_inicial,
+        ubicacion_final,
+        tipo_viaje="normal",
+        volumen=None,
+        peso=None,
+        tipo_material=None,
+        cobrar=True,
+    ):
         rutas_viaje = self.formar_rutas_viaje(
             vehiculo,
             ubicacion_inicial,
             ubicacion_final,
         )
-        viaje = self.comun.fabrica.crear_viaje_pasajero(vehiculo, usuario)
+        viaje = self.comun.fabrica.crear_viaje_pasajero(
+            vehiculo,
+            usuario,
+            tipo_viaje,
+            volumen,
+            peso,
+            tipo_material,
+            ubicacion_inicial,
+            ubicacion_final,
+        )
 
         if cobrar:
             try:

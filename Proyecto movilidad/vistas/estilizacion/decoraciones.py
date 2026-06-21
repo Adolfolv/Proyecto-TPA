@@ -14,10 +14,10 @@ RUTA_LOGO_SUSCRIPCION_PASAJERO = (
 )
 
 
-def crear_logo_suscripcion_pasajero(padre):
+def crear_logo_suscripcion_pasajero(padre, tamano=(574, 273)):
     """Logo decorativo exclusivo del formulario de suscripcion del pasajero."""
     imagen = Image.open(RUTA_LOGO_SUSCRIPCION_PASAJERO)
-    imagen.thumbnail((574, 273), Image.Resampling.LANCZOS)
+    imagen.thumbnail(tamano, Image.Resampling.LANCZOS)
     foto = ImageTk.PhotoImage(imagen)
     etiqueta = tk.Label(padre, image=foto, bg=tema.PANEL_SUAVE, bd=0)
     etiqueta.imagen_logo = foto

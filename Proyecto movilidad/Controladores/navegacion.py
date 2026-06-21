@@ -7,6 +7,7 @@ from vistas.panel_admin import VistaPanelAdmin
 from vistas.ayuda import VistaAyuda
 from vistas.billetera import VistaBilletera
 from vistas.inicio_sesion import VistaInicioSesion
+from vistas.historial import VistaHistorial
 from vistas.menu import VistaMenu
 from vistas.pantalla_inicial import VistaPantallaInicial
 from vistas.registro import VistaRegistro
@@ -194,6 +195,24 @@ class RutaBilletera(RutaNavegacion):
             self.navegacion.dependencias.controlador_tarjetas,
             self.navegacion.dependencias.controlador_movimientos_billetera,
             self.navegacion.obtener_usuario_actual(),
+        )
+
+
+class RutaHistorial(RutaNavegacion):
+    destino = "historial"
+
+    def ejecutar(self):
+        usuario = self.navegacion.obtener_usuario_actual()
+        if usuario is None:
+            self.navegacion.navegar("inicio_sesion")
+            return
+        self.limpiar_pantalla()
+        self.navegacion.ventana.title("Historial de viajes")
+        VistaHistorial(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+            self.navegacion.dependencias.controlador_historial,
+            usuario,
         )
 
 

@@ -197,13 +197,14 @@ class ServicioViajesSuscripcionConductor:
     COMISION_PLATAFORMA = 0.20
 
     def __init__(self, repositorio, pagos, horarios, politica_conductor,
-                 crear_unidad_trabajo, reloj):
+                 crear_unidad_trabajo, reloj, servicio_historial=None):
         self.repositorio = repositorio
         self.pagos = pagos
         self.horarios = horarios
         self.politica_conductor = politica_conductor
         self.crear_unidad_trabajo = crear_unidad_trabajo
         self.reloj = reloj
+        self.servicio_historial = servicio_historial
 
     def confirmar_pasajero_abordo_conductor(self, conductor, id_viaje):
         self.politica_conductor.validar_conductor(conductor)
@@ -226,7 +227,7 @@ class ServicioViajesSuscripcionConductor:
         self.politica_conductor.validar_conductor(conductor)
         viaje = self._obtener_viaje(id_viaje)
         if viaje.estado not in (
-            VIAJE_PROGRAMADO, VIAJE_ASIGNADO, VIAJE_EN_CURSO
+            VIAJE_PROGRAMADO, VIAJE_ASIGNADO, VIAJE_EN_CURSO, VIAJE_FINALIZADO
         ):
             raise ValueError("Este viaje ya no se puede finalizar.")
         suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
@@ -261,6 +262,11 @@ class ServicioViajesSuscripcionConductor:
                 viaje.pago_conductor_estado = "PENDIENTE"
                 unidad.confirmar()
             raise
+        if self.servicio_historial is not None:
+            self.servicio_historial.registrar_viaje_suscripcion(
+                suscripcion,
+                viaje,
+            )
         with self.crear_unidad_trabajo() as unidad:
             viaje.pago_conductor_estado = "PAGADO"
             viaje.estado = VIAJE_FINALIZADO

@@ -109,11 +109,13 @@ class ConsultaSuscripcionPasajero:
 class ServicioViajesSuscripcionPasajero:
     """Gestiona el ciclo de vida de los viajes del pasajero."""
 
-    def __init__(self, repositorio, horarios, crear_unidad_trabajo, reloj):
+    def __init__(self, repositorio, horarios, crear_unidad_trabajo, reloj,
+                 servicio_historial=None):
         self.repositorio = repositorio
         self.horarios = horarios
         self.crear_unidad_trabajo = crear_unidad_trabajo
         self.reloj = reloj
+        self.servicio_historial = servicio_historial
 
     def confirmar_inicio(self, usuario, id_viaje):
         viaje = next((item for item in self.repositorio.listar_viajes(
@@ -144,9 +146,14 @@ class ServicioViajesSuscripcionPasajero:
         ) if item.id_viaje_programado == id_viaje), None)
         if viaje is None or viaje.estado != VIAJE_EN_CURSO:
             raise ValueError("Solo se puede completar un viaje en curso.")
+        suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
+        if self.servicio_historial is not None and suscripcion is not None:
+            self.servicio_historial.registrar_viaje_suscripcion(
+                suscripcion,
+                viaje,
+            )
         with self.crear_unidad_trabajo() as unidad:
             viaje.estado = VIAJE_FINALIZADO
-            suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
             if suscripcion is not None:
                 suscripcion.monto_consumido = round(
                     suscripcion.monto_consumido + viaje.precio, 2

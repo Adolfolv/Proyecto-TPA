@@ -60,7 +60,7 @@ class VistaMenu(tk.Frame):
 
         derecha = self.moldes.crear_frame(contenido, tema.PANEL, fila=0, columna=2, margen_x=(16, 0), columnas_peso=((0, 1),), filas_peso=((0, 1), (1, 1)))
 
-        self.moldes.crear_tarjeta_acceso_menu(derecha, "Historial", "Consulta viajes realizados y actividad anterior.", metodo="grid", fila=0, columna=0, sticky="nsew", margen_y=(0, 8))
+        self.moldes.crear_tarjeta_acceso_menu(derecha, "Historial", "Consulta viajes realizados y actividad anterior.", comando=lambda: self.navegar("historial"), metodo="grid", fila=0, columna=0, sticky="nsew", margen_y=(0, 8))
         self.moldes.crear_tarjeta_acceso_menu(derecha, "Tarjeta social", "Accede a beneficios, perfil público y comunidad.", metodo="grid", fila=1, columna=0, sticky="nsew", margen_y=(8, 0))
 
         pie = self.moldes.crear_frame(panel, tema.PANEL, fila=2, columna=0, sticky="ew", margen_y=(16, 0), columnas_peso=((0, 1),))

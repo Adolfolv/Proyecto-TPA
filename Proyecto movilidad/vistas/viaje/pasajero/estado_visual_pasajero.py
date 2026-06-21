@@ -29,7 +29,9 @@ class EstadoVisualPasajero:
         self.vista.boton_pagar.grid_remove()
         self.vista.selector_ubicacion_inicial.config(state="disabled")
         self.vista.selector_ubicacion_final.config(state="disabled")
+        self.vista.selector_tipo_viaje.config(state="disabled")
         self.vista.entrada_usuarios.config(state="disabled")
+        self._configurar_datos_material("disabled")
         self.vista.tabla_vehiculos.config(selectmode="none")
         self.vista.label_pregunta_confirmacion.grid_remove()
         self.vista.boton_confirmar_pago.grid_remove()
@@ -43,7 +45,9 @@ class EstadoVisualPasajero:
     def _bloquear_datos_busqueda(self):
         self.vista.selector_ubicacion_inicial.config(state="disabled")
         self.vista.selector_ubicacion_final.config(state="disabled")
+        self.vista.selector_tipo_viaje.config(state="disabled")
         self.vista.entrada_usuarios.config(state="disabled")
+        self._configurar_datos_material("disabled")
         self.vista.boton_buscar_vehiculos.config(state="disabled", cursor="arrow")
         self.vista.boton_pagar.config(state="disabled", cursor="arrow")
         self.vista.tabla_vehiculos.config(selectmode="none")
@@ -51,7 +55,15 @@ class EstadoVisualPasajero:
     def _habilitar_datos_busqueda(self):
         self.vista.selector_ubicacion_inicial.config(state="readonly")
         self.vista.selector_ubicacion_final.config(state="readonly")
+        self.vista.selector_tipo_viaje.config(state="readonly")
         self.vista.entrada_usuarios.config(state="normal")
+        self._configurar_datos_material("normal")
         self.vista.boton_buscar_vehiculos.config(state="normal", cursor="hand2")
         self.vista.boton_pagar.config(state="normal", cursor="hand2")
         self.vista.tabla_vehiculos.config(selectmode="browse")
+
+    def _configurar_datos_material(self, estado):
+        self.vista.entrada_volumen.config(state=estado)
+        self.vista.entrada_peso.config(state=estado)
+        estado_selector = "readonly" if estado == "normal" else estado
+        self.vista.selector_tipo_material.config(state=estado_selector)

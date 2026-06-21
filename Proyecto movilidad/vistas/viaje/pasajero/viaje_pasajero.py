@@ -2,6 +2,7 @@ from tkinter import ttk
 
 from ...estilizacion import tema
 from ...estilizacion.widgets import Moldes
+from Servicios.Viajes.datos_viaje import TIPOS_MATERIAL
 from .estado_visual_pasajero import EstadoVisualPasajero
 from ..mapa_viaje import MapaViajePasajero
 from .renderizador_pasajero import RenderizadorPasajero
@@ -32,6 +33,7 @@ class VistaViajePasajero:
         PanelDerechoPasajero(self).crear(contenedor)
 
     def finalizar_viaje(self):
+        self.controlador_pasajero.finalizar_viaje(self.viaje_actual)
         self.renderizador.mostrar_estado_viaje("viaje finalizado")
         self.estado_visual.viaje_finalizado()
         
@@ -59,7 +61,21 @@ class PanelIzquierdoPasajero:
 
     def crear_servicio(self):
         self.moldes.crear_label(self.vista.panel, "Servicio", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_x=16, margen_y=(0, 4))
-        self.moldes.crear_label(self.vista.panel, "Viaje normal", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), ipady=8)
+        self.vista.selector_tipo_viaje = self.moldes.crear_selector(
+            self.vista.panel,
+            ("Viaje normal", "Viaje material"),
+            metodo="grid",
+            fila=2,
+            columna=0,
+            sticky="ew",
+            margen_x=16,
+            margen_y=(0, 10),
+            ipady=4,
+        )
+        self.vista.selector_tipo_viaje.bind(
+            "<<ComboboxSelected>>",
+            self.vista.acciones.cambiar_tipo_viaje,
+        )
 
     def crear_formulario(self):
         datos = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=3, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
@@ -67,6 +83,51 @@ class PanelIzquierdoPasajero:
         self.vista.selector_ubicacion_final = self.crear_selector_ubicacion(datos, "Ubicacion final", 0, 1, (5, 0))
         self.vista.selector_ubicacion_final.current(1)
         self.vista.entrada_usuarios = self.crear_campo(datos, "Cantidad usuarios", "1", 2, 0, 2)
+        self.crear_formulario_material(datos)
+
+    def crear_formulario_material(self, padre):
+        self.vista.panel_material = self.moldes.crear_frame(
+            padre,
+            tema.PANEL,
+            fila=3,
+            columna=0,
+            columnas=2,
+            sticky="ew",
+            columnas_peso=((0, 1), (1, 1), (2, 2)),
+        )
+        self.vista.entrada_volumen = self.crear_campo(
+            self.vista.panel_material,
+            "Volumen (m3)",
+            "",
+            0,
+            0,
+            margen_x=(0, 5),
+            ancho=8,
+        )
+        self.vista.entrada_peso = self.crear_campo(
+            self.vista.panel_material,
+            "Peso (kg)",
+            "",
+            0,
+            1,
+            margen_x=(5, 0),
+            ancho=8,
+        )
+        tipo = self.moldes.crear_frame(
+            self.vista.panel_material,
+            tema.PANEL_SUAVE,
+            tema.BORDE,
+            1,
+            fila=0,
+            columna=2,
+            sticky="ew",
+            margen_x=(5, 0),
+            columnas_peso=((0, 1),),
+        )
+        self.moldes.crear_label(tipo, "Tipo de material", ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w", margen_x=10, margen_y=(8, 4))
+        self.vista.selector_tipo_material = self.moldes.crear_selector(tipo, TIPOS_MATERIAL, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=10, margen_y=(0, 10), ipady=4)
+        self.vista.selector_tipo_material.config(width=22)
+        self.vista.panel_material.grid_remove()
 
     def crear_selector_ubicacion(self, padre, titulo, fila, columna, margen_x):
         apartado = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, fila=fila, columna=columna, sticky="ew", margen_x=margen_x, margen_y=(0, 8), columnas_peso=((0, 1),))
@@ -74,10 +135,10 @@ class PanelIzquierdoPasajero:
         lugares = self.vista.controlador_pasajero.obtener_lugares_disponibles()
         return self.moldes.crear_selector(apartado, lugares, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=10, margen_y=(0, 10), ipady=4)
 
-    def crear_campo(self, padre, titulo, valor_inicial, fila, columna, columnas=1):
-        campo = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, fila=fila, columna=columna, columnas=columnas, sticky="ew", margen_y=(0, 0), columnas_peso=((0, 1),))
+    def crear_campo(self, padre, titulo, valor_inicial, fila, columna, columnas=1, margen_x=0, ancho=None):
+        campo = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, fila=fila, columna=columna, columnas=columnas, sticky="ew", margen_x=margen_x, margen_y=(0, 0), columnas_peso=((0, 1),))
         self.moldes.crear_label(campo, titulo, ("Arial", 9, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w", margen_x=10, margen_y=(8, 4))
-        entrada = self.moldes.crear_entrada(campo)
+        entrada = self.moldes.crear_entrada(campo, ancho=ancho)
         entrada.insert(0, valor_inicial)
         entrada.grid(row=1, column=0, sticky="ew", padx=10, pady=(0, 10), ipady=3)
         return entrada
@@ -87,7 +148,7 @@ class PanelIzquierdoPasajero:
         self.vista.boton_buscar_vehiculos = self.moldes.crear_boton(contenedor, "Buscar vehiculos", True, None, self.vista.acciones.presionar_boton_buscar_vehiculos, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 4))
         self.vista.label_error_busqueda = self.moldes.crear_label(contenedor, "", ("Arial", 9), tema.ERROR, tema.PANEL, 300, "left", metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 8))
         self.vista.label_vehiculos_disponibles = self.moldes.crear_label(contenedor, "Vehiculos disponibles", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(0, 6))
-        self.vista.tabla_vehiculos = self.moldes.crear_tabla(contenedor, (("nombre", "Nombre", 105), ("detalle", "Detalle", 140), ("precio", "Precio", 80), ("tiempo", "Tiempo", 70)), 5, metodo="grid", fila=3, columna=0, sticky="nsew")
+        self.vista.tabla_vehiculos = self.moldes.crear_tabla(contenedor, (("nombre", "Nombre", 80), ("tipo", "Tipo", 65), ("detalle", "Detalle", 115), ("precio", "Precio", 70), ("tiempo", "Tiempo", 60)), 4, metodo="grid", fila=3, columna=0, sticky="nsew")
         self.vista.tabla_vehiculos.tag_configure("fila", background=tema.SECUNDARIO, foreground=tema.TEXTO)
         self.vista.tabla_vehiculos.bind("<<TreeviewSelect>>", self.vista.acciones.presionar_boton_seleccionar_vehiculo)
 
@@ -131,18 +192,52 @@ class AccionesBotonesPasajero:
     def __init__(self, vista):
         self.vista = vista
 
+    def cambiar_tipo_viaje(self, _evento=None):
+        vista = self.vista
+        es_material = vista.selector_tipo_viaje.get() == "Viaje material"
+        if es_material:
+            vista.panel_material.grid()
+            vista.entrada_usuarios.master.grid_remove()
+        else:
+            vista.panel_material.grid_remove()
+            vista.entrada_usuarios.master.grid()
+
+        # Cambiar el servicio invalida cualquier resultado de la busqueda anterior.
+        vista.vehiculo_seleccionado = None
+        vista.estado_visual.reiniciar_busqueda()
+        vista.renderizador.mostrar_mensaje_error("")
+        vista.renderizador.limpiar_tabla_vehiculos()
+        vista.vehiculos_por_item = {}
+        vista.mapa_viaje.limpiar_busqueda()
+
     def presionar_boton_buscar_vehiculos(self):
         vista = self.vista
         # La vista solo lee los campos; la validacion y la ruta quedan en el controlador.
-        cantidad_usuarios = vista.entrada_usuarios.get()
+        cantidad_usuarios = (
+            "1"
+            if vista.selector_tipo_viaje.get() == "Viaje material"
+            else vista.entrada_usuarios.get()
+        )
         ubicacion_inicial = vista.selector_ubicacion_inicial.get()
         ubicacion_final = vista.selector_ubicacion_final.get()
+        tipo_viaje = (
+            "material"
+            if vista.selector_tipo_viaje.get() == "Viaje material"
+            else "normal"
+        )
+        volumen = vista.entrada_volumen.get() if tipo_viaje == "material" else None
+        peso = vista.entrada_peso.get() if tipo_viaje == "material" else None
+        tipo_material = vista.selector_tipo_material.get() if tipo_viaje == "material" else None
         vista.vehiculo_seleccionado = None
         vista.estado_visual.reiniciar_busqueda()
         resultado = vista.controlador_pasajero.buscar_vehiculos_pasajero(
             cantidad_usuarios,
             ubicacion_inicial,
             ubicacion_final,
+            tipo_viaje,
+            volumen,
+            peso,
+            tipo_material,
         )
 
         if not resultado.exitoso:
@@ -155,6 +250,10 @@ class AccionesBotonesPasajero:
         vista.info_vehiculos_busqueda = resultado.vehiculos
         vista.ubicacion_inicial_busqueda = ubicacion_inicial
         vista.ubicacion_final_busqueda = ubicacion_final
+        vista.tipo_viaje_busqueda = tipo_viaje
+        vista.volumen_busqueda = volumen
+        vista.peso_busqueda = peso
+        vista.tipo_material_busqueda = tipo_material
         vista.renderizador.mostrar_mensaje_error("")
         vista.vehiculos_por_item = vista.renderizador.mostrar_vehiculos()
         vista.mapa_viaje.mostrar_busqueda_pasajero(
@@ -185,6 +284,10 @@ class AccionesBotonesPasajero:
             vista.vehiculo_seleccionado,
             vista.ubicacion_inicial_busqueda,
             vista.ubicacion_final_busqueda,
+            vista.tipo_viaje_busqueda,
+            vista.volumen_busqueda,
+            vista.peso_busqueda,
+            vista.tipo_material_busqueda,
         )
         {
             True: self.iniciar_viaje_confirmado,
@@ -193,6 +296,7 @@ class AccionesBotonesPasajero:
 
     def iniciar_viaje_confirmado(self, resultado):
         vista = self.vista
+        vista.viaje_actual = resultado.viaje
         # Desde aqui se bloquea la pantalla hasta que termine la animacion.
         vista.renderizador.mostrar_estado_viaje("viaje en proceso")
         vista.estado_visual.viaje_en_proceso()

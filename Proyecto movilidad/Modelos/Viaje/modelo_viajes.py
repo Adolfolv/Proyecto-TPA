@@ -117,6 +117,16 @@ class Viaje:
     precio: float
     distancia: float
     duracion: float
+    tipo: str = "normal"
+    volumen: float | None = None
+    peso: float | None = None
+    tipo_material: str | None = None
+    id_viaje: str = ""
+    id_pasajero: str = ""
+    id_conductor: str = ""
+    origen: str = ""
+    destino: str = ""
+    fecha_inicio: str = ""
 
 
 @dataclass(frozen=True)

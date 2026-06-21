@@ -41,6 +41,23 @@ LUGARES_OSORNO = {
     for nombre, (latitud, longitud) in COORDENADAS_REALES_OSORNO.items()
 }
 
+# Categorias amplias para clasificar cualquier carga. "Otro" evita impedir
+# solicitudes validas que no encajen en una categoria conocida.
+TIPOS_MATERIAL = (
+    "Carga general o mixta",
+    "Alimentos y perecibles",
+    "Textiles y articulos personales",
+    "Papel, carton y madera",
+    "Plasticos y caucho",
+    "Vidrio y ceramica",
+    "Metales y maquinaria",
+    "Electronica y electrodomesticos",
+    "Quimicos y materiales peligrosos",
+    "Materiales de construccion y minerales",
+    "Productos medicos o biologicos",
+    "Otro o no clasificado",
+)
+
 # Calles usadas solo para sembrar puntos plausibles de conductores simulados.
 CALLES_OSORNO = (
     CalleOsorno(

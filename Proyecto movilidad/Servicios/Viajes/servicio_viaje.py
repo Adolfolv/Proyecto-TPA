@@ -10,24 +10,57 @@ class ServicioViaje:
     servicios especializados: pasajero, conductor, pagos y operaciones comunes.
     """
 
-    def __init__(self, servicio_billetera):
+    def __init__(self, servicio_billetera, servicio_historial=None):
         self.comun = ServicioViajeComun()
         self.pagos = ServicioPagoViaje(servicio_billetera)
+        self.historial = servicio_historial
         self.pasajero = ServicioViajePasajero(self.comun, self.pagos)
         self.conductor = ServicioViajeConductor(self.comun, self.pagos)
 
     def buscar_pasajeros(self, ubicacion_conductor):
         return self.conductor.buscar_pasajeros(ubicacion_conductor)
 
-    def buscar_vehiculos(self, cantidad_usuarios, ubicacion_inicial, ubicacion_final):
-        return self.pasajero.buscar_vehiculos(cantidad_usuarios,ubicacion_inicial,ubicacion_final)
+    def buscar_vehiculos(
+        self,
+        cantidad_usuarios,
+        ubicacion_inicial,
+        ubicacion_final,
+        tipo_viaje="normal",
+        volumen=None,
+        peso=None,
+        tipo_material=None,
+    ):
+        return self.pasajero.buscar_vehiculos(
+            cantidad_usuarios,
+            ubicacion_inicial,
+            ubicacion_final,
+            tipo_viaje,
+            volumen,
+            peso,
+            tipo_material,
+        )
 
-    def confirmar_viaje_pasajero(self, usuario, vehiculo, ubicacion_inicial, ubicacion_final, cobrar=True):
+    def confirmar_viaje_pasajero(
+        self,
+        usuario,
+        vehiculo,
+        ubicacion_inicial,
+        ubicacion_final,
+        tipo_viaje="normal",
+        volumen=None,
+        peso=None,
+        tipo_material=None,
+        cobrar=True,
+    ):
         return self.pasajero.confirmar_viaje(
             usuario,
             vehiculo,
             ubicacion_inicial,
             ubicacion_final,
+            tipo_viaje,
+            volumen,
+            peso,
+            tipo_material,
             cobrar=cobrar,
         )
 
@@ -42,3 +75,8 @@ class ServicioViaje:
 
     def iniciar_viaje_conductor(self, pasajero, conductor):
         return self.conductor.iniciar_viaje(pasajero, conductor)
+
+    def finalizar_viaje(self, viaje):
+        if self.historial is None:
+            return viaje
+        return self.historial.registrar_viaje_normal(viaje)

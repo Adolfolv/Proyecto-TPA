@@ -1,0 +1,26 @@
+{
+    "viajes": [
+        {
+            "id_viaje": "fdea7afa3c2f4c79bc9f2ac150ec2171",
+            "id_pasajero": "USR0001",
+            "id_conductor": "",
+            "pasajero": "hardy aguila",
+            "conductor": "Diego Perez",
+            "origen": "Plaza de Armas Osorno",
+            "destino": "Terminal de Buses Osorno",
+            "fecha_inicio": "2026-06-21T14:56:32",
+            "fecha_finalizacion": "2026-06-21T14:56:46",
+            "modalidad": "VIAJE NORMAL",
+            "tipo_viaje": "NORMAL",
+            "vehiculo": "Chevrolet Sail",
+            "precio": 3600.0,
+            "pago_conductor": 3600.0,
+            "distancia": 1.53,
+            "duracion": 6.0,
+            "cantidad_pasajeros": 1,
+            "volumen": null,
+            "peso": null,
+            "tipo_material": null
+        }
+    ]
+}

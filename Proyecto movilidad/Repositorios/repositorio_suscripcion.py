@@ -3,7 +3,12 @@ from dataclasses import asdict
 from pathlib import Path
 
 from Modelos.Suscripcion.modelos_suscripcion import (
+    ESTADO_CANCELADA,
+    ESTADO_FINALIZADA,
     SuscripcionViaje,
+    VIAJE_CANCELADO,
+    VIAJE_FALLIDO,
+    VIAJE_FINALIZADO,
     ViajeProgramado,
 )
 from Repositorios.repositorio_json import cargar_json, guardar_json
@@ -40,12 +45,60 @@ class RepositorioSuscripcion:
         return self.suscripciones, self.viajes_programados
 
     def guardar(self):
+        self.limpiar_finalizados()
         guardar_json(
             self.archivo,
             {
                 "suscripciones": [asdict(item) for item in self.suscripciones],
                 "viajes_programados": [asdict(item) for item in self.viajes_programados],
             },
+        )
+
+    def limpiar_finalizados(self):
+        """Elimina registros terminales cuando ya no tienen pagos pendientes."""
+        suscripciones_protegidas = {
+            item.id_suscripcion
+            for item in self.suscripciones
+            if item.reembolso_estado == "PROCESANDO"
+        }
+
+        viajes_por_suscripcion = {}
+        for viaje in self.viajes_programados:
+            viajes_por_suscripcion.setdefault(viaje.id_suscripcion, []).append(viaje)
+
+        suscripciones_eliminables = {
+            item.id_suscripcion
+            for item in self.suscripciones
+            if item.estado in (ESTADO_CANCELADA, ESTADO_FINALIZADA)
+            and item.id_suscripcion not in suscripciones_protegidas
+            and all(
+                self._viaje_financieramente_cerrado(viaje)
+                for viaje in viajes_por_suscripcion.get(item.id_suscripcion, ())
+            )
+        }
+
+        self.suscripciones = [
+            item
+            for item in self.suscripciones
+            if item.id_suscripcion not in suscripciones_eliminables
+        ]
+        self.viajes_programados = [
+            viaje
+            for viaje in self.viajes_programados
+            if viaje.id_suscripcion not in suscripciones_eliminables
+            and not (
+                viaje.id_suscripcion not in suscripciones_protegidas
+                and self._viaje_financieramente_cerrado(viaje)
+            )
+        ]
+
+    @staticmethod
+    def _viaje_financieramente_cerrado(viaje):
+        if viaje.estado in (VIAJE_CANCELADO, VIAJE_FALLIDO):
+            return True
+        return (
+            viaje.estado == VIAJE_FINALIZADO
+            and viaje.pago_conductor_estado == "PAGADO"
         )
 
     def _asegurar_cargado(self):

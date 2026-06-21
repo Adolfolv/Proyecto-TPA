@@ -29,6 +29,7 @@ class RenderizadorPasajero:
                 "end",
                 values=(
                     vehiculo.nombre_completo,
+                    self.vista.tipo_viaje_busqueda.title(),
                     f"{vehiculo.vehiculo} | {vehiculo.patente} | {vehiculo.distancia} km",
                     f"${vehiculo.precio}",
                     f"{vehiculo.tiempo} s",

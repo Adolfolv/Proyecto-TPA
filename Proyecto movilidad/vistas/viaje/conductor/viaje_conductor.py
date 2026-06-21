@@ -133,6 +133,7 @@ class AccionesBotonesConductor:
             vista.info_pasajero_busqueda,
             vista.usuario_actual,
         )
+        vista.viaje_actual = resultado.viaje
         self.iniciar_animacion_viaje(resultado.rutas_viaje)
 
     def presionar_boton_cancelar(self):
@@ -180,5 +181,6 @@ class VistaViajeConductor:
         PanelDerechoConductor(self).crear(contenedor)
 
     def finalizar_viaje(self):
+        self.controlador_conductor.finalizar_viaje(self.viaje_actual)
         self.renderizador.mostrar_estado_viaje("viaje finalizado")
         self.estado_visual.viaje_finalizado()
