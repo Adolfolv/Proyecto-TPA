@@ -437,7 +437,7 @@
             ],
             "hora": "16:46",
             "cantidad_pasajeros": 1,
-            "estado": "ACTIVA",
+            "estado": "FINALIZADA",
             "creada_en": "2026-06-20T16:38:47",
             "cantidad_viajes": 1,
             "precio_por_viaje": 2900.0,

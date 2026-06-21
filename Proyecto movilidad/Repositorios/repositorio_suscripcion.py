@@ -3,8 +3,6 @@ from dataclasses import asdict
 from pathlib import Path
 
 from Modelos.Suscripcion.modelos_suscripcion import (
-    VIAJE_ASIGNADO,
-    VIAJE_PROGRAMADO,
     SuscripcionViaje,
     ViajeProgramado,
 )
@@ -35,7 +33,7 @@ class RepositorioSuscripcion:
             for item in datos.get("suscripciones", [])
         ]
         self.viajes_programados = [
-            ViajeProgramado(**self._normalizar_viaje(item))
+            ViajeProgramado(**item)
             for item in datos.get("viajes_programados", [])
         ]
         self.cargado = True
@@ -53,18 +51,6 @@ class RepositorioSuscripcion:
     def _asegurar_cargado(self):
         if not self.cargado:
             self.cargar()
-
-    def agregar(self, suscripcion, viajes_programados):
-        """Compatibilidad: agrega y persiste inmediatamente."""
-        self.agregar_sin_guardar(suscripcion, viajes_programados)
-        try:
-            self.guardar()
-        except OSError:
-            self.suscripciones.remove(suscripcion)
-            ids_viajes = {viaje.id_viaje_programado for viaje in viajes_programados}
-            self.viajes_programados = [viaje for viaje in self.viajes_programados if viaje.id_viaje_programado not in ids_viajes]
-            raise
-        return suscripcion
 
     def agregar_sin_guardar(self, suscripcion, viajes_programados):
         """Registra cambios en memoria; Unit of Work decide cuándo persistir."""
@@ -123,14 +109,3 @@ class RepositorioSuscripcion:
     def guardar_cambios(self):
         self._asegurar_cargado()
         self.guardar()
-
-    @staticmethod
-    def _normalizar_viaje(item):
-        """Migra sin romper JSON creados por versiones anteriores."""
-        datos = dict(item)
-        duracion_anterior = datos.pop("duracion_trayecto_minutos", None)
-        if duracion_anterior is not None and "duracion_trayecto_segundos" not in datos:
-            datos["duracion_trayecto_segundos"] = duracion_anterior
-        if datos.get("estado") == VIAJE_PROGRAMADO and datos.get("conductor"):
-            datos["estado"] = VIAJE_ASIGNADO
-        return datos

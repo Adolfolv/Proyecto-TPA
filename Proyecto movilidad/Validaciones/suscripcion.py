@@ -80,6 +80,8 @@ class ValidacionesSuscripcion:
 class PoliticaHorariosSuscripcion:
     """Operaciones temporales compartidas por pasajero y conductor."""
 
+    MARGEN_ATRASO = timedelta(minutes=15)
+
     @staticmethod
     def generar_fechas(inicio, fin, dias, horario, ahora):
         fechas, fecha_actual = [], inicio
