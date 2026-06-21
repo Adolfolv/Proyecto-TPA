@@ -12,6 +12,7 @@ from Controladores.controlador_ayuda import ControladorAyuda
 from Controladores.controlador_iniciosesion import ControladorInicioSesion
 from Controladores.controlador_perfil import ControladorPerfil
 from Controladores.controlador_registro import ControladorRegistro
+from Controladores.controlador_reputacion import ControladorReputacion
 from Controladores.controlador_suscripcion import (
     ControladorSuscripcionConductor,
     ControladorSuscripcionPasajero,
@@ -24,6 +25,7 @@ from Repositorios.repositorio_billetera import RepositorioBilletera
 from Repositorios.repositorio_suscripcion import RepositorioSuscripcion
 from Repositorios.unidad_trabajo_suscripcion import UnidadTrabajoSuscripcion
 from Repositorios.repositorio_usuario import RepositorioUsuario
+from Repositorios.repositorio_reputacion import RepositorioReputacion
 from Servicios.Billetera.operaciones_billetera import (
     OperacionPago,
     OperacionMovimientoTarjeta,
@@ -45,6 +47,7 @@ from Servicios.Usuario.buscador import (
 from Servicios.Usuario.fabrica_usuario import FabricaUsuario
 from Servicios.Usuario.perfil import ServicioPerfil
 from Servicios.Usuario.registro import ServicioRegistro
+from Servicios.reputacion.servicio_reputacion import ServicioReputacion
 from Servicios.Suscripciones.calculadora_cotizacion import CalculadoraCotizacionSuscripcion
 from Servicios.Suscripciones.datos_ofertas import OFERTAS_SIMULADAS
 from Servicios.Suscripciones.fabrica_suscripciones import FabricaSuscripciones
@@ -70,6 +73,7 @@ class DependenciasAplicacion:
             fabrica=self.fabrica_billetera
         )
         self.repositorio_suscripcion = RepositorioSuscripcion()
+        self.repositorio_reputacion = RepositorioReputacion()
 
         # Buscadores compartidos por servicios de usuario y billetera.
         self.buscador_usuario = BuscadorUsuario(self.repositorio_usuario)
@@ -101,6 +105,10 @@ class DependenciasAplicacion:
         self.contenido_ayuda = ContenidoAyuda()
         self.cliente_gemini = ClienteGemini()
         self.servicio_ayuda = ServicioAyuda(self.contenido_ayuda, self.cliente_gemini)
+        self.servicio_reputacion = ServicioReputacion(
+            self.repositorio_reputacion,
+            self.repositorio_usuario,
+        )
         
         self.servicio_tarjeta = ServicioTarjeta(
             self.repositorio_billetera,
@@ -209,6 +217,9 @@ class DependenciasAplicacion:
             self.servicio_admin,
         )
         self.controlador_ayuda = ControladorAyuda(self.servicio_ayuda)
+        self.controlador_reputacion = ControladorReputacion(
+            self.servicio_reputacion
+        )
         self.controlador_resumen_billetera = ControladorResumenBilletera(
             self.servicio_billetera,
         )

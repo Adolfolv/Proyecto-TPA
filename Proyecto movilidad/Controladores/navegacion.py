@@ -3,16 +3,17 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
-from vistas.panel_admin import VistaPanelAdmin
-from vistas.ayuda import VistaAyuda
-from vistas.billetera import VistaBilletera
-from vistas.inicio_sesion import VistaInicioSesion
-from vistas.menu import VistaMenu
-from vistas.pantalla_inicial import VistaPantallaInicial
-from vistas.registro import VistaRegistro
-from vistas.suscripcion import VistaSuscripcionViaje
-from vistas.viaje import VistaViaje
-from vistas.perfil import VistaPerfil
+from Vistas.panel_admin import VistaPanelAdmin
+from Vistas.ayuda import VistaAyuda
+from Vistas.billetera import VistaBilletera
+from Vistas.inicio_sesion import VistaInicioSesion
+from Vistas.menu import VistaMenu
+from Vistas.pantalla_inicial import VistaPantallaInicial
+from Vistas.registro import VistaRegistro
+from Vistas.reputacion import VistaReputacion
+from Vistas.suscripcion import VistaSuscripcionViaje
+from Vistas.viaje import VistaViaje
+from Vistas.perfil import VistaPerfil
 from abstracciones import NavegadorAbstracto, RutaNavegacion
 from Servicios.Suscripciones.planificador_suscripciones import PlanificadorSuscripciones
 
@@ -131,6 +132,25 @@ class RutaPerfil(RutaNavegacion):
             self.navegacion.navegar,
             self.navegacion.dependencias.controlador_perfil,
             self.navegacion.obtener_usuario_actual(),
+        )
+
+
+class RutaReputacion(RutaNavegacion):
+    destino = "reputacion"
+
+    def ejecutar(self):
+        usuario_actual = self.navegacion.obtener_usuario_actual()
+        if usuario_actual is None:
+            self.navegacion.navegar("inicio_sesion")
+            return
+
+        self.limpiar_pantalla()
+        self.navegacion.ventana.title("Tarjeta social")
+        VistaReputacion(
+            self.navegacion.ventana,
+            self.navegacion.navegar,
+            self.navegacion.dependencias.controlador_reputacion,
+            usuario_actual,
         )
 
 
