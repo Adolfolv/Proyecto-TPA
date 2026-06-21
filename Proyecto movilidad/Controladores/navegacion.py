@@ -3,21 +3,22 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
-from Vistas.panel_admin import VistaPanelAdmin
-from Vistas.ayuda import VistaAyuda
-from Vistas.billetera import VistaBilletera
-from Vistas.inicio_sesion import VistaInicioSesion
-from Vistas.menu import VistaMenu
-from Vistas.pantalla_inicial import VistaPantallaInicial
-from Vistas.registro import VistaRegistro
-from Vistas.reputacion import VistaReputacion
-from Vistas.suscripcion import VistaSuscripcionViaje
-from Vistas.viaje import VistaViaje
-from Vistas.perfil import VistaPerfil
+from vistas.panel_admin import VistaPanelAdmin
+from vistas.ayuda import VistaAyuda
+from vistas.billetera import VistaBilletera
+from vistas.inicio_sesion import VistaInicioSesion
+from vistas.menu import VistaMenu
+from vistas.pantalla_inicial import VistaPantallaInicial
+from vistas.registro import VistaRegistro
+from vistas.reputacion import VistaReputacion
+from vistas.suscripcion import VistaSuscripcionViaje
+from vistas.viaje import VistaViaje
+from vistas.perfil import VistaPerfil
 from abstracciones import NavegadorAbstracto, RutaNavegacion
-from Servicios.Suscripciones.planificador_suscripciones import PlanificadorSuscripciones
 
 class Navegacion:
+    INTERVALO_PROCESAMIENTO_MS = 30_000
+
     def __init__(self, dependencias=None):
         self.ventana = tk.Tk()
         self.ventana.title("Movilidad")
@@ -29,15 +30,24 @@ class Navegacion:
         # clase se concentre en cambiar pantallas y mantener el usuario actual.
         self.dependencias = dependencias or DependenciasAplicacion()
         self.navegador = NavegadorRutas(self)
-        self.planificador_suscripciones = PlanificadorSuscripciones(
-            self.ventana,
-            self.dependencias.procesador_suscripciones,
-        )
+        self._id_procesamiento = None
 
     def iniciar(self):
         self.navegar("pantalla_inicial")
-        self.planificador_suscripciones.iniciar()
+        self._iniciar_procesamiento_periodico()
         self.ventana.mainloop()
+
+    def _iniciar_procesamiento_periodico(self):
+        """Procesa estados vencidos sin interrumpir la navegación."""
+        try:
+            self.dependencias.servicio_suscripcion.procesar_pendientes()
+        except Exception:
+            pass
+        finally:
+            self._id_procesamiento = self.ventana.after(
+                self.INTERVALO_PROCESAMIENTO_MS,
+                self._iniciar_procesamiento_periodico,
+            )
 
     def navegar(self, destino):
         self.navegador.navegar(destino)

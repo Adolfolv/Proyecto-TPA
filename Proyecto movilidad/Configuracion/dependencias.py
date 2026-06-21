@@ -23,7 +23,6 @@ from Controladores.controlador_viaje import (
 )
 from Repositorios.repositorio_billetera import RepositorioBilletera
 from Repositorios.repositorio_suscripcion import RepositorioSuscripcion
-from Repositorios.unidad_trabajo_suscripcion import UnidadTrabajoSuscripcion
 from Repositorios.repositorio_usuario import RepositorioUsuario
 from Repositorios.repositorio_reputacion import RepositorioReputacion
 from Servicios.Billetera.operaciones_billetera import (
@@ -50,13 +49,32 @@ from Servicios.Usuario.registro import ServicioRegistro
 from Servicios.reputacion.servicio_reputacion import ServicioReputacion
 from Servicios.Suscripciones.calculadora_cotizacion import CalculadoraCotizacionSuscripcion
 from Servicios.Suscripciones.datos_ofertas import OFERTAS_SIMULADAS
-from Servicios.Suscripciones.fabrica_suscripciones import FabricaSuscripciones
-from Servicios.Suscripciones.procesador_suscripciones import ProcesadorSuscripciones
-from Servicios.Suscripciones.selector_ofertas import SelectorOfertasAleatorias
-from Servicios.Suscripciones.servicio_suscripcion_conductor import ServicioSuscripcionConductor
-from Servicios.Suscripciones.servicio_suscripcion_pasajero import ServicioSuscripcionPasajero
+from Servicios.Suscripciones.fabrica_suscripcion import FabricaSuscripcion
+from Servicios.Suscripciones.servicio_suscripcion import ServicioSuscripcion
+from Servicios.Suscripciones.servicio_suscripcion_conductor import (
+    ServicioAgendaSuscripcionConductor,
+    ServicioAsignacionSuscripcionConductor,
+    ServicioOfertasSuscripcionConductor,
+    ServicioViajesSuscripcionConductor,
+)
+from Servicios.Suscripciones.servicio_suscripcion_pasajero import (
+    ConsultaSuscripcionPasajero,
+    ServicioAltaSuscripcionPasajero,
+    ServicioEstadoSuscripcionPasajero,
+    ServicioViajesSuscripcionPasajero,
+)
+from Servicios.Suscripciones.servicios_compartidos import (
+    ProcesadorSuscripcionesPendientes,
+    ServicioPagosSuscripcion,
+)
+from Servicios.Suscripciones.unidad_trabajo_suscripcion import UnidadTrabajoSuscripcion
 from Servicios.Viajes.servicio_viaje import ServicioViaje
-from Validaciones.suscripcion import PoliticaHorariosSuscripcion, PoliticaSuscripcionConductor, PoliticaSuscripcionPasajero, ValidacionesSuscripcion
+from Validaciones.suscripcion import (
+    PoliticaHorariosSuscripcion,
+    PoliticaSuscripcionConductor,
+    PoliticaSuscripcionPasajero,
+    ValidacionesSuscripcion,
+)
 
 
 class DependenciasAplicacion:
@@ -151,54 +169,98 @@ class DependenciasAplicacion:
         self.servicio_viaje = ServicioViaje(
             servicio_billetera=self.servicio_billetera,
         )
-        # Policies y strategies se inyectan desde el punto de composición (DIP).
-        self.politica_horarios_suscripcion = PoliticaHorariosSuscripcion()
-        self.politica_suscripcion_pasajero = PoliticaSuscripcionPasajero(self.politica_horarios_suscripcion)
-        self.politica_suscripcion_conductor = PoliticaSuscripcionConductor(self.politica_horarios_suscripcion)
-        self.selector_ofertas_suscripcion = SelectorOfertasAleatorias()
+        # Construcción del dominio de suscripciones.
         self.calculadora_cotizacion_suscripcion = CalculadoraCotizacionSuscripcion(
             self.servicio_viaje.comun
         )
-        self.crear_unidad_trabajo_suscripcion = lambda: UnidadTrabajoSuscripcion(self.repositorio_suscripcion)
+        self.crear_unidad_trabajo_suscripcion = lambda: UnidadTrabajoSuscripcion(
+            self.repositorio_suscripcion
+        )
         self.reloj_suscripcion = datetime.now
 
-        # Specification + OCP: las reglas se componen aquí. Agregar una regla
-        # nueva no obliga a modificar los algoritmos de alta o aceptación.
-        # Factory construye el agregado; los servicios ejecutan casos de uso y
-        # la fachada mantiene estable la API consumida por los controladores.
-        self.fabrica_suscripciones = FabricaSuscripciones(
+        self.validador_suscripcion = ValidacionesSuscripcion()
+        self.politica_horarios_suscripcion = PoliticaHorariosSuscripcion()
+        self.politica_suscripcion_pasajero = PoliticaSuscripcionPasajero(
+            self.politica_horarios_suscripcion
+        )
+        self.politica_suscripcion_conductor = PoliticaSuscripcionConductor(
+            self.politica_horarios_suscripcion
+        )
+        self.procesador_suscripciones_pendientes = ProcesadorSuscripcionesPendientes(
+            self.repositorio_suscripcion,
+            self.crear_unidad_trabajo_suscripcion,
+            self.reloj_suscripcion,
+        )
+        self.fabrica_suscripcion = FabricaSuscripcion(
             self.servicio_viaje.comun,
             self.calculadora_cotizacion_suscripcion,
             self.politica_horarios_suscripcion,
             self.reloj_suscripcion,
         )
-        self.servicio_suscripcion_pasajero = ServicioSuscripcionPasajero(
+        self.servicio_pagos_suscripcion = ServicioPagosSuscripcion(self.servicio_viaje)
+        self.alta_suscripcion_pasajero = ServicioAltaSuscripcionPasajero(
             self.repositorio_suscripcion,
             self.servicio_viaje,
             self.servicio_viaje,
-            ValidacionesSuscripcion(),
+            self.validador_suscripcion,
             self.politica_horarios_suscripcion,
             self.politica_suscripcion_pasajero,
-            self.calculadora_cotizacion_suscripcion,
-            self.fabrica_suscripciones,
+            self.fabrica_suscripcion,
             self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
         )
-        self.servicio_suscripcion_conductor = ServicioSuscripcionConductor(
+        self.consulta_suscripcion_pasajero = ConsultaSuscripcionPasajero(
+            self.repositorio_suscripcion
+        )
+        self.viajes_suscripcion_pasajero = ServicioViajesSuscripcionPasajero(
+            self.repositorio_suscripcion,
+            self.politica_horarios_suscripcion,
+            self.crear_unidad_trabajo_suscripcion,
+            self.reloj_suscripcion,
+        )
+        self.estado_suscripcion_pasajero = ServicioEstadoSuscripcionPasajero(
+            self.repositorio_suscripcion,
+            self.servicio_viaje,
+            self.politica_suscripcion_pasajero,
+            self.crear_unidad_trabajo_suscripcion,
+            self.reloj_suscripcion,
+        )
+        self.ofertas_suscripcion_conductor = ServicioOfertasSuscripcionConductor(
             self.repositorio_suscripcion,
             OFERTAS_SIMULADAS,
-            self.selector_ofertas_suscripcion,
-            self.fabrica_suscripciones,
+            self.fabrica_suscripcion,
+            self.politica_suscripcion_conductor,
+        )
+        self.agenda_suscripcion_conductor = ServicioAgendaSuscripcionConductor(
+            self.repositorio_suscripcion,
+            self.politica_suscripcion_conductor,
+        )
+        self.asignacion_suscripcion_conductor = ServicioAsignacionSuscripcionConductor(
+            self.repositorio_suscripcion,
+            OFERTAS_SIMULADAS,
+            self.fabrica_suscripcion,
+            self.politica_suscripcion_conductor,
+            self.crear_unidad_trabajo_suscripcion,
+        )
+        self.viajes_suscripcion_conductor = ServicioViajesSuscripcionConductor(
+            self.repositorio_suscripcion,
             self.servicio_viaje,
             self.politica_horarios_suscripcion,
             self.politica_suscripcion_conductor,
             self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
         )
-        self.procesador_suscripciones = ProcesadorSuscripciones(
-            self.repositorio_suscripcion,
-            self.crear_unidad_trabajo_suscripcion,
-            self.reloj_suscripcion,
+        self.servicio_suscripcion = ServicioSuscripcion(
+            self.alta_suscripcion_pasajero,
+            self.consulta_suscripcion_pasajero,
+            self.viajes_suscripcion_pasajero,
+            self.estado_suscripcion_pasajero,
+            self.ofertas_suscripcion_conductor,
+            self.agenda_suscripcion_conductor,
+            self.asignacion_suscripcion_conductor,
+            self.viajes_suscripcion_conductor,
+            self.procesador_suscripciones_pendientes,
+            self.servicio_pagos_suscripcion,
         )
 
         # Controladores: adaptan lo que pide la vista hacia los servicios.
@@ -236,8 +298,8 @@ class DependenciasAplicacion:
             self.servicio_viaje,
         )
         self.controlador_suscripcion_pasajero = ControladorSuscripcionPasajero(
-            self.servicio_suscripcion_pasajero,
+            self.servicio_suscripcion,
         )
         self.controlador_suscripcion_conductor = ControladorSuscripcionConductor(
-            self.servicio_suscripcion_conductor,
+            self.servicio_suscripcion,
         )
