@@ -30,6 +30,8 @@ class ServicioPerfil:
             setattr(usuario, campo, valor)
 
         usuario_actualizado = self.repositorio_usuario.actualizar(usuario)
+        if usuario_actualizado is None:
+            raise ValueError("No se encontro el usuario para actualizar.")
         return self._datos_perfil(usuario_actualizado)
 
     def _datos_perfil(self, usuario):

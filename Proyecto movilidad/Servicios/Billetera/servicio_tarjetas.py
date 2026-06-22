@@ -9,6 +9,7 @@ from Validaciones.billetera import (
 )
 #_
 from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
+from Servicios.Billetera.servicio_billetera import obtener_o_crear_billetera
 
 class ServicioTarjeta:
 
@@ -40,8 +41,10 @@ class ServicioTarjeta:
         self.validador_tarjeta_encontrada = ValidadorTarjetaEncontrada()
 
     def _obtener_billetera(self, usuario):
-        # El repositorio tambien enlaza la billetera al usuario actual.
-        return self.repositorio_billetera.obtener(usuario)
+        return obtener_o_crear_billetera(
+            self.repositorio_billetera,
+            usuario.id_usuario,
+        )
 
     def _buscar_tarjeta(self, billetera, numero_tarjeta):
         tarjeta = self.buscador_tarjeta.buscar(billetera, numero_tarjeta)
@@ -54,6 +57,9 @@ class ServicioTarjeta:
 
     def obtener_tarjeta(self, usuario, numero_tarjeta):
         billetera = self._obtener_billetera(usuario)
+        return self._buscar_tarjeta(billetera, numero_tarjeta)
+
+    def obtener_tarjeta_de_billetera(self, billetera, numero_tarjeta):
         return self._buscar_tarjeta(billetera, numero_tarjeta)
 
     def agregar_tarjeta(self, usuario, tipo, titular, numero, vencimiento, cvv):
@@ -72,7 +78,7 @@ class ServicioTarjeta:
         tarjeta = self.fabrica_tarjeta.crear(titular, numero, vencimiento, cvv)
         billetera.tarjetas.append(tarjeta)
         # Se persiste toda la billetera porque las tarjetas viven dentro de ella.
-        self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
+        self.repositorio_billetera.actualizar(usuario.id_usuario, billetera)
 
         return True
 
@@ -81,5 +87,5 @@ class ServicioTarjeta:
         tarjeta = self._buscar_tarjeta(billetera, numero_tarjeta)
         billetera.tarjetas.remove(tarjeta)
         # Al eliminar tambien se guarda la billetera completa actualizada.
-        self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
+        self.repositorio_billetera.actualizar(usuario.id_usuario, billetera)
         return True

@@ -13,6 +13,7 @@ class ServicioRegistro:
 
         self.validaciones_usuario = ValidacionesUsuario(buscador_usuario)
         self.validaciones_conductor = ValidacionesConductor()
+        GeneradorID.sincronizar_desde_usuarios(self.repositorio_usuario.listar())
 
     def registrar_pasajero(self, datos, confirmar_contrasena=None):
         usuario = self.fabrica_usuario.crear_pasajero(datos)

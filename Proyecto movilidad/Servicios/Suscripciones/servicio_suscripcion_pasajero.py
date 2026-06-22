@@ -75,7 +75,7 @@ class ServicioAltaSuscripcionPasajero:
         self.pagos.cobrar_suscripcion(usuario, resumen.precio_total)
         try:
             with self.crear_unidad_trabajo() as unidad:
-                unidad.repositorio.agregar_sin_guardar(suscripcion, viajes)
+                unidad.repositorio.registrar_cambios(suscripcion, viajes)
                 unidad.confirmar()
         except OSError:
             self.pagos.reembolsar_suscripcion(usuario, resumen.precio_total)

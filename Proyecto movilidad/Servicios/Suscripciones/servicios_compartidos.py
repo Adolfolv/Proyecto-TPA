@@ -8,8 +8,63 @@ from Modelos.Suscripcion.modelos_suscripcion import (
     ESTADO_FINALIZADA,
     VIAJE_CANCELADO,
     VIAJE_FALLIDO,
+    VIAJE_FINALIZADO,
 )
 from Validaciones.suscripcion import ESTADOS_VIAJE_PENDIENTE, PoliticaHorariosSuscripcion
+
+
+class LimpiadorSuscripcionesFinalizadas:
+    """Descarta suscripciones cerradas cuando ya no quedan pagos pendientes."""
+
+    def limpiar(self, suscripciones, viajes_programados):
+        protegidas = {
+            suscripcion.id_suscripcion
+            for suscripcion in suscripciones
+            if suscripcion.reembolso_estado == "PROCESANDO"
+        }
+
+        viajes_por_suscripcion = {}
+        for viaje in viajes_programados:
+            viajes_por_suscripcion.setdefault(viaje.id_suscripcion, []).append(viaje)
+
+        eliminables = {
+            suscripcion.id_suscripcion
+            for suscripcion in suscripciones
+            if suscripcion.estado in (ESTADO_CANCELADA, ESTADO_FINALIZADA)
+            and suscripcion.id_suscripcion not in protegidas
+            and all(
+                self._viaje_financieramente_cerrado(viaje)
+                for viaje in viajes_por_suscripcion.get(
+                    suscripcion.id_suscripcion,
+                    (),
+                )
+            )
+        }
+
+        suscripciones_vigentes = [
+            suscripcion
+            for suscripcion in suscripciones
+            if suscripcion.id_suscripcion not in eliminables
+        ]
+        viajes_vigentes = [
+            viaje
+            for viaje in viajes_programados
+            if viaje.id_suscripcion not in eliminables
+            and not (
+                viaje.id_suscripcion not in protegidas
+                and self._viaje_financieramente_cerrado(viaje)
+            )
+        ]
+        return suscripciones_vigentes, viajes_vigentes
+
+    @staticmethod
+    def _viaje_financieramente_cerrado(viaje):
+        if viaje.estado in (VIAJE_CANCELADO, VIAJE_FALLIDO):
+            return True
+        return (
+            viaje.estado == VIAJE_FINALIZADO
+            and viaje.pago_conductor_estado == "PAGADO"
+        )
 
 
 class ProcesadorSuscripcionesPendientes:

@@ -3,6 +3,7 @@ from abstracciones import OperacionBilletera
 
 # Clases de dominio que hacen el trabajo concreto: historial, movimiento y pago.
 from Modelos.Billetera.movimiento import HistorialTransacciones, MoverSaldo, Pago
+from Servicios.Billetera.servicio_billetera import obtener_o_crear_billetera
 
 
 class OperacionMovimiento(OperacionBilletera):
@@ -24,13 +25,16 @@ class OperacionMovimiento(OperacionBilletera):
         # Primero se agrega una transaccion a la lista de la billetera.
         self.historial.crear_transaccion(billetera, self.tipo_transaccion, monto)
         # Luego se persiste la billetera completa asociada al usuario.
-        self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
+        self.repositorio_billetera.actualizar(usuario.id_usuario, billetera)
         # Se devuelve True para indicar que la operacion termino correctamente.
         return True
 
     def _obtener_billetera(self, usuario):
         # Centraliza la forma de recuperar la billetera del usuario actual.
-        return self.repositorio_billetera.obtener(usuario)
+        return obtener_o_crear_billetera(
+            self.repositorio_billetera,
+            usuario.id_usuario,
+        )
 
 
 class OperacionPago(OperacionMovimiento):
@@ -101,8 +105,8 @@ class OperacionMovimientoTarjeta(OperacionMovimiento):
         # Primero se obtiene la billetera del usuario.
         billetera = self._obtener_billetera(solicitud.usuario)
         # Luego se busca la tarjeta indicada en la solicitud.
-        tarjeta = self.servicio_tarjeta.obtener_tarjeta(
-            solicitud.usuario,
+        tarjeta = self.servicio_tarjeta.obtener_tarjeta_de_billetera(
+            billetera,
             solicitud.numero_tarjeta,
         )
         # Strategy por configuracion: origen_es_billetera cambia la direccion del flujo.

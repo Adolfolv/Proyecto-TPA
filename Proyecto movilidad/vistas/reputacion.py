@@ -3,6 +3,7 @@
 import tkinter as tk
 
 from .estilizacion import tema
+from .estilizacion.decoraciones import crear_panel_mensaje
 from .estilizacion.widgets import Moldes
 
 
@@ -68,7 +69,14 @@ class PanelReputacion:
     def crear_opiniones(self, padre):
         self.moldes.crear_label(padre, "Opiniones de pasajeros", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 12))
         self.tabla = self.moldes.crear_tabla(padre, (("autor", "Pasajero", 140), ("estrellas", "Estrellas", 100), ("comentario", "Opinion", 420)), alto=12, metodo="grid", fila=1, columna=0, sticky="nsew")
-        self.mensaje = self.moldes.crear_label(padre, "", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", margen_y=(10, 0))
+        area_mensaje = self.moldes.crear_frame(
+            padre,
+            tema.PANEL_SUAVE,
+            fila=2,
+            columna=0,
+            sticky="ew",
+        )
+        self.mostrar_mensaje = crear_panel_mensaje(area_mensaje, compacto=True)
 
     def configurar_conductores(self, conductores, conductor_actual=None):
         nombres = [f"{item.nombre} {item.apellido}" for item in conductores]
@@ -87,10 +95,6 @@ class PanelReputacion:
         filas = {f"opinion-{i}": (opinion.nombre_pasajero, "★" * opinion.estrellas, opinion.comentario) for i, opinion in enumerate(opiniones)}
         self.moldes.sincronizar_tabla(self.tabla, filas)
         self.mostrar_mensaje("" if filas else "Este conductor aun no tiene opiniones.")
-
-    def mostrar_mensaje(self, texto, exito=False):
-        self.mensaje.configure(text=texto, fg=tema.EXITO if exito else tema.TEXTO_SUAVE)
-
 
 class VistaReputacion(tk.Frame):
     def __init__(self, padre, navegar, controlador_reputacion, usuario_actual):

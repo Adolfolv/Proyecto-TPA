@@ -5,7 +5,7 @@ from tkinter import filedialog
 
 from .estilizacion import tema
 from .estilizacion.constantes_vistas import CATEGORIAS_LICENCIA, MARCAS_MODELOS
-from .estilizacion.decoraciones import crear_panel_mensaje_registro
+from .estilizacion.decoraciones import crear_panel_mensaje
 from .estilizacion.widgets import Moldes
 
 
@@ -45,7 +45,7 @@ class FormularioRegistroBase:
     def crear_contenido(self, compacto=False):
         self.limpiar()
         contenido = self.moldes.crear_frame(self.area_formulario, tema.PANEL, llenar="both", expandir=True)
-        self.mostrar_mensaje = crear_panel_mensaje_registro(contenido, compacto=compacto)
+        self.mostrar_mensaje = crear_panel_mensaje(contenido, compacto=compacto)
         return contenido
 
     def limpiar(self):
@@ -253,7 +253,7 @@ class FlujoRegistro:
             return
         self.vista.formulario_actual.mostrar_mensaje(mensaje_exito, True)
         if self.vista.al_registrar is not None:
-            self.vista.after(700, lambda: self.vista.al_registrar(resultado.usuario))
+            self.vista.after(700, lambda: self.vista.al_registrar(resultado.datos))
 
 
 class VistaRegistro(tk.Frame):

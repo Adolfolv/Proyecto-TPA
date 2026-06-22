@@ -65,13 +65,30 @@ class ServicioHistorial:
         self.reloj = reloj or datetime.now
 
     def registrar_viaje_normal(self, viaje):
-        return self.repositorio.guardar_si_no_existe(
-            self.fabrica.desde_viaje_normal(viaje)
-        )
+        registro = self.fabrica.desde_viaje_normal(viaje)
+        return self._guardar_registro(registro)
 
     def registrar_viaje_suscripcion(self, suscripcion, viaje):
-        return self.repositorio.guardar_si_no_existe(
-            self.fabrica.desde_suscripcion(suscripcion, viaje)
+        registro = self.fabrica.desde_suscripcion(suscripcion, viaje)
+        return self._guardar_registro(registro)
+
+    def _guardar_registro(self, registro):
+        existente = self.repositorio.obtener_por_viaje(registro.id_viaje)
+        if existente is None:
+            return self.repositorio.agregar(registro)
+        if not self._debe_actualizar(existente, registro):
+            return existente
+        actualizado = self.repositorio.actualizar(registro)
+        if actualizado is None:
+            raise ValueError("No se encontro el viaje en el historial.")
+        return actualizado
+
+    @staticmethod
+    def _debe_actualizar(existente, nuevo):
+        return (
+            nuevo.pago_conductor > existente.pago_conductor
+            or (not existente.id_conductor and nuevo.id_conductor)
+            or (not existente.conductor and nuevo.conductor)
         )
 
     def consultar(self, usuario):

@@ -3,7 +3,7 @@
 import tkinter as tk
 
 from .estilizacion import tema
-from .estilizacion.decoraciones import crear_panel_mensaje_registro
+from .estilizacion.decoraciones import crear_panel_mensaje
 from .estilizacion.widgets import Moldes
 
 
@@ -112,7 +112,7 @@ class VistaInicioSesion(tk.Frame):
             margen_x=14,
             margen_y=(0, 4),
         )
-        self.mostrar_mensaje = crear_panel_mensaje_registro(area_mensaje)
+        self.mostrar_mensaje = crear_panel_mensaje(area_mensaje)
 
     def actualizar_visibilidad_contrasena(self):
         if self.entrada_contrasena is not None:

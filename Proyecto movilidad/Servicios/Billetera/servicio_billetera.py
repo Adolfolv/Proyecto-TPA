@@ -1,5 +1,13 @@
-from Modelos.Billetera.datos_billetera import SolicitudOperacionBilletera
+from Modelos.Billetera.datos_billetera import Billetera, SolicitudOperacionBilletera
 from Validaciones.billetera import normalizar_monto_entero
+
+
+def obtener_o_crear_billetera(repositorio, id_usuario):
+    billetera = repositorio.obtener_por_usuario(id_usuario)
+    if billetera is not None:
+        return billetera
+
+    return repositorio.agregar(id_usuario, Billetera())
 
 
 #archivo para manejar la lógica de negocio relacionada con la billetera, 
@@ -14,7 +22,10 @@ class ServicioBilletera:
         self.operaciones = operaciones
 
     def obtener_billetera(self, usuario):
-        return self.repositorio_billetera.obtener(usuario)
+        return obtener_o_crear_billetera(
+            self.repositorio_billetera,
+            usuario.id_usuario,
+        )
 
     def ejecutar(self, nombre_operacion, usuario, monto, numero_tarjeta=None):
         # Patron Strategy/Command: cada nombre apunta a un objeto operacion distinto.
@@ -39,12 +50,7 @@ class ServicioBilletera:
             "transacciones": billetera.transacciones,
         }
 
-    def guardar(self, usuario=None, billetera=None):
-        if usuario is None:
-            # Sin usuario especifico, guarda todas las billeteras cargadas.
-            self.repositorio_billetera.guardar()
-            return
-
+    def guardar(self, usuario, billetera=None):
         # Si no llega una billetera, se usa la billetera actual del usuario.
         billetera = billetera or self.obtener_billetera(usuario)
-        self.repositorio_billetera.guardar_por_usuario(usuario.id_usuario, billetera)
+        self.repositorio_billetera.actualizar(usuario.id_usuario, billetera)

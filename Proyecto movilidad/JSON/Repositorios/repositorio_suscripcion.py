@@ -1,32 +1,27 @@
 from copy import deepcopy
 from dataclasses import asdict
-from pathlib import Path
 
+from JSON.rutas import ARCHIVO_SUSCRIPCIONES
 from Modelos.Suscripcion.modelos_suscripcion import (
-    ESTADO_CANCELADA,
-    ESTADO_FINALIZADA,
     SuscripcionViaje,
-    VIAJE_CANCELADO,
-    VIAJE_FALLIDO,
-    VIAJE_FINALIZADO,
     ViajeProgramado,
 )
-from Repositorios.repositorio_json import cargar_json, guardar_json
+from JSON.Repositorios.repositorio_json import cargar_json, guardar_json
 
 
 class RepositorioSuscripcion:
     """Persiste suscripciones y sus viajes generados en un unico documento JSON."""
 
     def __init__(self, archivo=None):
-        self.archivo = archivo or Path(__file__).resolve().parents[1] / "suscripciones.json"
+        self.archivo = archivo or ARCHIVO_SUSCRIPCIONES
         self.suscripciones = []
         self.viajes_programados = []
-        self.cargado = False
+        self._cargado = False
 
-    def cargar(self):
+    def _cargar(self):
         datos = cargar_json(self.archivo)
         if not isinstance(datos, dict):
-            datos = {}
+            raise ValueError("El archivo de suscripciones debe contener un objeto.")
 
         self.suscripciones = [
             SuscripcionViaje(
@@ -41,71 +36,13 @@ class RepositorioSuscripcion:
             ViajeProgramado(**item)
             for item in datos.get("viajes_programados", [])
         ]
-        self.cargado = True
-        return self.suscripciones, self.viajes_programados
-
-    def guardar(self):
-        self.limpiar_finalizados()
-        guardar_json(
-            self.archivo,
-            {
-                "suscripciones": [asdict(item) for item in self.suscripciones],
-                "viajes_programados": [asdict(item) for item in self.viajes_programados],
-            },
-        )
-
-    def limpiar_finalizados(self):
-        """Elimina registros terminales cuando ya no tienen pagos pendientes."""
-        suscripciones_protegidas = {
-            item.id_suscripcion
-            for item in self.suscripciones
-            if item.reembolso_estado == "PROCESANDO"
-        }
-
-        viajes_por_suscripcion = {}
-        for viaje in self.viajes_programados:
-            viajes_por_suscripcion.setdefault(viaje.id_suscripcion, []).append(viaje)
-
-        suscripciones_eliminables = {
-            item.id_suscripcion
-            for item in self.suscripciones
-            if item.estado in (ESTADO_CANCELADA, ESTADO_FINALIZADA)
-            and item.id_suscripcion not in suscripciones_protegidas
-            and all(
-                self._viaje_financieramente_cerrado(viaje)
-                for viaje in viajes_por_suscripcion.get(item.id_suscripcion, ())
-            )
-        }
-
-        self.suscripciones = [
-            item
-            for item in self.suscripciones
-            if item.id_suscripcion not in suscripciones_eliminables
-        ]
-        self.viajes_programados = [
-            viaje
-            for viaje in self.viajes_programados
-            if viaje.id_suscripcion not in suscripciones_eliminables
-            and not (
-                viaje.id_suscripcion not in suscripciones_protegidas
-                and self._viaje_financieramente_cerrado(viaje)
-            )
-        ]
-
-    @staticmethod
-    def _viaje_financieramente_cerrado(viaje):
-        if viaje.estado in (VIAJE_CANCELADO, VIAJE_FALLIDO):
-            return True
-        return (
-            viaje.estado == VIAJE_FINALIZADO
-            and viaje.pago_conductor_estado == "PAGADO"
-        )
+        self._cargado = True
 
     def _asegurar_cargado(self):
-        if not self.cargado:
-            self.cargar()
+        if not self._cargado:
+            self._cargar()
 
-    def agregar_sin_guardar(self, suscripcion, viajes_programados):
+    def registrar_cambios(self, suscripcion, viajes_programados):
         """Registra cambios en memoria; Unit of Work decide cuándo persistir."""
         self._asegurar_cargado()
         self.suscripciones.append(suscripcion)
@@ -119,6 +56,10 @@ class RepositorioSuscripcion:
 
     def restaurar_snapshot(self, snapshot):
         self.suscripciones, self.viajes_programados = deepcopy(snapshot)
+
+    def reemplazar_datos(self, suscripciones, viajes_programados):
+        self.suscripciones = list(suscripciones)
+        self.viajes_programados = list(viajes_programados)
 
     def listar_suscripciones(self, id_pasajero=None):
         self._asegurar_cargado()
@@ -161,4 +102,14 @@ class RepositorioSuscripcion:
 
     def guardar_cambios(self):
         self._asegurar_cargado()
-        self.guardar()
+        guardar_json(
+            self.archivo,
+            {
+                "suscripciones": [asdict(item) for item in self.suscripciones],
+                "viajes_programados": [
+                    asdict(item)
+                    for item in self.viajes_programados
+                ],
+            },
+        )
+        self._cargado = True

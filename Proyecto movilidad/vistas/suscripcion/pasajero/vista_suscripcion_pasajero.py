@@ -4,7 +4,7 @@ from tkinter import ttk
 
 from Modelos.Suscripcion.modelos_suscripcion import NOMBRES_DIAS, VIAJE_ASIGNADO, VIAJE_EN_CURSO, VIAJE_PROGRAMADO
 from ...estilizacion import tema
-from ...estilizacion.decoraciones import crear_logo_suscripcion_pasajero, crear_panel_mensaje_registro
+from ...estilizacion.decoraciones import crear_logo_suscripcion_pasajero, crear_panel_mensaje
 from ...estilizacion.widgets import Moldes
 from .estado_visual_suscripcion import EstadoVisualSuscripcionPasajero
 from .renderizador_suscripcion import RenderizadorSuscripcionPasajero
@@ -388,4 +388,4 @@ class VistaSuscripcionPasajero(tk.Frame):
         PanelIzquierdoSuscripcionPasajero(self, lugares).crear(cuerpo)
         PanelDerechoSuscripcionPasajero(self).crear(cuerpo)
         area_mensaje = self.moldes.crear_frame(principal, tema.PANEL, fila=2, columna=0, sticky="ew")
-        self._mostrar_mensaje = crear_panel_mensaje_registro(area_mensaje, compacto=True)
+        self._mostrar_mensaje = crear_panel_mensaje(area_mensaje, compacto=True)

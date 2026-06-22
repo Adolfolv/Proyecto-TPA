@@ -6,14 +6,15 @@ from tempfile import NamedTemporaryFile
 
 def cargar_json(archivo):
     try:
-        with open(archivo, "r", encoding="utf-8") as f:
-            return json.load(f)
+        with open(archivo, "r", encoding="utf-8") as archivo_json:
+            return json.load(archivo_json)
     except FileNotFoundError:
-        return []
+        return {}
 
 
 def guardar_json(archivo, datos):
     destino = Path(archivo)
+    destino.parent.mkdir(parents=True, exist_ok=True)
     temporal = None
     try:
         with NamedTemporaryFile(

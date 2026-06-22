@@ -6,7 +6,7 @@ class FabricaBilletera:
     # Patron Factory: reconstruye objetos de dominio desde datos del JSON.
     """Reconstruye billeteras y sus modelos anidados desde datos persistidos.."""
 
-    def crear_desde_dict(self, datos):
+    def desde_dict(self, datos):
         return Billetera(
             saldo=normalizar_saldo_entero(datos.get("saldo", 0)),
             tarjetas=[

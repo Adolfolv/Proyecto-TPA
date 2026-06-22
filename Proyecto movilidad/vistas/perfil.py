@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from .estilizacion import tema
-from .estilizacion.decoraciones import crear_panel_mensaje_registro
+from .estilizacion.decoraciones import crear_panel_mensaje
 from .estilizacion.widgets import Moldes
 
 
@@ -93,7 +93,7 @@ class PanelPerfil:
 
     def crear_mensaje(self, padre):
         area_mensaje = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=15, columna=0, sticky="ew")
-        self.mostrar_mensaje = crear_panel_mensaje_registro(area_mensaje, compacto=True)
+        self.mostrar_mensaje = crear_panel_mensaje(area_mensaje, compacto=True)
 
     def actualizar(self, datos):
         self.datos = datos

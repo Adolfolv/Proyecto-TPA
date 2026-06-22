@@ -4,8 +4,9 @@
 class UnidadTrabajoSuscripcion:
     """Guarda todos los cambios o los deshace todos."""
 
-    def __init__(self, repositorio):
+    def __init__(self, repositorio, limpiador):
         self.repositorio = repositorio
+        self.limpiador = limpiador
         self.snapshot = None
         self.debe_guardar = False
 
@@ -28,6 +29,11 @@ class UnidadTrabajoSuscripcion:
             return False
 
         try:
+            suscripciones, viajes = self.limpiador.limpiar(
+                self.repositorio.listar_suscripciones(),
+                self.repositorio.listar_viajes(),
+            )
+            self.repositorio.reemplazar_datos(suscripciones, viajes)
             self.repositorio.guardar_cambios()
         except Exception:
             self.repositorio.restaurar_snapshot(self.snapshot)

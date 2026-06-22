@@ -63,8 +63,7 @@ class ServicioAdmin:
             return False
 
         usuario.cuenta_congelada = True
-        self.repositorio_usuario.guardar_usuario(usuario)
-        return True
+        return self.repositorio_usuario.actualizar(usuario) is not None
 
     def descongelar_cuenta(self, id_usuario):
         # Descongelar usa la misma validacion que congelar para mantener
@@ -74,8 +73,7 @@ class ServicioAdmin:
             return False
 
         usuario.cuenta_congelada = False
-        self.repositorio_usuario.guardar_usuario(usuario)
-        return True
+        return self.repositorio_usuario.actualizar(usuario) is not None
 
     def eliminar_cuenta(self, id_usuario):
         # El borrado tambien pasa por el servicio para proteger cuentas admin

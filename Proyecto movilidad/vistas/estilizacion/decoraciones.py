@@ -29,8 +29,9 @@ def crear_logo_suscripcion_conductor(padre):
     return crear_logo_suscripcion_pasajero(padre)
 
 
-# --- DECORACION REGISTRO ---
-def crear_panel_mensaje_registro(padre, compacto=False):
+# --- MENSAJES DE FORMULARIOS ---
+def crear_panel_mensaje(padre, compacto=False):
+    """Crea el mensaje comun de error o exito usado por los formularios."""
     alto = 42 if compacto else 58
     fuente = ("Arial", 9, "bold") if compacto else tema.FUENTE_BOTON
     wrap = 430 if compacto else 720
@@ -56,6 +57,11 @@ def crear_panel_mensaje_registro(padre, compacto=False):
     margen_y = (6, 0) if compacto else (10, 0)
 
     def mostrar(texto, exito=False):
+        if not texto:
+            if contenedor.winfo_manager():
+                contenedor.pack_forget()
+            return
+
         fondo = tema.EXITO_FONDO if exito else tema.ERROR_FONDO
         borde = tema.EXITO if exito else tema.ERROR
 
@@ -66,8 +72,6 @@ def crear_panel_mensaje_registro(padre, compacto=False):
             contenedor.pack(fill="x", padx=10, pady=margen_y)
 
     return mostrar
-
-
 def crear_panel_confirmacion_admin(padre, fila=0):
     contenedor = tk.Frame(
         padre,

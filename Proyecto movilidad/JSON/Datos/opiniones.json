@@ -1,0 +1,12 @@
+{
+    "opiniones": [
+        {
+            "id_opinion": "OPI0001",
+            "id_conductor": "USR0005",
+            "id_pasajero": "USR0001",
+            "nombre_pasajero": "hardy aguila",
+            "estrellas": 5,
+            "comentario": "hola"
+        }
+    ]
+}

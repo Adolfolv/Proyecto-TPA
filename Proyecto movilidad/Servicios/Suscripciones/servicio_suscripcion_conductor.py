@@ -169,7 +169,7 @@ class ServicioAsignacionSuscripcionConductor:
                 viaje.vehiculo = vehiculo
                 viaje.estado = VIAJE_ASIGNADO
             if viajes_simulados is not None:
-                unidad.repositorio.agregar_sin_guardar(suscripcion, nuevos)
+                unidad.repositorio.registrar_cambios(suscripcion, nuevos)
             unidad.confirmar()
         return suscripcion
 

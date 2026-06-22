@@ -22,11 +22,11 @@ from Controladores.controlador_viaje import (
     ControladorViajeConductor,
     ControladorViajePasajero,
 )
-from Repositorios.repositorio_billetera import RepositorioBilletera
-from Repositorios.repositorio_historial import RepositorioHistorial
-from Repositorios.repositorio_suscripcion import RepositorioSuscripcion
-from Repositorios.repositorio_usuario import RepositorioUsuario
-from Repositorios.repositorio_reputacion import RepositorioReputacion
+from JSON.Repositorios.repositorio_billetera import RepositorioBilletera
+from JSON.Repositorios.repositorio_historial import RepositorioHistorial
+from JSON.Repositorios.repositorio_suscripcion import RepositorioSuscripcion
+from JSON.Repositorios.repositorio_usuario import RepositorioUsuario
+from JSON.Repositorios.repositorio_reputacion import RepositorioReputacion
 from Servicios.Billetera.operaciones_billetera import (
     OperacionPago,
     OperacionMovimientoTarjeta,
@@ -67,6 +67,7 @@ from Servicios.Suscripciones.servicio_suscripcion_pasajero import (
     ServicioViajesSuscripcionPasajero,
 )
 from Servicios.Suscripciones.servicios_compartidos import (
+    LimpiadorSuscripcionesFinalizadas,
     ProcesadorSuscripcionesPendientes,
     ServicioPagosSuscripcion,
 )
@@ -89,7 +90,7 @@ class DependenciasAplicacion:
         self.fabrica_usuario = FabricaUsuario()
         self.fabrica_billetera = FabricaBilletera()
         self.fabrica_tarjeta = FabricaTarjeta()
-        self.repositorio_usuario = RepositorioUsuario(fabrica=self.fabrica_usuario)
+        self.repositorio_usuario = RepositorioUsuario()
         self.repositorio_billetera = RepositorioBilletera(
             fabrica=self.fabrica_billetera
         )
@@ -183,8 +184,10 @@ class DependenciasAplicacion:
         self.calculadora_cotizacion_suscripcion = CalculadoraCotizacionSuscripcion(
             self.servicio_viaje.comun
         )
+        self.limpiador_suscripciones = LimpiadorSuscripcionesFinalizadas()
         self.crear_unidad_trabajo_suscripcion = lambda: UnidadTrabajoSuscripcion(
-            self.repositorio_suscripcion
+            self.repositorio_suscripcion,
+            self.limpiador_suscripciones,
         )
         self.reloj_suscripcion = datetime.now
 

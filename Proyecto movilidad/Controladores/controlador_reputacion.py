@@ -1,18 +1,8 @@
-from dataclasses import dataclass, field
-
-
-@dataclass
-class ResultadoReputacion:
-    datos: dict = field(default_factory=dict)
-    error: str = ""
-
-    @property
-    def exitoso(self):
-        return self.error == ""
+from Modelos.resultado import ResultadoOperacion
 
 
 class ControladorReputacion:
-    """Adapta las acciones de la vista sin capturar excepciones."""
+    """Adapta las acciones y transforma errores para la vista."""
 
     def __init__(self, servicio_reputacion):
         self.servicio_reputacion = servicio_reputacion
@@ -21,14 +11,20 @@ class ControladorReputacion:
         return self.servicio_reputacion.listar_conductores()
 
     def cargar_reputacion(self, conductor):
-        datos, error = self.servicio_reputacion.obtener_reputacion(conductor)
-        return ResultadoReputacion(datos, error)
+        try:
+            datos = self.servicio_reputacion.obtener_reputacion(conductor)
+            return ResultadoOperacion(datos=datos)
+        except ValueError as error:
+            return ResultadoOperacion(error=str(error))
 
     def agregar_opinion(self, conductor, usuario, estrellas, comentario):
-        datos, error = self.servicio_reputacion.agregar_opinion(
-            conductor,
-            usuario,
-            estrellas,
-            comentario,
-        )
-        return ResultadoReputacion(datos, error)
+        try:
+            datos = self.servicio_reputacion.agregar_opinion(
+                conductor,
+                usuario,
+                estrellas,
+                comentario,
+            )
+            return ResultadoOperacion(datos=datos)
+        except ValueError as error:
+            return ResultadoOperacion(error=str(error))

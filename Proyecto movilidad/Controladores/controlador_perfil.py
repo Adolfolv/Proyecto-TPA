@@ -1,14 +1,4 @@
-from dataclasses import dataclass, field
-
-
-@dataclass
-class ResultadoPerfil:
-    datos: dict = field(default_factory=dict)
-    error: str = ""
-
-    @property
-    def exitoso(self):
-        return self.error == ""
+from Modelos.resultado import ResultadoOperacion
 
 
 class ControladorPerfil:
@@ -19,13 +9,13 @@ class ControladorPerfil:
 
     def obtener_perfil(self, usuario):
         try:
-            return ResultadoPerfil(datos=self.servicio_perfil.obtener_perfil(usuario))
+            return ResultadoOperacion(datos=self.servicio_perfil.obtener_perfil(usuario))
         except ValueError as error:
-            return ResultadoPerfil(error=str(error))
+            return ResultadoOperacion(error=str(error))
 
     def actualizar_perfil(self, usuario, nombre, apellido, correo, telefono):
         try:
-            return ResultadoPerfil(
+            return ResultadoOperacion(
                 datos=self.servicio_perfil.actualizar_perfil(
                     usuario,
                     {
@@ -37,4 +27,4 @@ class ControladorPerfil:
                 )
             )
         except ValueError as error:
-            return ResultadoPerfil(error=str(error))
+            return ResultadoOperacion(error=str(error))

@@ -1,14 +1,4 @@
-from dataclasses import dataclass
-
-
-@dataclass
-class ResultadoRegistro:
-    usuario: object = None
-    error: str = ""
-
-    @property
-    def exitoso(self):
-        return self.error == ""
+from Modelos.resultado import ResultadoOperacion
 
 
 class ControladorRegistro:
@@ -90,6 +80,6 @@ class ControladorRegistro:
                 datos,
                 confirmar_contrasena,
             )
-            return ResultadoRegistro(usuario=usuario_registrado)
+            return ResultadoOperacion(datos=usuario_registrado)
         except ValueError as error:
-            return ResultadoRegistro(error=str(error))
+            return ResultadoOperacion(error=str(error))
