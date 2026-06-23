@@ -1,14 +1,4 @@
-from dataclasses import dataclass
-
-
-@dataclass
-class ResultadoAyuda:
-    texto: str = ""
-    error: str = ""
-
-    @property
-    def exitoso(self):
-        return self.error == ""
+from Modelos.resultado import ResultadoOperacion
 
 
 class ControladorAyuda:
@@ -25,6 +15,7 @@ class ControladorAyuda:
 
     def consultar_asistente(self, pregunta, usuario=None):
         try:
-            return ResultadoAyuda(texto=self.servicio_ayuda.consultar_asistente(pregunta, usuario))
+            respuesta = self.servicio_ayuda.consultar_asistente(pregunta, usuario)
+            return ResultadoOperacion(datos=respuesta)
         except Exception as error:
-            return ResultadoAyuda(error=str(error))
+            return ResultadoOperacion(error=str(error))

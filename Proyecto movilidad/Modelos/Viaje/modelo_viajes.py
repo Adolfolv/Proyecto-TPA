@@ -118,6 +118,7 @@ class Viaje:
     distancia: float
     duracion: float
     tipo: str = "normal"
+    cantidad_pasajeros: int = 1
     volumen: float | None = None
     peso: float | None = None
     tipo_material: str | None = None

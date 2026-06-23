@@ -50,6 +50,7 @@ class ServicioViaje:
         volumen=None,
         peso=None,
         tipo_material=None,
+        cantidad_pasajeros=1,
         cobrar=True,
     ):
         return self.pasajero.confirmar_viaje(
@@ -61,6 +62,7 @@ class ServicioViaje:
             volumen,
             peso,
             tipo_material,
+            cantidad_pasajeros,
             cobrar=cobrar,
         )
 

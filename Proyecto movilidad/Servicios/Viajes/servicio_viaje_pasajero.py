@@ -79,6 +79,7 @@ class ServicioViajePasajero:
         volumen=None,
         peso=None,
         tipo_material=None,
+        cantidad_pasajeros=1,
         cobrar=True,
     ):
         rutas_viaje = self.formar_rutas_viaje(
@@ -87,14 +88,15 @@ class ServicioViajePasajero:
             ubicacion_final,
         )
         viaje = self.comun.fabrica.crear_viaje_pasajero(
-            vehiculo,
-            usuario,
-            tipo_viaje,
-            volumen,
-            peso,
-            tipo_material,
-            ubicacion_inicial,
-            ubicacion_final,
+            vehiculo=vehiculo,
+            usuario=usuario,
+            tipo_viaje=tipo_viaje,
+            volumen=volumen,
+            peso=peso,
+            tipo_material=tipo_material,
+            origen=ubicacion_inicial,
+            destino=ubicacion_final,
+            cantidad_pasajeros=cantidad_pasajeros,
         )
 
         if cobrar:

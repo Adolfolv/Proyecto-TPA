@@ -251,6 +251,7 @@ class AccionesBotonesPasajero:
         vista.ubicacion_inicial_busqueda = ubicacion_inicial
         vista.ubicacion_final_busqueda = ubicacion_final
         vista.tipo_viaje_busqueda = tipo_viaje
+        vista.cantidad_usuarios_busqueda = int(cantidad_usuarios)
         vista.volumen_busqueda = volumen
         vista.peso_busqueda = peso
         vista.tipo_material_busqueda = tipo_material
@@ -288,6 +289,7 @@ class AccionesBotonesPasajero:
             vista.volumen_busqueda,
             vista.peso_busqueda,
             vista.tipo_material_busqueda,
+            vista.cantidad_usuarios_busqueda,
         )
         {
             True: self.iniciar_viaje_confirmado,

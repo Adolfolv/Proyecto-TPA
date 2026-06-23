@@ -163,7 +163,7 @@ class PanelAsistenteAyuda:
         self.vista.after(0, lambda: self.mostrar_resultado(resultado))
 
     def mostrar_resultado(self, resultado):
-        self.agregar_mensaje("Asistente" if resultado.exitoso else "Sistema", resultado.texto if resultado.exitoso else resultado.error)
+        self.agregar_mensaje("Asistente" if resultado.exitoso else "Sistema", resultado.datos if resultado.exitoso else resultado.error)
         self.cambiar_estado_envio(True)
 
     def cambiar_estado_envio(self, habilitado):

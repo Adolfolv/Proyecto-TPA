@@ -27,6 +27,7 @@ class FabricaViaje:
         tipo_material=None,
         origen="",
         destino="",
+        cantidad_pasajeros=1,
     ):
         return Viaje(
             pasajero=self.nombre_usuario(usuario),
@@ -36,6 +37,7 @@ class FabricaViaje:
             distancia=float(vehiculo.distancia),
             duracion=float(vehiculo.tiempo),
             tipo=tipo_viaje,
+            cantidad_pasajeros=int(cantidad_pasajeros),
             volumen=self.convertir_decimal_opcional(volumen),
             peso=self.convertir_decimal_opcional(peso),
             tipo_material=tipo_material,

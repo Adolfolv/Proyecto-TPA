@@ -44,6 +44,7 @@ class ControladorViajePasajero(ControladorViajeBase):
         volumen=None,
         peso=None,
         tipo_material=None,
+        cantidad_pasajeros=1,
     ):
         return self.servicio_viaje.confirmar_viaje_pasajero(
             usuario,
@@ -54,6 +55,7 @@ class ControladorViajePasajero(ControladorViajeBase):
             volumen,
             peso,
             tipo_material,
+            cantidad_pasajeros,
         )
 
 

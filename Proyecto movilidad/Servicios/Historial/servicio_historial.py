@@ -31,6 +31,7 @@ class FabricaHistorial:
             pago_conductor=float(viaje.precio),
             distancia=float(viaje.distancia),
             duracion=float(viaje.duracion),
+            cantidad_pasajeros=int(viaje.cantidad_pasajeros),
             volumen=viaje.volumen,
             peso=viaje.peso,
             tipo_material=viaje.tipo_material,
