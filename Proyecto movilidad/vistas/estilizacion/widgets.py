@@ -277,6 +277,41 @@ class Moldes:
             self.ubicar(tabla, metodo, margen_x=margen_x, margen_y=margen_y, **ubicacion)
         return tabla
 
+    def crear_scroll_tematico(self, padre, contenido):
+        scroll = tk.Scrollbar(
+            padre,
+            orient="vertical",
+            command=contenido.yview,
+            bg=tema.SECUNDARIO,
+            activebackground=tema.PRIMARIO,
+            troughcolor=tema.PANEL,
+            highlightbackground=tema.BORDE,
+            highlightcolor=tema.BORDE,
+            relief="flat",
+            bd=0,
+            width=12,
+            elementborderwidth=0,
+            cursor="hand2",
+        )
+        contenido.configure(yscrollcommand=scroll.set)
+        return scroll
+
+    @staticmethod
+    def habilitar_rueda(contenido, *componentes):
+        def desplazar(evento):
+            if getattr(evento, "num", None) in (4, 5):
+                unidades = -1 if evento.num == 4 else 1
+            else:
+                delta = getattr(evento, "delta", 0)
+                unidades = -int(delta / 120) if abs(delta) >= 120 else (-1 if delta > 0 else 1)
+            contenido.yview_scroll(unidades, "units")
+            return "break"
+
+        for componente in (contenido,) + componentes:
+            componente.bind("<MouseWheel>", desplazar)
+            componente.bind("<Button-4>", desplazar)
+            componente.bind("<Button-5>", desplazar)
+
     @staticmethod
     def sincronizar_tabla(tabla, filas):
         """Actualiza un Treeview conservando las filas existentes."""

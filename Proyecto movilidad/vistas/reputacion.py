@@ -13,7 +13,9 @@ class CabeceraReputacion:
 
     def crear(self):
         cabecera = self.panel.moldes.crear_frame(self.panel.principal, tema.PANEL, fila=0, columna=0, sticky="ew", margen_y=(0, 16), columnas_peso=((0, 1),))
-        self.panel.moldes.crear_label(cabecera, "Tarjeta social", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
+        marca = self.panel.moldes.crear_frame(cabecera, tema.PANEL, fila=0, columna=0, sticky="w")
+        self.panel.moldes.crear_label(marca, "TS", ("Arial", 42, "bold"), tema.PRIMARIO, tema.PANEL, lado="left", margen_x=(0, 12))
+        self.panel.moldes.crear_label(marca, "Tarjeta social", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, lado="left")
         acciones = self.panel.moldes.crear_frame(cabecera, tema.PANEL, fila=0, columna=1, sticky="e")
         self.panel.moldes.crear_boton(acciones, tema.texto_boton(), comando=self.panel.acciones["tema"], lado="left", margen_x=(0, 8))
         self.panel.moldes.crear_boton(acciones, "Volver", comando=self.panel.acciones["volver"], lado="left")

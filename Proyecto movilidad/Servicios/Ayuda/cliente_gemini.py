@@ -10,7 +10,7 @@ class ClienteGemini:
     """Cliente REST minimo para consultar Gemini sin acoplar la vista a la API."""
 
     URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
-    API_KEY_REPOSITORIO = "AQ.Ab8RN6JDw7_nYsqWXNjecXLxMXVwHZ0dQBmJfAHEC5ki2d8_Pw"
+    API_KEY_REPOSITORIO = ""
 
     def __init__(self, api_key=None, modelo=None, timeout=25, reintentos=2):
         self.api_key = self._resolver_api_key(api_key)
@@ -82,6 +82,10 @@ class ClienteGemini:
             mensaje_api = json.loads(detalle).get("error", {}).get("message", "")
         except json.JSONDecodeError:
             mensaje_api = ""
+        if codigo == 401:
+            return "La clave de Gemini no es valida. Configura GEMINI_API_KEY o AYUDA_IA_API_KEY con una clave activa."
+        if codigo == 403:
+            return "La clave de Gemini no tiene permisos para este modelo o proyecto. Revisa la API key y la facturacion en Google AI Studio."
         if codigo == 429:
             reintento = f" Intenta nuevamente en {max(int(espera), 1)} segundos." if espera else " Espera unos minutos e intenta nuevamente."
             return "Gemini alcanzo el limite de solicitudes de este proyecto." + reintento + " Si continua, revisa la cuota o la facturacion en Google AI Studio."

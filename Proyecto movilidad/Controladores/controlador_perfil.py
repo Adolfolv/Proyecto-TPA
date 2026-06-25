@@ -13,7 +13,7 @@ class ControladorPerfil:
         except ValueError as error:
             return ResultadoOperacion(error=str(error))
 
-    def actualizar_perfil(self, usuario, nombre, apellido, correo, telefono):
+    def actualizar_perfil(self, usuario, nombre, apellido, correo, telefono, imagen=""):
         try:
             return ResultadoOperacion(
                 datos=self.servicio_perfil.actualizar_perfil(
@@ -23,6 +23,7 @@ class ControladorPerfil:
                         "apellido": apellido,
                         "correo": correo,
                         "telefono": telefono,
+                        "imagen": imagen,
                     },
                 )
             )

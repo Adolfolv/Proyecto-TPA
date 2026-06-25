@@ -43,6 +43,28 @@
             "volumen": null,
             "peso": null,
             "tipo_material": null
+        },
+        {
+            "id_viaje": "515f0257a9ff434998af5a4ac6b8351a",
+            "id_pasajero": "USR0001",
+            "id_conductor": "",
+            "pasajero": "",
+            "conductor": "Cristobal Arias",
+            "origen": "Plaza de Armas Osorno",
+            "destino": "Terminal de Buses Osorno",
+            "fecha_inicio": "2026-06-25T02:11:17",
+            "fecha_finalizacion": "2026-06-25T02:11:23",
+            "modalidad": "SUSCRIPCION",
+            "tipo_viaje": "NORMAL",
+            "vehiculo": "Nissan Versa (EFGH-90)",
+            "precio": 2900.0,
+            "pago_conductor": 2320.0,
+            "distancia": 2.26,
+            "duracion": 6.0,
+            "cantidad_pasajeros": 1,
+            "volumen": null,
+            "peso": null,
+            "tipo_material": null
         }
     ]
 }

@@ -48,7 +48,7 @@ class ConstructorHistorial:
         vista.label_monto = self.moldes.crear_label(resumen, "Monto: $0", tema.FUENTE_TEXTO, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(5, 0))
         self.moldes.crear_label(panel, "Detalle seleccionado", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=6, columna=0, sticky="w", margen_y=(18, 8))
         vista.label_detalle = self.moldes.crear_label(panel, "Selecciona un viaje de la tabla.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, 250, "left", metodo="grid", fila=7, columna=0, sticky="nw")
-        vista.logo_suscripcion = crear_logo_suscripcion_pasajero(panel, (260, 124))
+        vista.logo_suscripcion = crear_logo_suscripcion_pasajero(panel, (520, 248))
         vista.logo_suscripcion.grid(row=9, column=0, sticky="s", pady=(16, 2))
 
     def _crear_contenido(self, padre):

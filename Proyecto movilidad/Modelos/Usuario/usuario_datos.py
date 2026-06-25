@@ -26,6 +26,7 @@ class Usuario:
     edad: int
     telefono: str
     contrasena: str
+    imagen: str = field(default="", kw_only=True)
     # Estado administrado desde el panel admin. Es kw_only para no romper
     # los constructores de Pasajero/Conductor, que agregan campos propios.
     cuenta_congelada: bool = field(default=False, kw_only=True)

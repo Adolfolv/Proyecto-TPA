@@ -7,15 +7,9 @@ class ControladorAyuda:
     def __init__(self, servicio_ayuda):
         self.servicio_ayuda = servicio_ayuda
 
-    def listar_secciones(self, usuario=None):
-        return self.servicio_ayuda.listar_secciones(usuario)
-
-    def listar_sugerencias(self, usuario=None):
-        return self.servicio_ayuda.listar_sugerencias(usuario)
-
-    def consultar_asistente(self, pregunta, usuario=None):
+    def pedir_solicitud(self, solicitud=None, usuario=None):
         try:
-            respuesta = self.servicio_ayuda.consultar_asistente(pregunta, usuario)
+            respuesta = self.servicio_ayuda.pedir_solicitud(solicitud, usuario)
             return ResultadoOperacion(datos=respuesta)
         except Exception as error:
             return ResultadoOperacion(error=str(error))

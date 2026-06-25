@@ -29,6 +29,11 @@ class ServicioPerfil:
         for campo, valor in datos_actualizados.items():
             setattr(usuario, campo, valor)
 
+        imagen = str(datos.get("imagen", self._imagen_perfil(usuario)) or "").strip()
+        if getattr(usuario, "tipo_usuario", "") == "conductor":
+            usuario.selfie = imagen
+        usuario.imagen = imagen
+
         usuario_actualizado = self.repositorio_usuario.actualizar(usuario)
         if usuario_actualizado is None:
             raise ValueError("No se encontro el usuario para actualizar.")
@@ -41,4 +46,9 @@ class ServicioPerfil:
             "correo": getattr(usuario, "correo", ""),
             "telefono": getattr(usuario, "telefono", ""),
             "tipo_usuario": getattr(usuario, "tipo_usuario", "usuario"),
+            "imagen": self._imagen_perfil(usuario),
         }
+
+    @staticmethod
+    def _imagen_perfil(usuario):
+        return getattr(usuario, "selfie", "") or getattr(usuario, "imagen", "")

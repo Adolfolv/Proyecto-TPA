@@ -8,6 +8,7 @@
             "edad": "18",
             "telefono": "+56 9 30356421",
             "contrasena": "123456",
+            "imagen": "C:/Users/xhard/Downloads/hombre12.png",
             "cuenta_congelada": false,
             "direccion": "sdafsadf",
             "tipo_usuario": "pasajero"
@@ -20,6 +21,7 @@
             "edad": "18",
             "telefono": "+56 930364232",
             "contrasena": "123456",
+            "imagen": "",
             "cuenta_congelada": false,
             "tipo_licencia": "Categoria A2",
             "licencia_conducir": "22224358-0",
@@ -42,6 +44,7 @@
             "edad": "21",
             "telefono": "+56 9 11111111",
             "contrasena": "123456",
+            "imagen": "",
             "cuenta_congelada": false,
             "direccion": "Direccion prueba 1",
             "tipo_usuario": "pasajero"
@@ -54,6 +57,7 @@
             "edad": "24",
             "telefono": "+56 9 22222222",
             "contrasena": "123456",
+            "imagen": "",
             "cuenta_congelada": false,
             "direccion": "Direccion prueba 2",
             "tipo_usuario": "pasajero"
@@ -66,6 +70,7 @@
             "edad": "32",
             "telefono": "+56 9 33333333",
             "contrasena": "123456",
+            "imagen": "",
             "cuenta_congelada": false,
             "tipo_licencia": "Categoria A2",
             "licencia_conducir": "11111111-1",
@@ -88,6 +93,7 @@
             "edad": "29",
             "telefono": "+56 9 44444444",
             "contrasena": "123456",
+            "imagen": "",
             "cuenta_congelada": false,
             "tipo_licencia": "Categoria B",
             "licencia_conducir": "22222222-2",
@@ -110,6 +116,7 @@
             "edad": "30",
             "telefono": "+56 9 00000000",
             "contrasena": "admin123",
+            "imagen": "",
             "cuenta_congelada": false,
             "tipo_usuario": "administrador"
         }
