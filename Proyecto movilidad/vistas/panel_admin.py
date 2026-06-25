@@ -219,8 +219,7 @@ class AccionesBotonesAdmin:
         PanelInicioAdmin(self.vista).crear()
 
     def presionar_boton_congelar_cuenta(self, usuario, tarjeta):
-        nombre = f"{usuario.nombre} {usuario.apellido}"
-        self.vista.mostrar_confirmacion(f"Confirmar congelar la cuenta de {nombre}?", lambda: self.confirmar_congelar_cuenta(usuario, tarjeta))
+        self.pedir_confirmacion(usuario, "congelar", lambda: self.confirmar_congelar_cuenta(usuario, tarjeta))
 
     def confirmar_congelar_cuenta(self, usuario, tarjeta):
         self.vista.controlador_admin.congelar_cuenta(usuario.id_usuario)
@@ -228,8 +227,7 @@ class AccionesBotonesAdmin:
         TarjetaUsuarioAdmin(self.vista).crear_acciones(tarjeta, usuario)
 
     def presionar_boton_descongelar_cuenta(self, usuario, tarjeta):
-        nombre = f"{usuario.nombre} {usuario.apellido}"
-        self.vista.mostrar_confirmacion(f"Confirmar descongelar la cuenta de {nombre}?", lambda: self.confirmar_descongelar_cuenta(usuario, tarjeta))
+        self.pedir_confirmacion(usuario, "descongelar", lambda: self.confirmar_descongelar_cuenta(usuario, tarjeta))
 
     def confirmar_descongelar_cuenta(self, usuario, tarjeta):
         self.vista.controlador_admin.descongelar_cuenta(usuario.id_usuario)
@@ -237,12 +235,18 @@ class AccionesBotonesAdmin:
         TarjetaUsuarioAdmin(self.vista).crear_acciones(tarjeta, usuario)
 
     def presionar_boton_eliminar_cuenta(self, usuario, tarjeta):
-        nombre = f"{usuario.nombre} {usuario.apellido}"
-        self.vista.mostrar_confirmacion(f"Confirmar borrar la cuenta de {nombre}?", lambda: self.confirmar_eliminar_cuenta(usuario, tarjeta))
+        self.pedir_confirmacion(usuario, "borrar", lambda: self.confirmar_eliminar_cuenta(usuario, tarjeta))
 
     def confirmar_eliminar_cuenta(self, usuario, tarjeta):
         self.vista.controlador_admin.eliminar_cuenta(usuario.id_usuario)
         tarjeta.destroy()
+
+    def pedir_confirmacion(self, usuario, accion, al_confirmar):
+        nombre = f"{usuario.nombre} {usuario.apellido}"
+        self.vista.mostrar_confirmacion(
+            f"Confirmar {accion} la cuenta de {nombre}?",
+            al_confirmar,
+        )
 
     def refrescar_listado(self):
         if self.vista.tipo_actual is None or self.vista.titulo_actual is None:

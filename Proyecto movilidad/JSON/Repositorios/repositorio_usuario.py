@@ -9,13 +9,20 @@ from Modelos.Usuario.usuario_datos import (
     Usuario,
 )
 from JSON.Repositorios.repositorio_json import cargar_json, guardar_json
+from Servicios.Usuario.seguridad_contrasena import SeguridadContrasena
 
 
 class RepositorioUsuario:
 
-    def __init__(self, archivo=None, convertidor=None):
+    def __init__(self, archivo=None, convertidor=None, seguridad=None):
         self.archivo = archivo or ARCHIVO_USUARIOS
         self.convertidor = convertidor or ConvertidorUsuario()
+        self.seguridad = seguridad or SeguridadContrasena()
+
+    def _proteger_contrasena(self, usuario):
+        if usuario and not self.seguridad.es_hash(usuario.contrasena):
+            usuario.contrasena = self.seguridad.generar_hash(usuario.contrasena)
+        return usuario
 
     def _escribir_usuarios(self, usuarios):
         guardar_json(
@@ -33,12 +40,24 @@ class RepositorioUsuario:
         if not isinstance(documento, dict):
             raise ValueError("El archivo de usuarios debe contener un objeto.")
 
-        return [
+        usuarios = [
             self.convertidor.desde_dict(datos)
             for datos in documento.get("usuarios", [])
         ]
+        if self._proteger_contrasenas_pendientes(usuarios):
+            self._escribir_usuarios(usuarios)
+        return usuarios
+
+    def _proteger_contrasenas_pendientes(self, usuarios):
+        protegida_alguna = False
+        for usuario in usuarios:
+            if usuario and not self.seguridad.es_hash(usuario.contrasena):
+                self._proteger_contrasena(usuario)
+                protegida_alguna = True
+        return protegida_alguna
 
     def agregar(self, usuario):
+        usuario = self._proteger_contrasena(usuario)
         usuarios = self.listar()
         usuarios.append(usuario)
         self._escribir_usuarios(usuarios)
@@ -48,6 +67,7 @@ class RepositorioUsuario:
         return self._leer_usuarios()
 
     def actualizar(self, usuario_actualizado):
+        usuario_actualizado = self._proteger_contrasena(usuario_actualizado)
         usuarios = self.listar()
         for indice, usuario in enumerate(usuarios):
             if str(usuario.id_usuario) == str(usuario_actualizado.id_usuario):

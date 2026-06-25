@@ -51,7 +51,11 @@ class ValidadorEdad(Validador):
 
 class ValidadorTelefono(Validador):
     def validar(self, valor):
-        telefono = re.sub(r"\D", "", str(valor or ""))
+        texto = str(valor or "").strip()
+        if not re.fullmatch(r"\+?[0-9 ]+", texto):
+            raise ValueError("Telefono invalido. Usa +56 9 seguido de 8 digitos.")
+
+        telefono = re.sub(r"\D", "", texto)
 
         if telefono.startswith("569"):
             if len(telefono) != 11:

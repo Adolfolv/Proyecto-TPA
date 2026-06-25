@@ -30,8 +30,6 @@ class ServicioPerfil:
             setattr(usuario, campo, valor)
 
         imagen = str(datos.get("imagen", self._imagen_perfil(usuario)) or "").strip()
-        if getattr(usuario, "tipo_usuario", "") == "conductor":
-            usuario.selfie = imagen
         usuario.imagen = imagen
 
         usuario_actualizado = self.repositorio_usuario.actualizar(usuario)
@@ -51,4 +49,4 @@ class ServicioPerfil:
 
     @staticmethod
     def _imagen_perfil(usuario):
-        return getattr(usuario, "selfie", "") or getattr(usuario, "imagen", "")
+        return getattr(usuario, "imagen", "") or getattr(usuario, "selfie", "")

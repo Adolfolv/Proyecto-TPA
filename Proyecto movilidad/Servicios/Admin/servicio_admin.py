@@ -58,21 +58,19 @@ class ServicioAdmin:
     def congelar_cuenta(self, id_usuario):
         # La regla de negocio queda aqui: el panel solo puede congelar cuentas
         # operativas, no cuentas administradoras.
-        usuario = self._buscar_usuario_gestionable(id_usuario)
-        if usuario is None:
-            return False
-
-        usuario.cuenta_congelada = True
-        return self.repositorio_usuario.actualizar(usuario) is not None
+        return self._cambiar_estado_cuenta(id_usuario, True)
 
     def descongelar_cuenta(self, id_usuario):
         # Descongelar usa la misma validacion que congelar para mantener
         # protegidas las cuentas administradoras.
+        return self._cambiar_estado_cuenta(id_usuario, False)
+
+    def _cambiar_estado_cuenta(self, id_usuario, cuenta_congelada):
         usuario = self._buscar_usuario_gestionable(id_usuario)
         if usuario is None:
             return False
 
-        usuario.cuenta_congelada = False
+        usuario.cuenta_congelada = cuenta_congelada
         return self.repositorio_usuario.actualizar(usuario) is not None
 
     def eliminar_cuenta(self, id_usuario):
