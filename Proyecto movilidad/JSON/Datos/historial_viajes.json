@@ -21,6 +21,28 @@
             "volumen": null,
             "peso": null,
             "tipo_material": null
+        },
+        {
+            "id_viaje": "133e08f670714dc49a4d160be6986ad0",
+            "id_pasajero": "USR0001",
+            "id_conductor": "",
+            "pasajero": "hardy aguila",
+            "conductor": "Felipe Munoz",
+            "origen": "Plaza de Armas Osorno",
+            "destino": "Terminal de Buses Osorno",
+            "fecha_inicio": "2026-06-25T01:50:49",
+            "fecha_finalizacion": "2026-06-25T01:50:59",
+            "modalidad": "VIAJE NORMAL",
+            "tipo_viaje": "NORMAL",
+            "vehiculo": "Kia Rio",
+            "precio": 4500.0,
+            "pago_conductor": 4500.0,
+            "distancia": 0.75,
+            "duracion": 3.0,
+            "cantidad_pasajeros": 1,
+            "volumen": null,
+            "peso": null,
+            "tipo_material": null
         }
     ]
 }

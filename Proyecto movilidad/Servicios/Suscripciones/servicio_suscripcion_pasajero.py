@@ -23,7 +23,7 @@ class ServicioAltaSuscripcionPasajero:
     """Previsualiza y crea suscripciones nuevas."""
 
     def __init__(self, repositorio, viajes, pagos, validador, horarios,
-                 politica_pasajero, fabrica, crear_unidad_trabajo, reloj):
+                 politica_pasajero, fabrica, reloj):
         self.repositorio = repositorio
         self.viajes = viajes
         self.pagos = pagos
@@ -31,7 +31,6 @@ class ServicioAltaSuscripcionPasajero:
         self.horarios = horarios
         self.politica_pasajero = politica_pasajero
         self.fabrica = fabrica
-        self.crear_unidad_trabajo = crear_unidad_trabajo
         self.reloj = reloj
 
     def previsualizar(self, usuario, origen, destino, fecha_inicio, fecha_fin,
@@ -74,9 +73,8 @@ class ServicioAltaSuscripcionPasajero:
         suscripcion, viajes = self.fabrica.crear_desde_resumen(usuario, resumen, conductor)
         self.pagos.cobrar_suscripcion(usuario, resumen.precio_total)
         try:
-            with self.crear_unidad_trabajo() as unidad:
-                unidad.repositorio.registrar_cambios(suscripcion, viajes)
-                unidad.confirmar()
+            self.repositorio.registrar_cambios(suscripcion, viajes)
+            self.repositorio.guardar_cambios()
         except OSError:
             self.pagos.reembolsar_suscripcion(usuario, resumen.precio_total)
             raise
@@ -109,11 +107,10 @@ class ConsultaSuscripcionPasajero:
 class ServicioViajesSuscripcionPasajero:
     """Gestiona el ciclo de vida de los viajes del pasajero."""
 
-    def __init__(self, repositorio, horarios, crear_unidad_trabajo, reloj,
+    def __init__(self, repositorio, horarios, reloj,
                  servicio_historial=None):
         self.repositorio = repositorio
         self.horarios = horarios
-        self.crear_unidad_trabajo = crear_unidad_trabajo
         self.reloj = reloj
         self.servicio_historial = servicio_historial
 
@@ -133,11 +130,10 @@ class ServicioViajesSuscripcionPasajero:
         suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
         if suscripcion is None or suscripcion.estado != ESTADO_ACTIVA:
             raise ValueError("La suscripcion debe estar activa para iniciar el viaje.")
-        with self.crear_unidad_trabajo() as unidad:
-            viaje.pasajero_confirmo_en = ahora.isoformat(timespec="seconds")
-            viaje.inicio_confirmado_en = ahora.isoformat(timespec="seconds")
-            viaje.estado = VIAJE_EN_CURSO
-            unidad.confirmar()
+        viaje.pasajero_confirmo_en = ahora.isoformat(timespec="seconds")
+        viaje.inicio_confirmado_en = ahora.isoformat(timespec="seconds")
+        viaje.estado = VIAJE_EN_CURSO
+        self.repositorio.guardar_cambios()
         return viaje
 
     def completar_viaje_pasajero(self, usuario, id_viaje):
@@ -152,13 +148,12 @@ class ServicioViajesSuscripcionPasajero:
                 suscripcion,
                 viaje,
             )
-        with self.crear_unidad_trabajo() as unidad:
-            viaje.estado = VIAJE_FINALIZADO
-            if suscripcion is not None:
-                suscripcion.monto_consumido = round(
-                    suscripcion.monto_consumido + viaje.precio, 2
-                )
-            unidad.confirmar()
+        viaje.estado = VIAJE_FINALIZADO
+        if suscripcion is not None:
+            suscripcion.monto_consumido = round(
+                suscripcion.monto_consumido + viaje.precio, 2
+            )
+        self.repositorio.guardar_cambios()
         return viaje
 
     def cancelar_viaje(self, usuario, id_viaje):
@@ -173,10 +168,9 @@ class ServicioViajesSuscripcionPasajero:
             raise ValueError("No se encontro el viaje programado.")
         if self.horarios.proximo(cancelables) is not viaje:
             raise ValueError("Solo se puede cancelar el proximo viaje programado.")
-        with self.crear_unidad_trabajo() as unidad:
-            viaje.estado = VIAJE_CANCELADO
-            viaje.error = "Cancelado por el pasajero. El saldo se liquida al cancelar la suscripcion."
-            unidad.confirmar()
+        viaje.estado = VIAJE_CANCELADO
+        viaje.error = "Cancelado por el pasajero. El saldo se liquida al cancelar la suscripcion."
+        self.repositorio.guardar_cambios()
         return viaje
 
 
@@ -185,12 +179,10 @@ class ServicioEstadoSuscripcionPasajero:
 
     CARGO_CANCELACION = 0.05
 
-    def __init__(self, repositorio, pagos, politica_pasajero,
-                 crear_unidad_trabajo, reloj):
+    def __init__(self, repositorio, pagos, politica_pasajero, reloj):
         self.repositorio = repositorio
         self.pagos = pagos
         self.politica_pasajero = politica_pasajero
-        self.crear_unidad_trabajo = crear_unidad_trabajo
         self.reloj = reloj
 
     def cambiar_estado(self, usuario, id_suscripcion, nuevo_estado):
@@ -207,9 +199,8 @@ class ServicioEstadoSuscripcionPasajero:
         if nuevo_estado not in transiciones.get(suscripcion.estado, set()):
             raise ValueError("Ese cambio de estado no esta permitido.")
         if nuevo_estado != ESTADO_CANCELADA:
-            with self.crear_unidad_trabajo() as unidad:
-                suscripcion.estado = nuevo_estado
-                unidad.confirmar()
+            suscripcion.estado = nuevo_estado
+            self.repositorio.guardar_cambios()
             return suscripcion
         return self._cancelar_suscripcion(usuario, suscripcion)
 
@@ -229,36 +220,32 @@ class ServicioEstadoSuscripcionPasajero:
         reembolso = round(max(0, saldo - cargo), 2)
 
         if reembolso and not suscripcion.monto_reembolsado:
-            with self.crear_unidad_trabajo() as unidad:
-                self._marcar_cancelada(suscripcion, viajes, monto_consumido)
-                suscripcion.cargo_cancelacion = cargo
-                suscripcion.reembolso_pendiente = reembolso
-                suscripcion.reembolso_estado = "PROCESANDO"
-                unidad.confirmar()
+            self._marcar_cancelada(suscripcion, viajes, monto_consumido)
+            suscripcion.cargo_cancelacion = cargo
+            suscripcion.reembolso_pendiente = reembolso
+            suscripcion.reembolso_estado = "PROCESANDO"
+            self.repositorio.guardar_cambios()
             try:
                 self.pagos.reembolsar_suscripcion(usuario, reembolso)
             except (ValueError, OSError):
-                with self.crear_unidad_trabajo() as unidad:
-                    suscripcion.estado = estado_anterior
-                    suscripcion.reembolso_estado = "PENDIENTE"
-                    suscripcion.reembolso_pendiente = 0.0
-                    for viaje in viajes:
-                        viaje.estado, viaje.error, viaje.reembolsado = estados_viajes[
-                            viaje.id_viaje_programado
-                        ]
-                    unidad.confirmar()
-                raise
-            with self.crear_unidad_trabajo() as unidad:
-                suscripcion.monto_reembolsado = reembolso
+                suscripcion.estado = estado_anterior
+                suscripcion.reembolso_estado = "PENDIENTE"
                 suscripcion.reembolso_pendiente = 0.0
-                suscripcion.reembolso_estado = "PAGADO"
-                unidad.confirmar()
+                for viaje in viajes:
+                    viaje.estado, viaje.error, viaje.reembolsado = estados_viajes[
+                        viaje.id_viaje_programado
+                    ]
+                self.repositorio.guardar_cambios()
+                raise
+            suscripcion.monto_reembolsado = reembolso
+            suscripcion.reembolso_pendiente = 0.0
+            suscripcion.reembolso_estado = "PAGADO"
+            self.repositorio.guardar_cambios()
         else:
-            with self.crear_unidad_trabajo() as unidad:
-                self._marcar_cancelada(suscripcion, viajes, monto_consumido)
-                if not reembolso:
-                    suscripcion.reembolso_estado = "SIN_SALDO"
-                unidad.confirmar()
+            self._marcar_cancelada(suscripcion, viajes, monto_consumido)
+            if not reembolso:
+                suscripcion.reembolso_estado = "SIN_SALDO"
+            self.repositorio.guardar_cambios()
         return suscripcion
 
     @staticmethod

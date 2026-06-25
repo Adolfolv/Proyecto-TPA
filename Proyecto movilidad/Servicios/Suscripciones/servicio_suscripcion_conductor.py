@@ -121,13 +121,11 @@ class ServicioAgendaSuscripcionConductor:
 class ServicioAsignacionSuscripcionConductor:
     """Acepta o cancela asignaciones completas de suscripción."""
 
-    def __init__(self, repositorio, catalogo, fabrica, politica_conductor,
-                 crear_unidad_trabajo):
+    def __init__(self, repositorio, catalogo, fabrica, politica_conductor):
         self.repositorio = repositorio
         self.catalogo = catalogo
         self.fabrica = fabrica
         self.politica_conductor = politica_conductor
-        self.crear_unidad_trabajo = crear_unidad_trabajo
 
     def agregar_suscripcion_conductor(self, conductor, id_suscripcion):
         suscripcion = self.repositorio.obtener_suscripcion(id_suscripcion)
@@ -159,18 +157,17 @@ class ServicioAsignacionSuscripcionConductor:
             f"{conductor.auto.marca} {conductor.auto.modelo} "
             f"({conductor.auto.patente})"
         )
-        with self.crear_unidad_trabajo() as unidad:
-            suscripcion.id_conductor = str(conductor.id_usuario)
-            suscripcion.conductor = nombre
-            suscripcion.vehiculo = vehiculo
-            for viaje in nuevos:
-                viaje.id_conductor = str(conductor.id_usuario)
-                viaje.conductor = nombre
-                viaje.vehiculo = vehiculo
-                viaje.estado = VIAJE_ASIGNADO
-            if viajes_simulados is not None:
-                unidad.repositorio.registrar_cambios(suscripcion, nuevos)
-            unidad.confirmar()
+        suscripcion.id_conductor = str(conductor.id_usuario)
+        suscripcion.conductor = nombre
+        suscripcion.vehiculo = vehiculo
+        for viaje in nuevos:
+            viaje.id_conductor = str(conductor.id_usuario)
+            viaje.conductor = nombre
+            viaje.vehiculo = vehiculo
+            viaje.estado = VIAJE_ASIGNADO
+        if viajes_simulados is not None:
+            self.repositorio.registrar_cambios(suscripcion, nuevos)
+        self.repositorio.guardar_cambios()
         return suscripcion
 
     def cancelar_suscripcion_conductor(self, conductor, id_suscripcion):
@@ -181,13 +178,12 @@ class ServicioAsignacionSuscripcionConductor:
         viajes = self.repositorio.listar_viajes(id_suscripcion=id_suscripcion)
         if any(viaje.estado == VIAJE_EN_CURSO for viaje in viajes):
             raise ValueError("No puedes cancelar una suscripcion con un viaje en curso.")
-        with self.crear_unidad_trabajo() as unidad:
-            suscripcion.estado = ESTADO_CANCELADA
-            for viaje in viajes:
-                if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO):
-                    viaje.estado = VIAJE_CANCELADO
-                    viaje.error = "Suscripcion cancelada por el conductor."
-            unidad.confirmar()
+        suscripcion.estado = ESTADO_CANCELADA
+        for viaje in viajes:
+            if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO):
+                viaje.estado = VIAJE_CANCELADO
+                viaje.error = "Suscripcion cancelada por el conductor."
+        self.repositorio.guardar_cambios()
         return suscripcion
 
 
@@ -197,12 +193,11 @@ class ServicioViajesSuscripcionConductor:
     COMISION_PLATAFORMA = 0.20
 
     def __init__(self, repositorio, pagos, horarios, politica_conductor,
-                 crear_unidad_trabajo, reloj, servicio_historial=None):
+                 reloj, servicio_historial=None):
         self.repositorio = repositorio
         self.pagos = pagos
         self.horarios = horarios
         self.politica_conductor = politica_conductor
-        self.crear_unidad_trabajo = crear_unidad_trabajo
         self.reloj = reloj
         self.servicio_historial = servicio_historial
 
@@ -217,10 +212,9 @@ class ServicioViajesSuscripcionConductor:
         ahora = self.reloj()
         if ahora < datetime.fromisoformat(viaje.fecha_hora):
             raise ValueError("Aun no llega la hora de abordar al pasajero.")
-        with self.crear_unidad_trabajo() as unidad:
-            viaje.estado = VIAJE_EN_CURSO
-            viaje.inicio_confirmado_en = ahora.isoformat(timespec="seconds")
-            unidad.confirmar()
+        viaje.estado = VIAJE_EN_CURSO
+        viaje.inicio_confirmado_en = ahora.isoformat(timespec="seconds")
+        self.repositorio.guardar_cambios()
         return viaje
 
     def finalizar_viaje_conductor(self, conductor, id_viaje):
@@ -243,37 +237,34 @@ class ServicioViajesSuscripcionConductor:
         if viaje.pago_conductor_estado == "PROCESANDO":
             raise ValueError("La liquidacion esta en revision; no se volvera a pagar automaticamente.")
 
-        with self.crear_unidad_trabajo() as unidad:
-            viaje.id_conductor = str(conductor.id_usuario)
-            viaje.conductor = f"{conductor.nombre} {conductor.apellido}"
-            viaje.vehiculo = (
-                f"{conductor.auto.marca} {conductor.auto.modelo} "
-                f"({conductor.auto.patente})"
-            )
-            viaje.pago_conductor = viaje.pago_conductor or round(
-                viaje.precio * (1 - self.COMISION_PLATAFORMA)
-            )
-            viaje.pago_conductor_estado = "PROCESANDO"
-            unidad.confirmar()
+        viaje.id_conductor = str(conductor.id_usuario)
+        viaje.conductor = f"{conductor.nombre} {conductor.apellido}"
+        viaje.vehiculo = (
+            f"{conductor.auto.marca} {conductor.auto.modelo} "
+            f"({conductor.auto.patente})"
+        )
+        viaje.pago_conductor = viaje.pago_conductor or round(
+            viaje.precio * (1 - self.COMISION_PLATAFORMA)
+        )
+        viaje.pago_conductor_estado = "PROCESANDO"
+        self.repositorio.guardar_cambios()
         try:
             self.pagos.abonar_conductor_suscripcion(conductor, viaje.pago_conductor)
         except (ValueError, OSError):
-            with self.crear_unidad_trabajo() as unidad:
-                viaje.pago_conductor_estado = "PENDIENTE"
-                unidad.confirmar()
+            viaje.pago_conductor_estado = "PENDIENTE"
+            self.repositorio.guardar_cambios()
             raise
         if self.servicio_historial is not None:
             self.servicio_historial.registrar_viaje_suscripcion(
                 suscripcion,
                 viaje,
             )
-        with self.crear_unidad_trabajo() as unidad:
-            viaje.pago_conductor_estado = "PAGADO"
-            viaje.estado = VIAJE_FINALIZADO
-            suscripcion.monto_consumido = round(
-                suscripcion.monto_consumido + viaje.precio, 2
-            )
-            unidad.confirmar()
+        viaje.pago_conductor_estado = "PAGADO"
+        viaje.estado = VIAJE_FINALIZADO
+        suscripcion.monto_consumido = round(
+            suscripcion.monto_consumido + viaje.precio, 2
+        )
+        self.repositorio.guardar_cambios()
         return viaje
 
     def cancelar_viaje_conductor(self, conductor, id_viaje):
@@ -290,16 +281,15 @@ class ServicioViajesSuscripcionConductor:
             raise ValueError("No se puede cancelar un viaje cuya liquidacion ya comenzo.")
         if viaje.id_conductor and str(viaje.id_conductor) != str(conductor.id_usuario):
             raise ValueError("El viaje fue gestionado por otro conductor.")
-        with self.crear_unidad_trabajo() as unidad:
-            viaje.id_conductor = str(conductor.id_usuario)
-            viaje.conductor = f"{conductor.nombre} {conductor.apellido}"
-            viaje.vehiculo = (
-                f"{conductor.auto.marca} {conductor.auto.modelo} "
-                f"({conductor.auto.patente})"
-            )
-            viaje.estado = VIAJE_CANCELADO
-            viaje.error = "Cancelado por el conductor. Sin liquidacion."
-            unidad.confirmar()
+        viaje.id_conductor = str(conductor.id_usuario)
+        viaje.conductor = f"{conductor.nombre} {conductor.apellido}"
+        viaje.vehiculo = (
+            f"{conductor.auto.marca} {conductor.auto.modelo} "
+            f"({conductor.auto.patente})"
+        )
+        viaje.estado = VIAJE_CANCELADO
+        viaje.error = "Cancelado por el conductor. Sin liquidacion."
+        self.repositorio.guardar_cambios()
         return viaje
 
     def _obtener_viaje(self, id_viaje):

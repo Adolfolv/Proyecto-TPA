@@ -67,11 +67,9 @@ from Servicios.Suscripciones.servicio_suscripcion_pasajero import (
     ServicioViajesSuscripcionPasajero,
 )
 from Servicios.Suscripciones.servicios_compartidos import (
-    LimpiadorSuscripcionesFinalizadas,
     ProcesadorSuscripcionesPendientes,
     ServicioPagosSuscripcion,
 )
-from Servicios.Suscripciones.unidad_trabajo_suscripcion import UnidadTrabajoSuscripcion
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 from Validaciones.suscripcion import (
     PoliticaHorariosSuscripcion,
@@ -184,11 +182,6 @@ class DependenciasAplicacion:
         self.calculadora_cotizacion_suscripcion = CalculadoraCotizacionSuscripcion(
             self.servicio_viaje.comun
         )
-        self.limpiador_suscripciones = LimpiadorSuscripcionesFinalizadas()
-        self.crear_unidad_trabajo_suscripcion = lambda: UnidadTrabajoSuscripcion(
-            self.repositorio_suscripcion,
-            self.limpiador_suscripciones,
-        )
         self.reloj_suscripcion = datetime.now
 
         self.validador_suscripcion = ValidacionesSuscripcion()
@@ -201,7 +194,6 @@ class DependenciasAplicacion:
         )
         self.procesador_suscripciones_pendientes = ProcesadorSuscripcionesPendientes(
             self.repositorio_suscripcion,
-            self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
         )
         self.fabrica_suscripcion = FabricaSuscripcion(
@@ -219,7 +211,6 @@ class DependenciasAplicacion:
             self.politica_horarios_suscripcion,
             self.politica_suscripcion_pasajero,
             self.fabrica_suscripcion,
-            self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
         )
         self.consulta_suscripcion_pasajero = ConsultaSuscripcionPasajero(
@@ -228,7 +219,6 @@ class DependenciasAplicacion:
         self.viajes_suscripcion_pasajero = ServicioViajesSuscripcionPasajero(
             self.repositorio_suscripcion,
             self.politica_horarios_suscripcion,
-            self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
             self.servicio_historial,
         )
@@ -236,7 +226,6 @@ class DependenciasAplicacion:
             self.repositorio_suscripcion,
             self.servicio_viaje,
             self.politica_suscripcion_pasajero,
-            self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
         )
         self.ofertas_suscripcion_conductor = ServicioOfertasSuscripcionConductor(
@@ -254,14 +243,12 @@ class DependenciasAplicacion:
             OFERTAS_SIMULADAS,
             self.fabrica_suscripcion,
             self.politica_suscripcion_conductor,
-            self.crear_unidad_trabajo_suscripcion,
         )
         self.viajes_suscripcion_conductor = ServicioViajesSuscripcionConductor(
             self.repositorio_suscripcion,
             self.servicio_viaje,
             self.politica_horarios_suscripcion,
             self.politica_suscripcion_conductor,
-            self.crear_unidad_trabajo_suscripcion,
             self.reloj_suscripcion,
             self.servicio_historial,
         )

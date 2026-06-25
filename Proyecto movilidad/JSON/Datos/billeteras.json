@@ -1,7 +1,7 @@
 {
     "billeteras": [
         {
-            "saldo": 1142585,
+            "saldo": 1074285,
             "tarjetas": [
                 {
                     "titular": "adolfo",
@@ -502,6 +502,18 @@
                     "tipo": "Pago",
                     "monto": 66700,
                     "fecha": "22-06-2026 17:49"
+                },
+                {
+                    "id_transaccion": "TRX0075",
+                    "tipo": "Pago",
+                    "monto": 4500,
+                    "fecha": "25-06-2026 01:50"
+                },
+                {
+                    "id_transaccion": "TRX0076",
+                    "tipo": "Pago",
+                    "monto": 63800,
+                    "fecha": "25-06-2026 01:51"
                 }
             ],
             "id_usuario": "USR0001"

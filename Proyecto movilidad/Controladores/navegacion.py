@@ -3,18 +3,18 @@
 import tkinter as tk
 
 from Configuracion.dependencias import DependenciasAplicacion
-from Vistas.panel_admin import VistaPanelAdmin
-from Vistas.ayuda import VistaAyuda
-from Vistas.billetera import VistaBilletera
-from Vistas.inicio_sesion import VistaInicioSesion
-from Vistas.historial import VistaHistorial
-from Vistas.menu import VistaMenu
-from Vistas.pantalla_inicial import VistaPantallaInicial
-from Vistas.registro import VistaRegistro
-from Vistas.reputacion import VistaReputacion
-from Vistas.suscripcion import VistaSuscripcionViaje
-from Vistas.viaje import VistaViaje
-from Vistas.perfil import VistaPerfil
+from vistas.panel_admin import VistaPanelAdmin
+from vistas.ayuda import VistaAyuda
+from vistas.billetera import VistaBilletera
+from vistas.inicio_sesion import VistaInicioSesion
+from vistas.historial import VistaHistorial
+from vistas.menu import VistaMenu
+from vistas.pantalla_inicial import VistaPantallaInicial
+from vistas.registro import VistaRegistro
+from vistas.reputacion import VistaReputacion
+from vistas.suscripcion import VistaSuscripcionViaje
+from vistas.viaje import VistaViaje
+from vistas.perfil import VistaPerfil
 from abstracciones import NavegadorAbstracto, RutaNavegacion
 
 class Navegacion:
