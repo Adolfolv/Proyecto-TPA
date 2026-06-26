@@ -7,7 +7,7 @@ conductor. Esto aplica SRP sin convertir cada comprobación en un archivo.
 
 from datetime import datetime, timedelta
 
-from Modelos.Suscripcion.modelos_suscripcion import ESTADO_ACTIVA, VIAJE_ASIGNADO, VIAJE_EN_CURSO, VIAJE_PROGRAMADO
+from Modelos.Suscripcion.modelos_suscripcion import VIAJE_ASIGNADO, VIAJE_EN_CURSO, VIAJE_PROGRAMADO
 from Servicios.Viajes.datos_viaje import LUGARES_OSORNO
 
 
@@ -128,35 +128,3 @@ class PoliticaSuscripcionPasajero:
             if timedelta(0) <= diferencia < self.BLOQUEO_INMINENTE:
                 raise ValueError("No se pueden crear ni cancelar suscripciones a menos de 10 minutos del proximo viaje.")
 
-
-class PoliticaSuscripcionConductor:
-    """Specification condensada para identidad, capacidad y agenda."""
-
-    SEPARACION_AGENDA = timedelta(hours=1)
-
-    def __init__(self, horarios):
-        self.horarios = horarios
-
-    @staticmethod
-    def validar_conductor(conductor):
-        if getattr(conductor, "tipo_usuario", "") != "conductor":
-            raise ValueError("Esta operacion es exclusiva para conductores.")
-
-    def validar_aceptacion(self, conductor, suscripcion, fechas_nuevas, viajes_existentes):
-        self.validar_conductor(conductor)
-        if suscripcion is None or suscripcion.estado != ESTADO_ACTIVA:
-            raise ValueError("La suscripcion ya no esta disponible.")
-        if suscripcion.id_conductor and str(suscripcion.id_conductor) != str(conductor.id_usuario):
-            raise ValueError("La suscripcion ya fue agregada por otro conductor.")
-        self.validar_capacidad(conductor, suscripcion.cantidad_pasajeros)
-        self.horarios.validar_separacion(fechas_nuevas, viajes_existentes, self.SEPARACION_AGENDA, "No puedes agregarla: uno de sus viajes esta a una hora o menos de otro viaje de tu agenda.")
-
-    @staticmethod
-    def validar_capacidad(conductor, cantidad_pasajeros):
-        if int(conductor.auto.cantidad_asientos) < cantidad_pasajeros:
-            raise ValueError("El vehiculo no tiene asientos suficientes.")
-
-    def validar_pertenencia(self, conductor, suscripcion):
-        self.validar_conductor(conductor)
-        if suscripcion is None or str(suscripcion.id_conductor) != str(conductor.id_usuario):
-            raise ValueError("La suscripcion no pertenece a tu agenda.")

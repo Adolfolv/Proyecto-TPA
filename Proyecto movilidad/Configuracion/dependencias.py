@@ -66,7 +66,7 @@ from Servicios.Suscripciones.servicio_suscripcion_conductor import (
 from Servicios.Suscripciones.servicio_suscripcion_pasajero import (
     ConsultaSuscripcionPasajero,
     ServicioAltaSuscripcionPasajero,
-    ServicioEstadoSuscripcionPasajero,
+    ServicioCancelacionSuscripcionPasajero,
     ServicioViajesSuscripcionPasajero,
 )
 from Servicios.Suscripciones.servicios_compartidos import (
@@ -76,7 +76,6 @@ from Servicios.Suscripciones.servicios_compartidos import (
 from Servicios.Viajes.servicio_viaje import ServicioViaje
 from Validaciones.suscripcion import (
     PoliticaHorariosSuscripcion,
-    PoliticaSuscripcionConductor,
     PoliticaSuscripcionPasajero,
     ValidacionesSuscripcion,
 )
@@ -194,9 +193,6 @@ class DependenciasAplicacion:
         self.politica_suscripcion_pasajero = PoliticaSuscripcionPasajero(
             self.politica_horarios_suscripcion
         )
-        self.politica_suscripcion_conductor = PoliticaSuscripcionConductor(
-            self.politica_horarios_suscripcion
-        )
         self.procesador_suscripciones_pendientes = ProcesadorSuscripcionesPendientes(
             self.repositorio_suscripcion,
             self.reloj_suscripcion,
@@ -227,7 +223,7 @@ class DependenciasAplicacion:
             self.reloj_suscripcion,
             self.registrador_historial,
         )
-        self.estado_suscripcion_pasajero = ServicioEstadoSuscripcionPasajero(
+        self.cancelacion_suscripcion_pasajero = ServicioCancelacionSuscripcionPasajero(
             self.repositorio_suscripcion,
             self.servicio_viaje,
             self.politica_suscripcion_pasajero,
@@ -237,23 +233,19 @@ class DependenciasAplicacion:
             self.repositorio_suscripcion,
             OFERTAS_SIMULADAS,
             self.fabrica_suscripcion,
-            self.politica_suscripcion_conductor,
         )
         self.agenda_suscripcion_conductor = ServicioAgendaSuscripcionConductor(
             self.repositorio_suscripcion,
-            self.politica_suscripcion_conductor,
         )
         self.asignacion_suscripcion_conductor = ServicioAsignacionSuscripcionConductor(
             self.repositorio_suscripcion,
             OFERTAS_SIMULADAS,
             self.fabrica_suscripcion,
-            self.politica_suscripcion_conductor,
         )
         self.viajes_suscripcion_conductor = ServicioViajesSuscripcionConductor(
             self.repositorio_suscripcion,
             self.servicio_viaje,
             self.politica_horarios_suscripcion,
-            self.politica_suscripcion_conductor,
             self.reloj_suscripcion,
             self.registrador_historial,
         )
@@ -261,7 +253,7 @@ class DependenciasAplicacion:
             self.alta_suscripcion_pasajero,
             self.consulta_suscripcion_pasajero,
             self.viajes_suscripcion_pasajero,
-            self.estado_suscripcion_pasajero,
+            self.cancelacion_suscripcion_pasajero,
             self.ofertas_suscripcion_conductor,
             self.agenda_suscripcion_conductor,
             self.asignacion_suscripcion_conductor,

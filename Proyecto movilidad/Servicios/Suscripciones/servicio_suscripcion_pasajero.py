@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from Modelos.Suscripcion.modelos_suscripcion import (
     ESTADO_ACTIVA,
     ESTADO_CANCELADA,
-    ESTADO_PAUSADA,
     VIAJE_ASIGNADO,
     VIAJE_CANCELADO,
     VIAJE_EN_CURSO,
@@ -174,8 +173,8 @@ class ServicioViajesSuscripcionPasajero:
         return viaje
 
 
-class ServicioEstadoSuscripcionPasajero:
-    """Cambia el estado de una suscripción y coordina su reembolso."""
+class ServicioCancelacionSuscripcionPasajero:
+    """Cancela una suscripcion del pasajero y coordina su reembolso."""
 
     CARGO_CANCELACION = 0.05
 
@@ -185,23 +184,14 @@ class ServicioEstadoSuscripcionPasajero:
         self.politica_pasajero = politica_pasajero
         self.reloj = reloj
 
-    def cambiar_estado(self, usuario, id_suscripcion, nuevo_estado):
+    def cancelar_suscripcion(self, usuario, id_suscripcion):
         suscripcion = self._obtener_propia(usuario, id_suscripcion)
-        if nuevo_estado == ESTADO_CANCELADA:
-            self.politica_pasajero.validar_sin_viaje_inminente(
-                self.repositorio.listar_viajes(id_pasajero=usuario.id_usuario),
-                self.reloj(),
-            )
-        transiciones = {
-            ESTADO_ACTIVA: {ESTADO_PAUSADA, ESTADO_CANCELADA},
-            ESTADO_PAUSADA: {ESTADO_ACTIVA, ESTADO_CANCELADA},
-        }
-        if nuevo_estado not in transiciones.get(suscripcion.estado, set()):
-            raise ValueError("Ese cambio de estado no esta permitido.")
-        if nuevo_estado != ESTADO_CANCELADA:
-            suscripcion.estado = nuevo_estado
-            self.repositorio.guardar_cambios()
-            return suscripcion
+        if suscripcion.estado != ESTADO_ACTIVA:
+            raise ValueError("La suscripcion ya no se puede cancelar.")
+        self.politica_pasajero.validar_sin_viaje_inminente(
+            self.repositorio.listar_viajes(id_pasajero=usuario.id_usuario),
+            self.reloj(),
+        )
         return self._cancelar_suscripcion(usuario, suscripcion)
 
     def _cancelar_suscripcion(self, usuario, suscripcion):

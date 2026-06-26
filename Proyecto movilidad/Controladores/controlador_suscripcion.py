@@ -32,7 +32,7 @@ class ControladorSuscripcionPasajero(ControladorSuscripcionBase):
         return self.ejecutar(lambda: (tuple(self.servicio.listar_suscripciones(pasajero)), tuple(self.servicio.listar_viajes(pasajero))))
 
     def cancelar_suscripcion(self, pasajero, id_suscripcion):
-        return self.ejecutar(self.servicio.cambiar_estado, pasajero, id_suscripcion, "CANCELADA")
+        return self.ejecutar(self.servicio.cancelar_suscripcion_pasajero, pasajero, id_suscripcion)
 
     def cancelar_viaje(self, pasajero, id_viaje):
         return self.ejecutar(self.servicio.cancelar_viaje, pasajero, id_viaje)

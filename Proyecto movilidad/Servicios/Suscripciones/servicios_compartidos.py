@@ -36,10 +36,7 @@ class ProcesadorSuscripcionesPendientes:
                 viaje.estado = VIAJE_CANCELADO
                 viaje.error = "La suscripcion ya no esta disponible."
                 cambios = True
-            elif (
-                suscripcion.estado != "PAUSADA"
-                and ahora - horario > PoliticaHorariosSuscripcion.MARGEN_ATRASO
-            ):
+            elif ahora - horario > PoliticaHorariosSuscripcion.MARGEN_ATRASO:
                 viaje.estado = VIAJE_FALLIDO
                 viaje.error = "El horario vencio mientras la aplicacion estaba cerrada."
                 cambios = True

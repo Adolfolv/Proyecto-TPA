@@ -8,12 +8,12 @@ class ServicioSuscripcion:
     """Fachada pública del módulo de suscripciones."""
 
     def __init__(self, alta_pasajero, consultas_pasajero, viajes_pasajero,
-                 estado_pasajero, ofertas_conductor, agenda_conductor,
+                 cancelacion_pasajero, ofertas_conductor, agenda_conductor,
                  asignacion_conductor, viajes_conductor, procesador, pagos):
         self.alta_pasajero = alta_pasajero
         self.consultas_pasajero = consultas_pasajero
         self.viajes_pasajero = viajes_pasajero
-        self.estado_pasajero = estado_pasajero
+        self.cancelacion_pasajero = cancelacion_pasajero
         self.ofertas_conductor = ofertas_conductor
         self.agenda_conductor = agenda_conductor
         self.asignacion_conductor = asignacion_conductor
@@ -21,7 +21,10 @@ class ServicioSuscripcion:
         self.procesador = procesador
         self.pagos = pagos
 
+
     # --- Casos de uso del pasajero ---
+
+
     def previsualizar(self, *args):
         return self.alta_pasajero.previsualizar(*args)
 
@@ -49,8 +52,8 @@ class ServicioSuscripcion:
     def cancelar_viaje(self, *args):
         return self.viajes_pasajero.cancelar_viaje(*args)
 
-    def cambiar_estado(self, *args):
-        return self.estado_pasajero.cambiar_estado(*args)
+    def cancelar_suscripcion_pasajero(self, *args):
+        return self.cancelacion_pasajero.cancelar_suscripcion(*args)
 
     # --- Casos de uso del conductor ---
     def listar_disponibles_conductor(self, *args):
@@ -83,7 +86,12 @@ class ServicioSuscripcion:
     def cancelar_viaje_conductor(self, *args):
         return self.viajes_conductor.cancelar_viaje_conductor(*args)
 
+
+
     # --- Operaciones de pagos ---
+
+
+
     def cobrar_suscripcion(self, *args):
         return self.pagos.cobrar_suscripcion(*args)
 

@@ -1,6 +1,5 @@
 """Casos de uso de suscripciones para conductor, separados por responsabilidad."""
 
-from datetime import datetime
 from random import Random
 
 from Modelos.Suscripcion.modelos_suscripcion import (
@@ -13,7 +12,6 @@ from Modelos.Suscripcion.modelos_suscripcion import (
     VIAJE_PROGRAMADO,
 )
 from Validaciones.suscripcion import (
-    ESTADOS_VIAJE_ACTIVO,
     ESTADOS_VIAJE_PENDIENTE,
 )
 
@@ -24,15 +22,13 @@ class ServicioOfertasSuscripcionConductor:
     MINIMO_OFERTAS_SELECCION = 3
     MAXIMO_OFERTAS_SELECCION = 5
 
-    def __init__(self, repositorio, catalogo, fabrica, politica_conductor):
+    def __init__(self, repositorio, catalogo, fabrica):
         self.repositorio = repositorio
         self.catalogo = catalogo
         self.fabrica = fabrica
-        self.politica_conductor = politica_conductor
         self._randomizador = Random()
 
     def buscar_ofertas_conductor(self, conductor):
-        self.politica_conductor.validar_conductor(conductor)
         existentes = {
             suscripcion.id_suscripcion
             for suscripcion in self.repositorio.listar_suscripciones()
@@ -59,7 +55,6 @@ class ServicioOfertasSuscripcionConductor:
         ]
 
     def listar_disponibles_conductor(self, conductor):
-        self.politica_conductor.validar_conductor(conductor)
         disponibles = []
         for suscripcion in self.repositorio.listar_suscripciones():
             viajes = self.repositorio.listar_viajes(
@@ -78,12 +73,10 @@ class ServicioOfertasSuscripcionConductor:
 class ServicioAgendaSuscripcionConductor:
     """Consulta la agenda y los viajes asignados al conductor."""
 
-    def __init__(self, repositorio, politica_conductor):
+    def __init__(self, repositorio):
         self.repositorio = repositorio
-        self.politica_conductor = politica_conductor
 
     def listar_actuales_conductor(self, conductor):
-        self.politica_conductor.validar_conductor(conductor)
         return sorted(
             self.repositorio.listar_suscripciones_conductor(
                 conductor.id_usuario, (ESTADO_ACTIVA,)
@@ -107,11 +100,6 @@ class ServicioAgendaSuscripcionConductor:
         return suscripciones, viajes
 
     def listar_viajes_suscripcion_conductor(self, conductor, id_suscripcion):
-        suscripcion = self.repositorio.obtener_suscripcion(id_suscripcion)
-        self.politica_conductor.validar_pertenencia(conductor, suscripcion)
-        self.politica_conductor.validar_capacidad(
-            conductor, suscripcion.cantidad_pasajeros
-        )
         return sorted(
             self.repositorio.listar_viajes(id_suscripcion=id_suscripcion),
             key=lambda item: item.fecha_hora,
@@ -121,11 +109,10 @@ class ServicioAgendaSuscripcionConductor:
 class ServicioAsignacionSuscripcionConductor:
     """Acepta o cancela asignaciones completas de suscripción."""
 
-    def __init__(self, repositorio, catalogo, fabrica, politica_conductor):
+    def __init__(self, repositorio, catalogo, fabrica):
         self.repositorio = repositorio
         self.catalogo = catalogo
         self.fabrica = fabrica
-        self.politica_conductor = politica_conductor
 
     def agregar_suscripcion_conductor(self, conductor, id_suscripcion):
         suscripcion = self.repositorio.obtener_suscripcion(id_suscripcion)
@@ -143,15 +130,6 @@ class ServicioAsignacionSuscripcionConductor:
             for viaje in self.repositorio.listar_viajes(id_suscripcion=id_suscripcion)
             if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO)
         ]
-        existentes = tuple(
-            self.repositorio.listar_viajes_conductor(
-                conductor.id_usuario, ESTADOS_VIAJE_ACTIVO
-            )
-        )
-        fechas = tuple(datetime.fromisoformat(viaje.fecha_hora) for viaje in nuevos)
-        self.politica_conductor.validar_aceptacion(
-            conductor, suscripcion, fechas, existentes
-        )
         nombre = f"{conductor.nombre} {conductor.apellido}"
         vehiculo = (
             f"{conductor.auto.marca} {conductor.auto.modelo} "
@@ -172,12 +150,7 @@ class ServicioAsignacionSuscripcionConductor:
 
     def cancelar_suscripcion_conductor(self, conductor, id_suscripcion):
         suscripcion = self.repositorio.obtener_suscripcion(id_suscripcion)
-        self.politica_conductor.validar_pertenencia(conductor, suscripcion)
-        if suscripcion.estado != ESTADO_ACTIVA:
-            raise ValueError("La suscripcion ya no se puede cancelar.")
         viajes = self.repositorio.listar_viajes(id_suscripcion=id_suscripcion)
-        if any(viaje.estado == VIAJE_EN_CURSO for viaje in viajes):
-            raise ValueError("No puedes cancelar una suscripcion con un viaje en curso.")
         suscripcion.estado = ESTADO_CANCELADA
         for viaje in viajes:
             if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO):
@@ -192,50 +165,30 @@ class ServicioViajesSuscripcionConductor:
 
     COMISION_PLATAFORMA = 0.20
 
-    def __init__(self, repositorio, pagos, horarios, politica_conductor,
-                 reloj, servicio_historial=None):
+    def __init__(self, repositorio, pagos, horarios, reloj,
+                 servicio_historial=None):
         self.repositorio = repositorio
         self.pagos = pagos
         self.horarios = horarios
-        self.politica_conductor = politica_conductor
         self.reloj = reloj
         self.servicio_historial = servicio_historial
 
     def confirmar_pasajero_abordo_conductor(self, conductor, id_viaje):
-        self.politica_conductor.validar_conductor(conductor)
         pendientes = self.repositorio.listar_viajes_conductor(
             conductor.id_usuario, ESTADOS_VIAJE_PENDIENTE
         )
         viaje = self.horarios.proximo(pendientes)
-        if viaje is None or viaje.id_viaje_programado != id_viaje:
-            raise ValueError("Solo puedes iniciar el proximo viaje de tu agenda.")
         ahora = self.reloj()
-        if ahora < datetime.fromisoformat(viaje.fecha_hora):
-            raise ValueError("Aun no llega la hora de abordar al pasajero.")
         viaje.estado = VIAJE_EN_CURSO
         viaje.inicio_confirmado_en = ahora.isoformat(timespec="seconds")
         self.repositorio.guardar_cambios()
         return viaje
 
     def finalizar_viaje_conductor(self, conductor, id_viaje):
-        self.politica_conductor.validar_conductor(conductor)
         viaje = self._obtener_viaje(id_viaje)
-        if viaje.estado not in (
-            VIAJE_PROGRAMADO, VIAJE_ASIGNADO, VIAJE_EN_CURSO, VIAJE_FINALIZADO
-        ):
-            raise ValueError("Este viaje ya no se puede finalizar.")
         suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
-        if suscripcion is None or suscripcion.estado != ESTADO_ACTIVA:
-            raise ValueError("La suscripcion ya no esta activa.")
-        self.politica_conductor.validar_capacidad(
-            conductor, viaje.cantidad_pasajeros
-        )
-        if viaje.id_conductor and str(viaje.id_conductor) != str(conductor.id_usuario):
-            raise ValueError("El viaje fue gestionado por otro conductor.")
         if viaje.pago_conductor_estado == "PAGADO":
             return viaje
-        if viaje.pago_conductor_estado == "PROCESANDO":
-            raise ValueError("La liquidacion esta en revision; no se volvera a pagar automaticamente.")
 
         viaje.id_conductor = str(conductor.id_usuario)
         viaje.conductor = f"{conductor.nombre} {conductor.apellido}"
@@ -268,19 +221,7 @@ class ServicioViajesSuscripcionConductor:
         return viaje
 
     def cancelar_viaje_conductor(self, conductor, id_viaje):
-        self.politica_conductor.validar_conductor(conductor)
         viaje = self._obtener_viaje(id_viaje)
-        proximo = self.horarios.proximo(
-            self.repositorio.listar_viajes_conductor(
-                conductor.id_usuario, ESTADOS_VIAJE_PENDIENTE
-            )
-        )
-        if proximo is None or proximo.id_viaje_programado != id_viaje:
-            raise ValueError("Solo puedes cancelar el proximo viaje de tu agenda.")
-        if viaje.pago_conductor_estado in ("PROCESANDO", "PAGADO"):
-            raise ValueError("No se puede cancelar un viaje cuya liquidacion ya comenzo.")
-        if viaje.id_conductor and str(viaje.id_conductor) != str(conductor.id_usuario):
-            raise ValueError("El viaje fue gestionado por otro conductor.")
         viaje.id_conductor = str(conductor.id_usuario)
         viaje.conductor = f"{conductor.nombre} {conductor.apellido}"
         viaje.vehiculo = (
@@ -293,7 +234,4 @@ class ServicioViajesSuscripcionConductor:
         return viaje
 
     def _obtener_viaje(self, id_viaje):
-        viaje = self.repositorio.obtener_viaje(id_viaje)
-        if viaje is None:
-            raise ValueError("No se encontro el viaje programado.")
-        return viaje
+        return self.repositorio.obtener_viaje(id_viaje)
