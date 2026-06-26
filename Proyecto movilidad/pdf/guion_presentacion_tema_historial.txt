@@ -1,0 +1,56 @@
+GUION DE PRESENTACION - FUNCIONALIDADES TEMA E HISTORIAL
+Proyecto movilidad
+
+Introduccion
+
+Buenos dias. En esta presentacion voy a mostrar dos funcionalidades importantes del proyecto: el cambio de tema visual y la seccion de historial. La idea es explicar primero como las usa una persona dentro de la interfaz y luego relacionarlas con el diseno interno del proyecto. Tambien veremos como se aplican los principios SOLID y algunos patrones de diseno, pero siempre con una explicacion simple: cada clase debe tener una responsabilidad clara, las partes deben estar separadas y el sistema debe poder crecer sin romper lo que ya funciona.
+
+
+Presentacion de la interfaz
+
+Al iniciar la aplicacion vemos una interfaz construida con Tkinter. Desde la pantalla inicial el usuario puede registrarse, iniciar sesion, abrir ayuda o cambiar el tema. Despues de iniciar sesion se muestra el menu principal, donde aparecen accesos a viaje, suscripcion, billetera, historial, tarjeta social, perfil y ayuda. Lo importante de esta interfaz es que mantiene una estructura uniforme: paneles, botones, textos, tablas y selectores usan los mismos moldes visuales. Esa consistencia se logra porque muchas vistas usan el archivo vistas/estilizacion/widgets.py y los colores definidos en vistas/estilizacion/tema.py.
+
+
+Funcionalidad de cambio de tema
+Duracion estimada del monologo: menos de 2 minutos.
+
+Ahora voy a mostrar el cambio de tema. El usuario solo debe presionar el boton "Cambiar Tema", que aparece en la pantalla inicial, en el menu principal, en el panel administrador y en la seccion de tarjeta social. Cada vez que se presiona, la aplicacion cambia al siguiente tema disponible. Actualmente existen tres temas: oscuro, claro y azul. Si el usuario sigue presionando el boton, el ciclo vuelve al primer tema.
+
+Visualmente se actualizan el fondo de la aplicacion, los paneles, los textos, los botones, los selectores, las tablas y tambien elementos como el grafico del historial. Esto permite adaptar la lectura y el estilo sin cambiar la forma de usar el sistema.
+
+La funcionalidad se apoya principalmente en vistas/estilizacion/tema.py. En ese archivo aparecen la clase base Tema y las clases TemaOscuro, TemaClaro y TemaAzul. Cada una entrega un diccionario de colores. La funcion alternar_tema cambia el tema actual y actualiza constantes como FONDO, PANEL, TEXTO, PRIMARIO y BORDE. Luego la vista vuelve a navegar a la misma pantalla, por ejemplo menu.py llama a navegar("menu"), para reconstruir la interfaz con la nueva paleta. Como las vistas toman los colores desde el mismo modulo, la experiencia se mantiene consistente.
+
+
+Funcionalidad de historial
+Duracion estimada del monologo: menos de 2 minutos.
+
+Ahora entramos a la seccion de Historial desde el menu principal. Esta pantalla permite revisar viajes realizados, transacciones de billetera y actividad reciente. En la parte izquierda aparecen filtros por procedencia, como todos, viaje normal o suscripcion, y por tipo de viaje, como normal o material. Tambien se muestra un resumen con cantidad de viajes, distancia total, monto gastado o ganado y numero de transacciones.
+
+En la parte derecha se muestran dos tablas. La primera contiene los viajes realizados, con fecha, ruta, procedencia, tipo y monto. La segunda muestra transacciones de billetera, con fecha, tipo y monto. Al seleccionar una fila, aparece un detalle mas completo: ruta, vehiculo, distancia, duracion, datos de material si corresponde, o informacion de la transaccion. Abajo se muestra un grafico de actividad de los ultimos siete dias, junto con una tendencia porcentual.
+
+La informacion del historial se guarda en JSON/Datos/historial_viajes.json. El modelo principal es RegistroHistorialViaje, ubicado en Modelos/Historial/modelo_historial.py. La persistencia se maneja con RepositorioHistorial, que lee, agrega, actualiza y lista registros por usuario. La consulta pasa por ControladorHistorial y ServicioHistorial. Finalmente, vistas/historial.py organiza la pantalla con VistaHistorial, ConstructorHistorial, AccionesHistorial y RenderizadorHistorial.
+
+
+Aplicacion de principios SOLID
+
+En el proyecto se observan varios principios SOLID. El principio de responsabilidad unica, o SRP, se ve cuando cada clase tiene una tarea principal. Por ejemplo, tema.py se encarga de las paletas visuales, mientras que vistas/historial.py separa construccion, acciones y renderizado. El principio abierto/cerrado, u OCP, aparece en el tema: se puede agregar una nueva clase de tema sin modificar todas las vistas. El principio de sustitucion de Liskov se cumple porque TemaOscuro, TemaClaro y TemaAzul pueden usarse como Tema. El principio de segregacion de interfaces se refleja en controladores pequenos, como ControladorHistorial, que ofrece solo consultar. Finalmente, la inversion de dependencias aparece en Configuracion/dependencias.py, donde se conectan repositorios, servicios y controladores sin que la vista tenga que crear todo directamente.
+
+
+Patrones de diseno utilizados
+
+El cambio de tema usa una idea cercana al patron Strategy, porque cada clase de tema representa una estrategia distinta para entregar colores. El historial usa Repository mediante RepositorioHistorial, que oculta la forma exacta de leer y escribir el archivo JSON. Tambien se usa una arquitectura por capas, parecida a MVC: la vista muestra datos, el controlador recibe la solicitud, el servicio aplica la logica y el repositorio accede a la informacion. ServicioHistorial funciona como una fachada simple, porque entrega a la vista un resumen ya armado con viajes, transacciones y estadisticas. Ademas, DependenciasAplicacion actua como punto de composicion, conectando las piezas concretas del sistema.
+
+
+Como se aplicaron SOLID y patrones en la funcionalidad de tema
+
+En el cambio de tema, SRP se aplica porque las vistas no definen colores uno por uno; solo piden el cambio y se reconstruyen. La responsabilidad de las paletas queda en tema.py. OCP se aplica porque para agregar otro tema bastaria crear una nueva clase con el metodo colores y sumarla a la lista de temas. El patron Strategy ayuda a entender esta parte: cada tema es una estrategia visual intercambiable. Gracias a eso, widgets.py puede seguir creando botones, entradas, selectores y tablas con los mismos nombres de color, sin importar si el tema activo es oscuro, claro o azul.
+
+
+Como se aplicaron SOLID y patrones en la funcionalidad de historial
+
+En historial, SRP se ve con mucha claridad. ConstructorHistorial construye widgets, AccionesHistorial maneja filtros y seleccion de filas, RenderizadorHistorial actualiza tablas y grafico, ControladorHistorial adapta la peticion de la vista, ServicioHistorial prepara la informacion y RepositorioHistorial trabaja con el archivo JSON. El patron Repository evita que la vista conozca la persistencia. La separacion Controlador/Servicio permite que la logica de consulta, ordenamiento, transacciones y tendencia se mantenga fuera de la pantalla. Tambien se aplica una fachada en ServicioHistorial, porque la vista recibe un solo resumen con todo lo necesario para mostrar la seccion.
+
+
+Conclusion
+
+Para concluir, el cambio de tema mejora la experiencia visual sin alterar la logica del sistema, y el historial permite consultar informacion importante de viajes y movimientos anteriores. Ambas funcionalidades muestran una organizacion clara del codigo: las vistas se enfocan en la interfaz, los controladores comunican, los servicios procesan reglas y los repositorios administran datos. Esta separacion facilita explicar el proyecto, mantenerlo y agregar nuevas funciones en el futuro.

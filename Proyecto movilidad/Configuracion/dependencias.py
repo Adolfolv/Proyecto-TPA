@@ -35,7 +35,10 @@ from Servicios.Billetera.fabrica_billetera import FabricaBilletera
 from Servicios.Billetera.fabrica_tarjeta import FabricaTarjeta
 from Servicios.Billetera.servicio_billetera import ServicioBilletera
 from Servicios.Billetera.servicio_tarjetas import ServicioTarjeta
-from Servicios.Historial.servicio_historial import FabricaHistorial, ServicioHistorial
+from Servicios.Historial.servicio_historial import (
+    RegistradorHistorial,
+    ServicioHistorial,
+)
 from Servicios.Admin.servicio_admin import ServicioAdmin
 from Servicios.Ayuda.cliente_gemini import ClienteGemini
 from Servicios.Ayuda.contenido_ayuda import ContenidoAyuda
@@ -169,14 +172,16 @@ class DependenciasAplicacion:
             self.repositorio_billetera,
             self.operaciones_billetera,
         )
-        self.fabrica_historial = FabricaHistorial()
+        self.registrador_historial = RegistradorHistorial(
+            self.repositorio_historial,
+        )
         self.servicio_historial = ServicioHistorial(
             self.repositorio_historial,
-            self.fabrica_historial,
+            self.repositorio_billetera,
         )
         self.servicio_viaje = ServicioViaje(
             servicio_billetera=self.servicio_billetera,
-            servicio_historial=self.servicio_historial,
+            servicio_historial=self.registrador_historial,
         )
         # Construcción del dominio de suscripciones.
         self.calculadora_cotizacion_suscripcion = CalculadoraCotizacionSuscripcion(
@@ -220,7 +225,7 @@ class DependenciasAplicacion:
             self.repositorio_suscripcion,
             self.politica_horarios_suscripcion,
             self.reloj_suscripcion,
-            self.servicio_historial,
+            self.registrador_historial,
         )
         self.estado_suscripcion_pasajero = ServicioEstadoSuscripcionPasajero(
             self.repositorio_suscripcion,
@@ -250,7 +255,7 @@ class DependenciasAplicacion:
             self.politica_horarios_suscripcion,
             self.politica_suscripcion_conductor,
             self.reloj_suscripcion,
-            self.servicio_historial,
+            self.registrador_historial,
         )
         self.servicio_suscripcion = ServicioSuscripcion(
             self.alta_suscripcion_pasajero,

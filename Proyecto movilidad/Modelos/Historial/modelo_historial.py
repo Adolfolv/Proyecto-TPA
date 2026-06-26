@@ -25,18 +25,3 @@ class RegistroHistorialViaje:
     volumen: float | None = None
     peso: float | None = None
     tipo_material: str | None = None
-
-
-@dataclass(frozen=True)
-class ActividadDiaria:
-    fecha: str
-    cantidad: int
-    variacion: int
-
-
-@dataclass(frozen=True)
-class ResumenHistorial:
-    viajes: tuple[RegistroHistorialViaje, ...]
-    actividad: tuple[ActividadDiaria, ...]
-    total_ultimos_7_dias: int
-    tendencia_porcentual: float

@@ -81,4 +81,4 @@ class ServicioViaje:
     def finalizar_viaje(self, viaje):
         if self.historial is None:
             return viaje
-        return self.historial.registrar_viaje_normal(viaje)
+        return self.historial.registrar_viaje(viaje)
