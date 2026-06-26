@@ -38,7 +38,7 @@ class WidgetsPerfil:
         if ruta.exists():
             try:
                 with Image.open(ruta) as archivo:
-                    imagen = ImageOps.fit(archivo.convert("RGB"), (150, 150), method=Image.Resampling.LANCZOS)
+                    imagen = ImageOps.fit(archivo.convert("RGB"), (240, 240), method=Image.Resampling.LANCZOS)
                 self.foto = ImageTk.PhotoImage(imagen); self.foto_label.configure(image=self.foto, text="")
                 return
             except (OSError, ValueError):
@@ -61,30 +61,30 @@ class VistaPerfil(tk.Frame):
         cabecera = self.moldes.crear_frame(panel, tema.PANEL, fila=0, columna=0, sticky="ew", margen_y=(0, 18), columnas_peso=((0, 1),))
         self.moldes.crear_label(cabecera, "Perfil", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
         self.moldes.crear_boton(cabecera, "Volver", False, None, lambda: self.navegar("menu"), metodo="grid", fila=0, columna=1, sticky="e")
-        cuerpo = self.moldes.crear_frame(panel, tema.PANEL, fila=1, columna=0, sticky="nsew", columnas_peso=((0, 1),), filas_peso=((0, 1),))
-        tarjeta = self.moldes.crear_frame(cuerpo, tema.PANEL_SUAVE, tema.BORDE, 1, 34, 30, fila=0, columna=0, sticky="", columnas_peso=((0, 0), (1, 1)))
+        cuerpo = self.moldes.crear_frame(panel, tema.PANEL, fila=1, columna=0, sticky="nsew", columnas_peso=((0, 1), (1, 0), (2, 1)), filas_peso=((0, 1), (1, 0), (2, 1)))
+        tarjeta = self.moldes.crear_frame(cuerpo, tema.PANEL_SUAVE, tema.BORDE, 1, 62, 54, fila=1, columna=1, sticky="", margen_x=70, margen_y=34, columnas_peso=((0, 0), (1, 0)), filas_peso=((0, 1),))
         foto, tipo, boton_imagen = self.crear_foto(tarjeta); entradas = self.crear_entradas(tarjeta); botones = self.crear_botones(tarjeta, boton_imagen)
         self.widgets = WidgetsPerfil(entradas, botones, foto, tipo); self.widgets.editar(False)
-        self.mostrar_mensaje = crear_panel_mensaje(self.moldes.crear_frame(cuerpo, tema.PANEL, fila=1, columna=0, sticky="ew", margen_y=(12, 0)), compacto=True)
+        self.mostrar_mensaje = crear_panel_mensaje(self.moldes.crear_frame(cuerpo, tema.PANEL, fila=2, columna=1, sticky="ew", margen_y=(12, 0)), compacto=True)
 
     def crear_foto(self, padre):
-        lateral = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=0, columna=0, sticky="n", margen_x=(0, 34), columnas_peso=((0, 1),))
-        self.moldes.crear_label(lateral, "Foto", ("Arial", 18, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 12))
-        marco = self.moldes.crear_frame(lateral, tema.SECUNDARIO, tema.BORDE, 1, fila=1, columna=0, ancho_fijo=180, alto_fijo=180); marco.grid_propagate(False)
+        lateral = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=0, columna=0, sticky="", margen_x=(0, 52), columnas_peso=((0, 1),))
+        self.moldes.crear_label(lateral, "Foto", ("Arial", 18, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="", margen_y=(0, 12))
+        marco = self.moldes.crear_frame(lateral, tema.SECUNDARIO, tema.BORDE, 1, fila=1, columna=0, ancho_fijo=280, alto_fijo=280); marco.grid_propagate(False)
         foto = tk.Label(marco, bg=tema.SECUNDARIO, fg=tema.PRIMARIO, bd=0); foto.pack(fill="both", expand=True, padx=12, pady=12)
         boton = self.moldes.crear_boton(lateral, "Cambiar foto", False, None, self.seleccionar_imagen, metodo="grid", fila=2, columna=0, sticky="ew", margen_y=(12, 0))
         tipo = self.moldes.crear_label(lateral, "", ("Arial", 14, "bold"), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=0, sticky="ew", margen_y=(18, 0))
         return foto, tipo, boton
 
     def crear_entradas(self, padre):
-        formulario = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=0, columna=1, sticky="nsew", columnas_peso=((0, 1), (1, 1)))
-        self.moldes.crear_label(formulario, "Datos personales", ("Arial", 20, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_y=(0, 20))
+        formulario = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=0, columna=1, sticky="", columnas_peso=((0, 1), (1, 1)))
+        self.moldes.crear_label(formulario, "Datos personales", ("Arial", 22, "bold"), tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 24))
         entradas = {}
         for i, (titulo, clave) in enumerate(self.CAMPOS):
             fila, col = (i // 2) * 2 + 1, i % 2
             self.moldes.crear_label(formulario, titulo, ("Arial", 13, "bold"), tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=fila, columna=col, sticky="w", margen_y=(0, 6))
-            entrada = tk.Entry(formulario, font=("Arial", 16, "bold"), bg=tema.SECUNDARIO, fg=tema.TEXTO, insertbackground=tema.TEXTO, relief="flat", bd=0, width=24)
-            entrada.grid(row=fila + 1, column=col, sticky="ew", padx=(0, 18 if col == 0 else 0), pady=(0, 18), ipady=9); entradas[clave] = entrada
+            entrada = tk.Entry(formulario, font=("Arial", 18, "bold"), bg=tema.SECUNDARIO, fg=tema.TEXTO, insertbackground=tema.TEXTO, relief="flat", bd=0, width=32)
+            entrada.grid(row=fila + 1, column=col, sticky="ew", padx=(0, 26 if col == 0 else 0), pady=(0, 28), ipady=13); entradas[clave] = entrada
         self.formulario = formulario; return entradas
 
     def crear_botones(self, padre, boton_imagen):
