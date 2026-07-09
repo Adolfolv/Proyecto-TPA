@@ -2,6 +2,7 @@
 
 import tkinter as tk
 
+from .Comunes.formateadores import FormateadorMoneda
 from .estilizacion import tema
 from .estilizacion.decoraciones import crear_panel_mensaje
 from .estilizacion.widgets import Moldes
@@ -38,8 +39,8 @@ class ResumenBilletera:
         self.label_saldo_tarjetas.pack(anchor="w", pady=(6, 0))
 
     def actualizar(self, saldo_billetera, saldo_tarjetas):
-        self.label_saldo_billetera.config(text=f"${saldo_billetera:.0f} CLP")
-        self.label_saldo_tarjetas.config(text=f"${saldo_tarjetas:.0f} CLP")
+        self.label_saldo_billetera.config(text=f"{FormateadorMoneda.pesos(saldo_billetera)} CLP")
+        self.label_saldo_tarjetas.config(text=f"{FormateadorMoneda.pesos(saldo_tarjetas)} CLP")
 
 
 class PanelTarjetasBilletera:
@@ -87,7 +88,7 @@ class PanelTarjetasBilletera:
             self.lista_tarjetas.insert(tk.END, "Aún no hay tarjetas agregadas.")
             return
         for tarjeta in tarjetas:
-            self.lista_tarjetas.insert(tk.END, f"{tarjeta.titular} - {tarjeta.numero_tarjeta} - ${tarjeta.saldo:.0f}")
+            self.lista_tarjetas.insert(tk.END, f"{tarjeta.titular} - {tarjeta.numero_tarjeta} - {FormateadorMoneda.pesos(tarjeta.saldo)}")
 
 
 class PanelMovimientoBilletera:
@@ -124,7 +125,7 @@ class PanelMovimientoBilletera:
             self.selector_tarjeta_movimiento.configure(values=("Sin tarjetas",))
             self.selector_tarjeta_movimiento.current(0)
             return
-        opciones = tuple(f"{tarjeta.numero_tarjeta} - ${tarjeta.saldo:.0f}" for tarjeta in tarjetas)
+        opciones = tuple(f"{tarjeta.numero_tarjeta} - {FormateadorMoneda.pesos(tarjeta.saldo)}" for tarjeta in tarjetas)
         self.selector_tarjeta_movimiento.configure(values=opciones)
         self.selector_tarjeta_movimiento.current(0)
 
@@ -134,7 +135,7 @@ class PanelMovimientoBilletera:
             self.lista_historial.insert(tk.END, "Aún no hay transacciones registradas.")
             return
         for transaccion in transacciones:
-            self.lista_historial.insert(tk.END, f"{transaccion.id_transaccion} - {transaccion.tipo} - ${transaccion.monto:.0f} - {transaccion.fecha}")
+            self.lista_historial.insert(tk.END, f"{transaccion.id_transaccion} - {transaccion.tipo} - {FormateadorMoneda.pesos(transaccion.monto)} - {transaccion.fecha}")
 
 
 class PanelBilletera:
