@@ -152,7 +152,7 @@ class DependenciasAplicacion:
             ),
             "reembolsar": OperacionPago(
                 self.repositorio_billetera,
-                "Reembolso suscripcion",
+                "Reembolso suscripción",
                 "recibir_pago",
             ),
             "cargar": OperacionMovimientoTarjeta(

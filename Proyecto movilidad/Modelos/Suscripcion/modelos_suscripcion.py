@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-NOMBRES_DIAS = ("Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom")
+NOMBRES_DIAS = ("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
 
 
 ESTADO_ACTIVA = "ACTIVA"

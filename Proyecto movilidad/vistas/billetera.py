@@ -210,16 +210,8 @@ class VistaBilletera(tk.Frame):
     def agregar_tarjeta(self):
         tipo, titular, numero, vencimiento, cvv = self.panel.tarjetas.datos_tarjeta()
         self.ejecutar_accion(
-            lambda: self.controlador_tarjetas.agregar_tarjeta(
-                self.usuario,
-                tipo,
-                titular,
-                numero,
-                vencimiento,
-                cvv,
-            ),
-            "Tarjeta agregada correctamente.",
-        )
+            lambda: self.controlador_tarjetas.agregar_tarjeta(self.usuario, tipo, titular, numero, vencimiento, cvv),
+            "Tarjeta agregada correctamente.")
 
     def eliminar_tarjeta(self):
         numero = self.panel.tarjetas.numero_tarjeta_seleccionada()

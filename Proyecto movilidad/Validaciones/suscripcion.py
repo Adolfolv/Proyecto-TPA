@@ -21,7 +21,7 @@ class ValidacionesSuscripcion:
     FORMATO_FECHA = "%Y-%m-%d"
     FORMATO_HORA = "%H:%M"
     MAXIMO_DIAS_PERIODO = 365
-    NOMBRES_DIAS = ("lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo")
+    NOMBRES_DIAS = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
 
     def validar(self, usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad, ahora=None):
         ahora = ahora or datetime.now()
@@ -37,17 +37,17 @@ class ValidacionesSuscripcion:
         if fin < inicio:
             raise ValueError("La fecha final debe ser posterior a la inicial.")
         if (fin - inicio).days > self.MAXIMO_DIAS_PERIODO:
-            raise ValueError("El periodo no puede superar un ano.")
+            raise ValueError("El período no puede superar un año.")
         dias = tuple(sorted(set(dias_semana)))
         if not dias or any(dia not in range(7) for dia in dias):
-            raise ValueError("Selecciona al menos un dia de la semana.")
+            raise ValueError("Selecciona al menos un día de la semana.")
         self._validar_dias_dentro_del_periodo(inicio, fin, dias)
         if inicio == fin == ahora.date() and inicio.weekday() in dias and datetime.combine(inicio, horario) <= ahora:
-            raise ValueError("Para una suscripcion de hoy, la hora debe ser posterior a la actual.")
+            raise ValueError("Para una suscripción de hoy, la hora debe ser posterior a la actual.")
         try:
             pasajeros = int(cantidad)
         except (TypeError, ValueError) as error:
-            raise ValueError("La cantidad de pasajeros debe ser un numero.") from error
+            raise ValueError("La cantidad de pasajeros debe ser un número.") from error
         if pasajeros < 1 or pasajeros > 4:
             raise ValueError("La cantidad de pasajeros debe estar entre 1 y 4.")
         return inicio, fin, dias, horario, pasajeros
@@ -56,13 +56,13 @@ class ValidacionesSuscripcion:
         dias_futuros = {fecha.weekday() for fecha in fechas}
         faltantes = [self.NOMBRES_DIAS[dia] for dia in dias_seleccionados if dia not in dias_futuros]
         if faltantes:
-            raise ValueError(f"No quedan horarios futuros dentro del periodo para: {', '.join(faltantes)}.")
+            raise ValueError(f"No quedan horarios futuros dentro del período para: {', '.join(faltantes)}.")
 
     def _validar_dias_dentro_del_periodo(self, inicio, fin, dias_seleccionados):
         dias_periodo = {(inicio + timedelta(days=desplazamiento)).weekday() for desplazamiento in range((fin - inicio).days + 1)}
         faltantes = [self.NOMBRES_DIAS[dia] for dia in dias_seleccionados if dia not in dias_periodo]
         if faltantes:
-            raise ValueError(f"El periodo seleccionado no contiene estos dias marcados: {', '.join(faltantes)}.")
+            raise ValueError(f"El período seleccionado no contiene estos días marcados: {', '.join(faltantes)}.")
 
     def _fecha(self, valor):
         try:
@@ -118,7 +118,7 @@ class PoliticaSuscripcionPasajero:
         self.validar_sin_viaje_inminente(viajes_existentes, ahora)
         if fechas_nuevas[0] < ahora + self.ANTICIPACION_MINIMA:
             raise ValueError("La primera fecha de viaje debe estar al menos a 5 minutos de distancia.")
-        self.horarios.validar_separacion(fechas_nuevas, viajes_existentes, self.ANTICIPACION_MINIMA, "Cada viaje de una nueva suscripcion debe estar a mas de 5 minutos de los viajes ya creados.")
+        self.horarios.validar_separacion(fechas_nuevas, viajes_existentes, self.ANTICIPACION_MINIMA, "Cada viaje de una nueva suscripción debe estar a más de 5 minutos de los viajes ya creados.")
 
     def validar_sin_viaje_inminente(self, viajes, ahora):
         for viaje in viajes:
@@ -126,5 +126,5 @@ class PoliticaSuscripcionPasajero:
                 continue
             diferencia = datetime.fromisoformat(viaje.fecha_hora) - ahora
             if timedelta(0) <= diferencia < self.BLOQUEO_INMINENTE:
-                raise ValueError("No se pueden crear ni cancelar suscripciones a menos de 10 minutos del proximo viaje.")
+                raise ValueError("No se pueden crear ni cancelar suscripciones a menos de 10 minutos del próximo viaje.")
 

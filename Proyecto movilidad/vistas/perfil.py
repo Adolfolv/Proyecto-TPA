@@ -48,7 +48,7 @@ class WidgetsPerfil:
 
 
 class VistaPerfil(tk.Frame):
-    CAMPOS = (("Nombre", "nombre"), ("Apellido", "apellido"), ("Correo", "correo"), ("Telefono", "telefono"))
+    CAMPOS = (("Nombre", "nombre"), ("Apellido", "apellido"), ("Correo", "correo"), ("Teléfono", "telefono"))
 
     def __init__(self, padre, navegar, controlador_perfil, usuario_actual):
         self.navegar, self.controlador_perfil, self.usuario_actual = navegar, controlador_perfil, usuario_actual
@@ -104,7 +104,7 @@ class VistaPerfil(tk.Frame):
         self.imagen_temporal = self.datos.get("imagen", ""); self.widgets.cargar(self.datos); self.widgets.editar(False); self.mostrar_mensaje("")
 
     def seleccionar_imagen(self):
-        ruta = filedialog.askopenfilename(title="Cambiar foto", filetypes=(("Imagenes", "*.png *.jpg *.jpeg"), ("Todos", "*.*")))
+        ruta = filedialog.askopenfilename(title="Cambiar foto", filetypes=(("Imágenes", "*.png *.jpg *.jpeg"), ("Todos", "*.*")))
         if ruta:
             self.imagen_temporal = ruta; self.widgets.cargar_foto(dict(self.datos, **self.widgets.datos(), imagen=ruta))
 

@@ -55,9 +55,9 @@ class ConstructorHistorial:
     def _crear_informacion(self, padre):
         vista = self.vista
         panel = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 14, 14, fila=1, columna=0, sticky="nsew", margen_x=(0, 10), columnas_peso=((0, 1),), filas_peso=((9, 1),))
-        self.moldes.crear_label(panel, "Informacion", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 10))
+        self.moldes.crear_label(panel, "Información", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 10))
         self.moldes.crear_label(panel, "Procedencia", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=1, columna=0, sticky="w")
-        vista.selector_modalidad = self.moldes.crear_selector(panel, ("Todos", "Viaje normal", "Suscripcion"), metodo="grid", fila=2, columna=0, sticky="ew", margen_y=(4, 10), ipady=4)
+        vista.selector_modalidad = self.moldes.crear_selector(panel, ("Todos", "Viaje normal", "Suscripción"), metodo="grid", fila=2, columna=0, sticky="ew", margen_y=(4, 10), ipady=4)
         self.moldes.crear_label(panel, "Tipo de viaje", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=0, sticky="w")
         vista.selector_tipo = self.moldes.crear_selector(panel, ("Todos", "Normal", "Material"), metodo="grid", fila=4, columna=0, sticky="ew", margen_y=(4, 14), ipady=4)
         vista.selector_modalidad.bind("<<ComboboxSelected>>", vista.acciones.aplicar_filtros)
@@ -69,7 +69,7 @@ class ConstructorHistorial:
         vista.label_monto = self.moldes.crear_label(resumen, "Monto: $0", tema.FUENTE_TEXTO, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(5, 0))
         vista.label_transacciones = self.moldes.crear_label(resumen, "Transacciones: 0", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, metodo="grid", fila=3, columna=0, sticky="w", margen_y=(5, 0))
         self.moldes.crear_label(panel, "Detalle seleccionado", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=6, columna=0, sticky="w", margen_y=(18, 8))
-        vista.label_detalle = self.moldes.crear_label(panel, "Selecciona un viaje o una transaccion.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, 250, "left", metodo="grid", fila=7, columna=0, sticky="nw")
+        vista.label_detalle = self.moldes.crear_label(panel, "Selecciona un viaje o una transacción.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, 250, "left", metodo="grid", fila=7, columna=0, sticky="nw")
         vista.logo_suscripcion = crear_logo_suscripcion_pasajero(panel, (520, 248))
         vista.logo_suscripcion.grid(row=9, column=0, sticky="s", pady=(16, 2))
 
@@ -87,7 +87,7 @@ class ConstructorHistorial:
         vista.label_sin_transacciones = self.moldes.crear_label(panel, "", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, metodo="grid", fila=5, columna=0, sticky="w", margen_y=(5, 8))
 
         cabecera = self.moldes.crear_frame(panel, tema.PANEL, fila=6, columna=0, sticky="ew", margen_y=(6, 8), columnas_peso=((0, 1),))
-        self.moldes.crear_label(cabecera, "Actividad de los ultimos 7 dias", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
+        self.moldes.crear_label(cabecera, "Actividad de los últimos 7 días", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
         vista.label_tendencia = self.moldes.crear_label(cabecera, "", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=0, columna=1, sticky="e")
         vista.grafico_actividad = tk.Canvas(panel, bg=tema.SECUNDARIO, highlightbackground=tema.BORDE, highlightthickness=1, height=150)
         vista.grafico_actividad.grid(row=7, column=0, sticky="nsew")
@@ -110,7 +110,8 @@ class AccionesHistorial:
 
     def aplicar_filtros(self, _evento=None):
         vista = self.vista
-        modalidad, tipo = vista.selector_modalidad.get().upper(), vista.selector_tipo.get().upper()
+        modalidad = vista.selector_modalidad.get().upper().replace("Ó", "O")
+        tipo = vista.selector_tipo.get().upper()
         viajes = [viaje for viaje in vista.viajes if (modalidad == "TODOS" or viaje.modalidad == modalidad) and (tipo == "TODOS" or viaje.tipo_viaje == tipo)]
         vista.renderizador.renderizar_viajes(viajes)
 
@@ -143,14 +144,14 @@ class RenderizadorHistorial:
         es_conductor = getattr(vista.usuario_actual, "tipo_usuario", "") == "conductor"
         for viaje in viajes:
             monto = viaje.pago_conductor if es_conductor else viaje.precio
-            item = vista.tabla_viajes.insert("", "end", values=(self.formatear_fecha(viaje.fecha_finalizacion), f"{viaje.origen} -> {viaje.destino}", viaje.modalidad.title(), viaje.tipo_viaje.title(), f"${monto:,.0f}"))
+            item = vista.tabla_viajes.insert("", "end", values=(self.formatear_fecha(viaje.fecha_finalizacion), f"{viaje.origen} -> {viaje.destino}", self.formatear_modalidad(viaje.modalidad), viaje.tipo_viaje.title(), f"${monto:,.0f}"))
             vista.viajes_por_item[item] = viaje
         monto_total = sum((v.pago_conductor if es_conductor else v.precio) for v in viajes)
         vista.label_total.config(text=f"Viajes: {len(viajes)}")
         vista.label_distancia.config(text=f"Distancia: {sum(v.distancia for v in viajes):.1f} km")
         vista.label_monto.config(text=f"{'Ganado' if es_conductor else 'Gastado'}: ${monto_total:,.0f}")
         vista.label_sin_viajes.config(text="No hay viajes para estos filtros." if not viajes else "")
-        vista.label_detalle.config(text="Selecciona un viaje o una transaccion.")
+        vista.label_detalle.config(text="Selecciona un viaje o una transacción.")
 
     def renderizar_transacciones(self, transacciones):
         vista = self.vista
@@ -206,7 +207,7 @@ class RenderizadorHistorial:
         material = ""
         if viaje.tipo_viaje == "MATERIAL":
             material = f"\nMaterial: {viaje.tipo_material}\nPeso: {viaje.peso} kg - Volumen: {viaje.volumen} m3"
-        self.vista.label_detalle.config(text=f"{viaje.origen} -> {viaje.destino}\n{viaje.modalidad.title()} - {viaje.tipo_viaje.title()}\nVehiculo: {viaje.vehiculo}\nDistancia: {viaje.distancia:.1f} km\nDuracion: {viaje.duracion:.0f} s{material}")
+        self.vista.label_detalle.config(text=f"{viaje.origen} -> {viaje.destino}\n{self.formatear_modalidad(viaje.modalidad)} - {viaje.tipo_viaje.title()}\nVehículo: {viaje.vehiculo}\nDistancia: {viaje.distancia:.1f} km\nDuración: {viaje.duracion:.0f} s{material}")
 
     def mostrar_detalle_transaccion(self, transaccion):
         self.vista.label_detalle.config(
@@ -221,6 +222,9 @@ class RenderizadorHistorial:
     def formatear_fecha(self, valor):
         return datetime.fromisoformat(valor).strftime("%d-%m-%Y %H:%M")
 
+    def formatear_modalidad(self, valor):
+        return "Suscripción" if str(valor).upper() == "SUSCRIPCION" else str(valor).title()
+
     def formatear_dia(self, valor):
-        nombres = ("Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom")
+        nombres = ("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
         return nombres[datetime.fromisoformat(valor).date().weekday()]

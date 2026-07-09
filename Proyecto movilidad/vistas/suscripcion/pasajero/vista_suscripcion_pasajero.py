@@ -27,7 +27,7 @@ class PanelIzquierdoSuscripcionPasajero:
     def _crear_formulario(self, padre):
         vista = self.vista
         vista.panel_formulario = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 1, 18, 18, fila=0, columna=0, sticky="nsew", columnas_peso=((0, 1), (1, 1)))
-        self.moldes.crear_label(vista.panel_formulario, "Nueva suscripcion", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 10))
+        self.moldes.crear_label(vista.panel_formulario, "Nueva suscripción", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, columnas=2, sticky="w", margen_y=(0, 10))
         vista.origen = self._crear_selector("Origen", self.lugares, 1, 0)
         vista.destino = self._crear_selector("Destino", self.lugares, 1, 1)
         if len(self.lugares) > 1:
@@ -40,12 +40,12 @@ class PanelIzquierdoSuscripcionPasajero:
         self._crear_dias(7)
         vista.boton_buscar_conductor = self.moldes.crear_boton(vista.panel_formulario, "Buscar conductor", True, None, vista.acciones.presionar_boton_buscar_conductor, metodo="grid", fila=9, columna=0, columnas=2, sticky="ew", margen_y=(14, 0))
         vista.label_busqueda = self.moldes.crear_label(vista.panel_formulario, "", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL_SUAVE, 340, "center", metodo="grid", fila=10, columna=0, columnas=2, sticky="ew", margen_y=(8, 0))
-        vista.tabla_conductores = self.moldes.crear_tabla(vista.panel_formulario, (("conductor", "Conductor", 125), ("vehiculo", "Vehiculo", 175), ("precio", "Precio por viaje", 110)), alto=4)
+        vista.tabla_conductores = self.moldes.crear_tabla(vista.panel_formulario, (("conductor", "Conductor", 125), ("vehiculo", "Vehículo", 175), ("precio", "Precio por viaje", 110)), alto=4)
         vista.tabla_conductores.grid(row=11, column=0, columnspan=2, sticky="nsew", pady=(8, 0))
         vista.tabla_conductores.bind("<<TreeviewSelect>>", vista.acciones.presionar_boton_seleccionar_conductor)
         vista.area_acciones_formulario = self.moldes.crear_frame(vista.panel_formulario, tema.PANEL_SUAVE, fila=12, columna=0, columnas=2, sticky="ew", margen_y=(8, 0), columnas_peso=((0, 1), (1, 1)))
         vista.boton_ajustar = self.moldes.crear_boton(vista.area_acciones_formulario, "Volver a ajustar", False, None, vista.acciones.presionar_boton_volver_ajustar, metodo="grid", fila=0, columna=0, sticky="ew", margen_x=(0, 5))
-        vista.boton_crear_suscripcion = self.moldes.crear_boton(vista.area_acciones_formulario, "Crear suscripcion", True, None, vista.acciones.presionar_boton_previsualizar_suscripcion, metodo="grid", fila=0, columna=1, sticky="ew", margen_x=(5, 0))
+        vista.boton_crear_suscripcion = self.moldes.crear_boton(vista.area_acciones_formulario, "Crear suscripción", True, None, vista.acciones.presionar_boton_previsualizar_suscripcion, metodo="grid", fila=0, columna=1, sticky="ew", margen_x=(5, 0))
         vista.logo_suscripcion = crear_logo_suscripcion_pasajero(vista.panel_formulario)
         vista.logo_suscripcion.grid(row=13, column=0, columnspan=2, sticky="s", pady=(30, 8))
         vista.panel_formulario.grid_rowconfigure(13, weight=1)
@@ -56,13 +56,13 @@ class PanelIzquierdoSuscripcionPasajero:
         vista.panel_resumen = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, tema.BORDE, 2, fila=0, columna=0, sticky="nsew", columnas_peso=((0, 1),), filas_peso=((1, 1),))
         cabecera = self.moldes.crear_frame(vista.panel_resumen, tema.PANEL, relleno_x=22, relleno_y=16, fila=0, columna=0, sticky="ew", columnas_peso=((0, 1),))
         self.moldes.crear_label(cabecera, "RESUMEN DE COMPRA", ("Arial", 9, "bold"), tema.PRIMARIO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
-        self.moldes.crear_label(cabecera, "Tu suscripcion de viaje", ("Arial", 17, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(3, 0))
+        self.moldes.crear_label(cabecera, "Tu suscripción de viaje", ("Arial", 17, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(3, 0))
         contenido = self.moldes.crear_frame(vista.panel_resumen, tema.PANEL_SUAVE, relleno_x=22, relleno_y=18, fila=1, columna=0, sticky="nsew", columnas_peso=((0, 1),))
         ruta = self.moldes.crear_frame(contenido, tema.SECUNDARIO, tema.BORDE, 1, 16, 12, fila=0, columna=0, sticky="ew", columnas_peso=((0, 1),))
         self.moldes.crear_label(ruta, "RUTA PROGRAMADA", ("Arial", 8, "bold"), tema.TEXTO_SUAVE, tema.SECUNDARIO, metodo="grid", fila=0, columna=0, sticky="w")
         vista.valores_resumen["ruta"] = self.moldes.crear_label(ruta, "-", ("Arial", 13, "bold"), tema.TEXTO, tema.SECUNDARIO, 390, "left", metodo="grid", fila=1, columna=0, sticky="w", margen_y=(5, 0))
         detalles = self.moldes.crear_frame(contenido, tema.PANEL_SUAVE, fila=1, columna=0, sticky="ew", margen_y=(16, 0), columnas_peso=((0, 1), (1, 1)))
-        campos = (("Periodo", "periodo"), ("Dias de viaje", "dias"), ("Hora de salida", "hora"), ("Viajes incluidos", "cantidad_viajes"), ("Pasajeros", "pasajeros"), ("Valor por viaje", "precio_viaje"), ("Vehiculo seleccionado", "vehiculo"))
+        campos = (("Período", "periodo"), ("Días de viaje", "dias"), ("Hora de salida", "hora"), ("Viajes incluidos", "cantidad_viajes"), ("Pasajeros", "pasajeros"), ("Valor por viaje", "precio_viaje"), ("Vehículo seleccionado", "vehiculo"))
         for indice, (titulo, clave) in enumerate(campos):
             fila, columna = divmod(indice, 2)
             bloque = self.moldes.crear_frame(detalles, tema.PANEL_SUAVE, fila=fila, columna=columna, sticky="ew", margen_x=(0, 12) if columna == 0 else (12, 0), margen_y=(0, 13), columnas_peso=((0, 1),))
@@ -93,7 +93,7 @@ class PanelIzquierdoSuscripcionPasajero:
 
     def _crear_dias(self, fila):
         vista = self.vista
-        self.moldes.crear_label(vista.panel_formulario, "Dias de la semana", tema.FUENTE_BOTON, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=fila, columna=0, columnas=2, sticky="w", margen_x=5, margen_y=(8, 3))
+        self.moldes.crear_label(vista.panel_formulario, "Días de la semana", tema.FUENTE_BOTON, tema.TEXTO_SUAVE, tema.PANEL_SUAVE, metodo="grid", fila=fila, columna=0, columnas=2, sticky="w", margen_x=5, margen_y=(8, 3))
         contenedor = self.moldes.crear_frame(vista.panel_formulario, tema.PANEL_SUAVE, fila=fila + 1, columna=0, columnas=2, sticky="ew")
         for indice, nombre in enumerate(NOMBRES_DIAS):
             variable = tk.BooleanVar(value=indice < 5)
@@ -116,17 +116,17 @@ class PanelDerechoSuscripcionPasajero:
         self.moldes.crear_label(panel, "Mis suscripciones", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w")
         vista.tabla_suscripciones = self.moldes.crear_tabla(panel, (("ruta", "Ruta", 190), ("horario", "Horario", 115), ("conductor", "Conductor", 130), ("total", "Total", 80), ("estado", "Estado", 95)), alto=5, metodo="grid", fila=1, columna=0, sticky="nsew", margen_y=(8, 5))
         botones = self.moldes.crear_frame(panel, tema.PANEL_SUAVE, fila=2, columna=0, sticky="ew", margen_y=(3, 12))
-        vista.boton_cancelar_suscripcion = self.moldes.crear_boton(botones, "Cancelar suscripcion", False, None, vista.acciones.presionar_boton_cancelar_suscripcion, lado="left")
+        vista.boton_cancelar_suscripcion = self.moldes.crear_boton(botones, "Cancelar suscripción", False, None, vista.acciones.presionar_boton_cancelar_suscripcion, lado="left")
         vista.confirmacion_suscripcion = self.moldes.crear_frame(botones, tema.PANEL_SUAVE, lado="left", margen_x=(8, 0))
         self.moldes.crear_label(vista.confirmacion_suscripcion, "¿Confirmar?", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL_SUAVE, lado="left", margen_x=(0, 5))
-        self.moldes.crear_boton(vista.confirmacion_suscripcion, "Si", True, None, vista.acciones.presionar_boton_confirmar_cancelacion_suscripcion, lado="left", margen_x=3)
+        self.moldes.crear_boton(vista.confirmacion_suscripcion, "Sí", True, None, vista.acciones.presionar_boton_confirmar_cancelacion_suscripcion, lado="left", margen_x=3)
         self.moldes.crear_boton(vista.confirmacion_suscripcion, "No", False, None, vista.acciones.presionar_boton_ocultar_cancelacion_suscripcion, lado="left")
         vista.confirmacion_suscripcion.pack_forget()
         self.moldes.crear_label(panel, "Viajes programados", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=3, columna=0, sticky="w")
         vista.tabla_viajes = self.moldes.crear_tabla(panel, (("fecha", "Fecha y hora", 120), ("ruta", "Ruta", 165), ("estado", "Estado", 120), ("detalle", "Conductor / detalle", 155)), alto=5, metodo="grid", fila=4, columna=0, sticky="nsew", margen_y=(8, 5))
         pie = self.moldes.crear_frame(panel, tema.PANEL, tema.BORDE, 1, 14, 12, fila=5, columna=0, sticky="ew", margen_y=(10, 0), columnas_peso=((0, 1),))
-        self.moldes.crear_label(pie, "PROXIMO VIAJE", ("Arial", 8, "bold"), tema.PRIMARIO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
-        vista.texto_temporizador = self.moldes.crear_label(pie, "No hay viajes proximos", ("Arial", 13, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(4, 8))
+        self.moldes.crear_label(pie, "PRÓXIMO VIAJE", ("Arial", 8, "bold"), tema.PRIMARIO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
+        vista.texto_temporizador = self.moldes.crear_label(pie, "No hay viajes próximos", ("Arial", 13, "bold"), tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(4, 8))
         vista.boton_confirmar_inicio = self.moldes.crear_boton(pie, "Confirmar inicio", True, None, vista.acciones.presionar_boton_confirmar_inicio, metodo="grid", fila=1, columna=1, sticky="e", margen_x=5)
         vista.boton_cancelar_viaje = self.moldes.crear_boton(pie, "Cancelar viaje", False, None, vista.acciones.presionar_boton_cancelar_viaje, metodo="grid", fila=1, columna=2, sticky="e")
         vista.panel_progreso = self.moldes.crear_frame(pie, tema.PANEL, fila=2, columna=0, columnas=3, sticky="ew", columnas_peso=((0, 1),))
@@ -135,7 +135,7 @@ class PanelDerechoSuscripcionPasajero:
         vista.label_progreso = self.moldes.crear_label(vista.panel_progreso, "0%", tema.FUENTE_BOTON, tema.PRIMARIO, tema.PANEL, metodo="grid", fila=0, columna=1, sticky="e", margen_x=(10, 0))
         vista.confirmacion_viaje = self.moldes.crear_frame(pie, tema.PANEL, fila=3, columna=2, sticky="e", margen_y=(8, 0))
         self.moldes.crear_label(vista.confirmacion_viaje, "¿Confirmar?", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, lado="left", margen_x=(0, 5))
-        self.moldes.crear_boton(vista.confirmacion_viaje, "Si", True, None, vista.acciones.presionar_boton_confirmar_cancelacion_viaje, lado="left", margen_x=3)
+        self.moldes.crear_boton(vista.confirmacion_viaje, "Sí", True, None, vista.acciones.presionar_boton_confirmar_cancelacion_viaje, lado="left", margen_x=3)
         self.moldes.crear_boton(vista.confirmacion_viaje, "No", False, None, vista.acciones.presionar_boton_ocultar_cancelacion_viaje, lado="left")
         vista.confirmacion_viaje.grid_remove()
 
@@ -175,9 +175,9 @@ class AccionesBotonesSuscripcionPasajero:
         if conductor is None:
             return
         self.vista.conductor_seleccionado = conductor
-        self.vista.label_busqueda.configure(text=f"{conductor.vehiculo} seleccionado. A continuacion, crea tu suscripcion.")
+        self.vista.label_busqueda.configure(text=f"{conductor.vehiculo} seleccionado. A continuación, crea tu suscripción.")
         self.vista.boton_crear_suscripcion.configure(state="disabled" if self.vista.bloqueo_creacion else "normal", cursor="arrow" if self.vista.bloqueo_creacion else "hand2")
-        self.vista.renderizador.mostrar_mensaje(f"Vehiculo seleccionado: {conductor.vehiculo} - ${conductor.precio:,.0f} por viaje.", True)
+        self.vista.renderizador.mostrar_mensaje(f"Vehículo seleccionado: {conductor.vehiculo} - ${conductor.precio:,.0f} por viaje.", True)
 
     def presionar_boton_previsualizar_suscripcion(self):
         vista = self.vista
@@ -193,7 +193,7 @@ class AccionesBotonesSuscripcionPasajero:
         vista.datos_pendientes = datos
         vista.renderizador.mostrar_resumen(resumen, vista.conductor_seleccionado)
         vista.estado_visual.cotizacion()
-        vista.renderizador.mostrar_mensaje("Cotizacion generada. Revisa los datos antes de pagar.", True)
+        vista.renderizador.mostrar_mensaje("Cotización generada. Revisa los datos antes de pagar.", True)
 
     def presionar_boton_volver_ajustar(self):
         self.vista.datos_pendientes = None
@@ -221,7 +221,7 @@ class AccionesBotonesSuscripcionPasajero:
         vista.conductor_seleccionado = None
         vista.estado_visual.formulario()
         self.presionar_boton_refrescar()
-        vista.renderizador.mostrar_mensaje("Pago realizado. La suscripcion ya aparece en tus listados.", True)
+        vista.renderizador.mostrar_mensaje("Pago realizado. La suscripción ya aparece en tus listados.", True)
 
     def presionar_boton_cancelar_alta(self):
         self.vista.datos_pendientes = None
@@ -232,7 +232,7 @@ class AccionesBotonesSuscripcionPasajero:
         seleccion = self.vista.tabla_suscripciones.selection()
         suscripcion = self.vista.suscripciones.get(seleccion[0]) if seleccion else None
         if suscripcion is None:
-            self.vista.renderizador.mostrar_mensaje("Selecciona una suscripcion.")
+            self.vista.renderizador.mostrar_mensaje("Selecciona una suscripción.")
             return
         self.vista.suscripcion_pendiente_cancelacion = suscripcion
         self.vista.estado_visual.confirmar_cancelacion_suscripcion(True)
@@ -243,7 +243,7 @@ class AccionesBotonesSuscripcionPasajero:
         if suscripcion is None:
             return
         _, error = self.vista.controlador.cancelar_suscripcion(self.vista.usuario_actual, suscripcion.id_suscripcion)
-        self.vista.renderizador.mostrar_mensaje(error or "Suscripcion cancelada correctamente.", not error)
+        self.vista.renderizador.mostrar_mensaje(error or "Suscripción cancelada correctamente.", not error)
         if not error:
             self.presionar_boton_refrescar()
 
@@ -255,7 +255,7 @@ class AccionesBotonesSuscripcionPasajero:
         candidatos = [viaje for viaje in self.vista.viajes.values() if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO)]
         viaje = min(candidatos, key=lambda item: item.fecha_hora) if candidatos else None
         if viaje is None:
-            self.vista.renderizador.mostrar_mensaje("No hay un proximo viaje disponible para cancelar.")
+            self.vista.renderizador.mostrar_mensaje("No hay un próximo viaje disponible para cancelar.")
             return
         self.vista.viaje_pendiente_cancelacion = viaje
         self.vista.estado_visual.confirmar_cancelacion_viaje(True)
@@ -300,7 +300,7 @@ class AccionesBotonesSuscripcionPasajero:
         vista = self.vista
         candidatos = [viaje for viaje in vista.viajes.values() if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO, VIAJE_EN_CURSO)]
         if not candidatos:
-            vista.renderizador.mostrar_cronometro("No hay viajes proximos")
+            vista.renderizador.mostrar_cronometro("No hay viajes próximos")
             vista.estado_visual.sin_viajes()
             return
         viaje = min(candidatos, key=lambda item: (0 if item.estado == VIAJE_EN_CURSO else 1, item.fecha_hora))
@@ -327,7 +327,7 @@ class AccionesBotonesSuscripcionPasajero:
             vista.renderizador.mostrar_cronometro(f"Confirma el inicio - {vista.renderizador.temporizador.formatear(cierre - ahora)} restantes")
             vista.estado_visual.inicio_disponible()
         else:
-            vista.renderizador.mostrar_cronometro("El tiempo para iniciar este viaje vencio")
+            vista.renderizador.mostrar_cronometro("El tiempo para iniciar este viaje venció")
             vista.estado_visual.esperando_inicio(False)
 
 
@@ -380,7 +380,7 @@ class VistaSuscripcionPasajero(tk.Frame):
     def crear_widgets(self, lugares):
         principal = self.moldes.crear_frame(self, tema.PANEL, tema.BORDE, 1, 22, 22, llenar="both", expandir=True, margen_x=24, margen_y=24, columnas_peso=((0, 1),), filas_peso=((1, 1),))
         cabecera = self.moldes.crear_frame(principal, tema.PANEL, fila=0, columna=0, sticky="ew", columnas_peso=((0, 1),))
-        self.moldes.crear_label(cabecera, "Suscripcion de viaje", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
+        self.moldes.crear_label(cabecera, "Suscripción de viaje", tema.FUENTE_TITULO, tema.TEXTO, tema.PANEL, metodo="grid", fila=0, columna=0, sticky="w")
         self.moldes.crear_boton(cabecera, "Volver", False, None, lambda: self.navegar("menu"), metodo="grid", fila=0, columna=1, sticky="e")
         cuerpo = self.moldes.crear_frame(principal, tema.PANEL, fila=1, columna=0, sticky="nsew", margen_y=(16, 8), columnas_peso=((0, 2), (1, 3)), filas_peso=((0, 1),))
         cuerpo.grid_columnconfigure(0, weight=2, uniform="suscripcion")

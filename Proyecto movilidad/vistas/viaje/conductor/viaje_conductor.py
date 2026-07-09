@@ -49,7 +49,7 @@ class PanelIzquierdoConductor:
     def crear_busqueda(self):
         contenedor = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=4, columna=0, sticky="nsew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
         self.vista.boton_buscar_pasajeros = self.moldes.crear_boton(contenedor, "Buscar pasajeros", True, None, self.vista.acciones.presionar_boton_buscar_pasajero, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 8))
-        self.moldes.crear_label(contenedor, "Cronometro", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 6))
+        self.moldes.crear_label(contenedor, "Cronómetro", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 6))
         self.vista.label_cronometro = self.moldes.crear_label(contenedor, "00:00", ("Arial", 28, "bold"), tema.PRIMARIO, tema.PANEL_SUAVE, metodo="grid", fila=2, columna=0, sticky="ew", ipady=24)
 
     def crear_panel_pasajero(self):
@@ -69,8 +69,8 @@ class PanelIzquierdoConductor:
 
     def crear_confirmacion(self):
         self.vista.panel_confirmacion = self.moldes.crear_frame(self.vista.panel, tema.FONDO, tema.BORDE, 1, fila=7, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
-        self.vista.label_pregunta_confirmacion = self.moldes.crear_label(self.vista.panel_confirmacion, "Confirmar viaje?", tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
-        self.vista.boton_confirmar_viaje = self.moldes.crear_boton(self.vista.panel_confirmacion, "Si, confirmar", True, None, self.vista.acciones.presionar_boton_confirmar_viaje, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
+        self.vista.label_pregunta_confirmacion = self.moldes.crear_label(self.vista.panel_confirmacion, "¿Confirmar viaje?", tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
+        self.vista.boton_confirmar_viaje = self.moldes.crear_boton(self.vista.panel_confirmacion, "Sí, confirmar", True, None, self.vista.acciones.presionar_boton_confirmar_viaje, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
         self.vista.boton_cancelar_viaje = self.moldes.crear_boton(self.vista.panel_confirmacion, "Cancelar", False, None, self.vista.acciones.presionar_boton_cancelar, metodo="grid", fila=1, columna=1, sticky="ew", margen_x=(4, 10), margen_y=(0, 8))
         self.vista.label_estado_viaje = self.moldes.crear_label(self.vista.panel_confirmacion, "", tema.FUENTE_BOTON, tema.PRIMARIO, tema.FONDO, metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=10)
         self.vista.label_estado_viaje.grid_remove()
@@ -140,7 +140,7 @@ class AccionesBotonesConductor:
         self.vista.navegar("viaje")
 
     def presionar_boton_volver_pregunta_activa(self):
-        messagebox.showwarning("Viaje pendiente", "Debo seleccionar una opcion.")
+        messagebox.showwarning("Viaje pendiente", "Debes seleccionar una opción.")
 
     def presionar_boton_volver_flujo_activo(self):
         messagebox.showwarning("Viaje en proceso", "No se puede volver ya que hay un viaje en proceso.")

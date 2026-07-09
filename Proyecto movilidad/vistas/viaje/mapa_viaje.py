@@ -94,8 +94,8 @@ class MapaViajeComun:
         return self.mapa.set_marker(*coordenada, icon=imagen,)
 
     def crear_marcadores_extremos(self, ruta_llegada, ruta_viaje):
-        self.marcador_inicio_viaje = self.mapa.set_marker(*ruta_llegada[-1], text="Ubicacion inicial")
-        self.marcador_destino_viaje = self.mapa.set_marker(*ruta_viaje[-1], text="Ubicacion final")
+        self.marcador_inicio_viaje = self.mapa.set_marker(*ruta_llegada[-1], text="Ubicación inicial")
+        self.marcador_destino_viaje = self.mapa.set_marker(*ruta_viaje[-1], text="Ubicación final")
         self.ocultar_simbolo_marcador(self.marcador_inicio_viaje)
         self.ocultar_simbolo_marcador(self.marcador_destino_viaje)
 

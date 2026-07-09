@@ -17,7 +17,7 @@ FUENTE_LOGIN_BOTON = ("Arial", 11, "bold")
 
 # --- constantes archivo registro.py ---
 
-CATEGORIAS_LICENCIA = ("Categoria A1", "Categoria A2", "Categoria A3", "Categoria B")
+CATEGORIAS_LICENCIA = ("Categoría A1", "Categoría A2", "Categoría A3", "Categoría B")
 PREFIJO_TELEFONO = "+56 9"
 
 MARCAS_MODELOS = {

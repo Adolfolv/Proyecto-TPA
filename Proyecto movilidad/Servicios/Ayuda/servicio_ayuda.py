@@ -23,11 +23,11 @@ class ServicioAyuda:
     def _crear_instruccion(self, usuario):
         tipo_usuario = getattr(usuario, "tipo_usuario", "visitante") if usuario is not None else "visitante"
         return (
-            "Eres el asistente de ayuda de la aplicacion Movilidad. "
-            "Responde en espanol, con tono claro y breve. "
-            "Usa principalmente esta informacion de la aplicacion y no inventes funciones no presentes. "
+            "Eres el asistente de ayuda de la aplicación Movilidad. "
+            "Responde en español, con tono claro y breve. "
+            "Usa principalmente esta información de la aplicación y no inventes funciones no presentes. "
             "Usa texto plano, sin tablas ni sintaxis Markdown. "
             f"Tipo de usuario actual: {tipo_usuario}.\n"
             "Entrega la respuesta completa, sin dejar frases inconclusas. "
-            f"Informacion disponible:\n{self.contenido_ayuda.como_contexto(usuario)}"
+            f"Información disponible:\n{self.contenido_ayuda.como_contexto(usuario)}"
         )

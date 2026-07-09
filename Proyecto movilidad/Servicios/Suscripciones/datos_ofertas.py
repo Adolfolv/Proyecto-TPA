@@ -1,15 +1,15 @@
 """Catálogo simulado utilizado por la estrategia de ofertas del conductor."""
 
 RUTAS = (
-    ("Plaza de Armas Osorno", "Hospital Base San Jose"), ("Terminal de Buses Osorno", "Universidad de Los Lagos"),
-    ("Portal Osorno", "Parque Chuyaca"), ("Mercado Municipal Osorno", "Hospital Base San Jose"),
-    ("Casino Marina del Sol Osorno", "Terminal de Buses Osorno"), ("Estadio Ruben Marcos Peralta", "Plaza de Armas Osorno"),
+    ("Plaza de Armas Osorno", "Hospital Base San José"), ("Terminal de Buses Osorno", "Universidad de Los Lagos"),
+    ("Portal Osorno", "Parque Chuyaca"), ("Mercado Municipal Osorno", "Hospital Base San José"),
+    ("Casino Marina del Sol Osorno", "Terminal de Buses Osorno"), ("Estadio Rubén Marcos Peralta", "Plaza de Armas Osorno"),
     ("Universidad de Los Lagos", "Portal Osorno"), ("Parque Chuyaca", "Mercado Municipal Osorno"),
-    ("Hospital Base San Jose", "Casino Marina del Sol Osorno"), ("Plaza de Armas Osorno", "Universidad de Los Lagos"),
-    ("Terminal de Buses Osorno", "Portal Osorno"), ("Portal Osorno", "Estadio Ruben Marcos Peralta"),
-    ("Mercado Municipal Osorno", "Parque Chuyaca"), ("Casino Marina del Sol Osorno", "Hospital Base San Jose"),
-    ("Estadio Ruben Marcos Peralta", "Terminal de Buses Osorno"), ("Universidad de Los Lagos", "Plaza de Armas Osorno"),
-    ("Parque Chuyaca", "Casino Marina del Sol Osorno"), ("Hospital Base San Jose", "Portal Osorno"),
+    ("Hospital Base San José", "Casino Marina del Sol Osorno"), ("Plaza de Armas Osorno", "Universidad de Los Lagos"),
+    ("Terminal de Buses Osorno", "Portal Osorno"), ("Portal Osorno", "Estadio Rubén Marcos Peralta"),
+    ("Mercado Municipal Osorno", "Parque Chuyaca"), ("Casino Marina del Sol Osorno", "Hospital Base San José"),
+    ("Estadio Rubén Marcos Peralta", "Terminal de Buses Osorno"), ("Universidad de Los Lagos", "Plaza de Armas Osorno"),
+    ("Parque Chuyaca", "Casino Marina del Sol Osorno"), ("Hospital Base San José", "Portal Osorno"),
     ("Plaza de Armas Osorno", "Mercado Municipal Osorno"), ("Terminal de Buses Osorno", "Parque Chuyaca"),
 )
 

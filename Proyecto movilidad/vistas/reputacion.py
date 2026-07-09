@@ -28,11 +28,11 @@ class FormularioOpinion:
 
     def crear(self, padre):
         bloque = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=4, columna=0, sticky="ew", margen_y=(22, 0), columnas_peso=((0, 1),))
-        self.moldes.crear_label(bloque, "Deja tu opinion", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w")
+        self.moldes.crear_label(bloque, "Deja tu opinión", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w")
         self.estrellas = self.moldes.crear_selector(bloque, ("5 estrellas", "4 estrellas", "3 estrellas", "2 estrellas", "1 estrella"), metodo="grid", fila=1, columna=0, sticky="ew", margen_y=(10, 8))
         self.comentario = tk.Text(bloque, height=4, font=tema.FUENTE_TEXTO, bg=tema.SECUNDARIO, fg=tema.TEXTO, insertbackground=tema.TEXTO, relief="flat", bd=0, wrap="word")
         self.comentario.grid(row=2, column=0, sticky="ew", pady=(0, 10))
-        self.moldes.crear_boton(bloque, "Publicar opinion", True, comando=self.panel.acciones["publicar"], metodo="grid", fila=3, columna=0, sticky="ew")
+        self.moldes.crear_boton(bloque, "Publicar opinión", True, comando=self.panel.acciones["publicar"], metodo="grid", fila=3, columna=0, sticky="ew")
 
     def datos(self):
         return self.estrellas.get().split()[0], self.comentario.get("1.0", "end").strip()
@@ -70,7 +70,7 @@ class PanelReputacion:
 
     def crear_opiniones(self, padre):
         self.moldes.crear_label(padre, "Opiniones de pasajeros", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE, metodo="grid", fila=0, columna=0, sticky="w", margen_y=(0, 12))
-        self.tabla = self.moldes.crear_tabla(padre, (("autor", "Pasajero", 140), ("estrellas", "Estrellas", 100), ("comentario", "Opinion", 420)), alto=12, metodo="grid", fila=1, columna=0, sticky="nsew")
+        self.tabla = self.moldes.crear_tabla(padre, (("autor", "Pasajero", 140), ("estrellas", "Estrellas", 100), ("comentario", "Opinión", 420)), alto=12, metodo="grid", fila=1, columna=0, sticky="nsew")
         area_mensaje = self.moldes.crear_frame(
             padre,
             tema.PANEL_SUAVE,
@@ -96,7 +96,7 @@ class PanelReputacion:
         self.resumen.configure(text=f"{'★' * llenas}{'☆' * (5 - llenas)}  {promedio:.1f} | {len(opiniones)} opiniones")
         filas = {f"opinion-{i}": (opinion.nombre_pasajero, "★" * opinion.estrellas, opinion.comentario) for i, opinion in enumerate(opiniones)}
         self.moldes.sincronizar_tabla(self.tabla, filas)
-        self.mostrar_mensaje("" if filas else "Este conductor aun no tiene opiniones.")
+        self.mostrar_mensaje("" if filas else "Este conductor aún no tiene opiniones.")
 
 class VistaReputacion(tk.Frame):
     def __init__(self, padre, navegar, controlador_reputacion, usuario_actual):
@@ -122,7 +122,7 @@ class VistaReputacion(tk.Frame):
             self.conductores = self.controlador.listar_conductores()
             self.panel.configurar_conductores(self.conductores)
             if not self.conductores:
-                self.panel.mostrar_mensaje("Aun no hay conductores disponibles.")
+                self.panel.mostrar_mensaje("Aún no hay conductores disponibles.")
                 return
             self.id_conductor = self.conductores[0].id_usuario
         else:
@@ -151,7 +151,7 @@ class VistaReputacion(tk.Frame):
             return
         self.panel.formulario.limpiar()
         self.panel.actualizar(resultado.datos)
-        self.panel.mostrar_mensaje("Opinion publicada correctamente.", True)
+        self.panel.mostrar_mensaje("Opinión publicada correctamente.", True)
 
     def cambiar_tema(self):
         tema.alternar_tema()

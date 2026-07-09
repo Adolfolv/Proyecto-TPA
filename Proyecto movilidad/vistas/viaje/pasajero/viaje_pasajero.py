@@ -79,8 +79,8 @@ class PanelIzquierdoPasajero:
 
     def crear_formulario(self):
         datos = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=3, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
-        self.vista.selector_ubicacion_inicial = self.crear_selector_ubicacion(datos, "Ubicacion inicial", 0, 0, (0, 5))
-        self.vista.selector_ubicacion_final = self.crear_selector_ubicacion(datos, "Ubicacion final", 0, 1, (5, 0))
+        self.vista.selector_ubicacion_inicial = self.crear_selector_ubicacion(datos, "Ubicación inicial", 0, 0, (0, 5))
+        self.vista.selector_ubicacion_final = self.crear_selector_ubicacion(datos, "Ubicación final", 0, 1, (5, 0))
         self.vista.selector_ubicacion_final.current(1)
         self.vista.entrada_usuarios = self.crear_campo(datos, "Cantidad usuarios", "1", 2, 0, 2)
         self.crear_formulario_material(datos)
@@ -145,9 +145,9 @@ class PanelIzquierdoPasajero:
 
     def crear_busqueda_vehiculos(self):
         contenedor = self.moldes.crear_frame(self.vista.panel, tema.PANEL, fila=4, columna=0, sticky="nsew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1),))
-        self.vista.boton_buscar_vehiculos = self.moldes.crear_boton(contenedor, "Buscar vehiculos", True, None, self.vista.acciones.presionar_boton_buscar_vehiculos, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 4))
+        self.vista.boton_buscar_vehiculos = self.moldes.crear_boton(contenedor, "Buscar vehículos", True, None, self.vista.acciones.presionar_boton_buscar_vehiculos, metodo="grid", fila=0, columna=0, sticky="ew", margen_y=(0, 4))
         self.vista.label_error_busqueda = self.moldes.crear_label(contenedor, "", ("Arial", 9), tema.ERROR, tema.PANEL, 300, "left", metodo="grid", fila=1, columna=0, sticky="w", margen_y=(0, 8))
-        self.vista.label_vehiculos_disponibles = self.moldes.crear_label(contenedor, "Vehiculos disponibles", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(0, 6))
+        self.vista.label_vehiculos_disponibles = self.moldes.crear_label(contenedor, "Vehículos disponibles", tema.FUENTE_BOTON, tema.TEXTO, tema.PANEL, metodo="grid", fila=2, columna=0, sticky="w", margen_y=(0, 6))
         self.vista.tabla_vehiculos = self.moldes.crear_tabla(contenedor, (("nombre", "Nombre", 80), ("tipo", "Tipo", 65), ("detalle", "Detalle", 115), ("precio", "Precio", 70), ("tiempo", "Tiempo", 60)), 4, metodo="grid", fila=3, columna=0, sticky="nsew")
         self.vista.tabla_vehiculos.tag_configure("fila", background=tema.SECUNDARIO, foreground=tema.TEXTO)
         self.vista.tabla_vehiculos.bind("<<TreeviewSelect>>", self.vista.acciones.presionar_boton_seleccionar_vehiculo)
@@ -158,8 +158,8 @@ class PanelIzquierdoPasajero:
 
     def crear_confirmacion(self):
         self.vista.panel_confirmacion = self.moldes.crear_frame(self.vista.panel, tema.FONDO, tema.BORDE, 1, fila=7, columna=0, sticky="ew", margen_x=16, margen_y=(0, 10), columnas_peso=((0, 1), (1, 1)))
-        self.vista.label_pregunta_confirmacion = self.moldes.crear_label(self.vista.panel_confirmacion, "Confirmar pago del viaje seleccionado?", tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
-        self.vista.boton_confirmar_pago = self.moldes.crear_boton(self.vista.panel_confirmacion, "Si, confirmar", True, None, self.vista.acciones.presionar_boton_confirmar_pago, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
+        self.vista.label_pregunta_confirmacion = self.moldes.crear_label(self.vista.panel_confirmacion, "¿Confirmar pago del viaje seleccionado?", tema.FUENTE_BOTON, tema.TEXTO, tema.FONDO, 280, "left", metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=(8, 6))
+        self.vista.boton_confirmar_pago = self.moldes.crear_boton(self.vista.panel_confirmacion, "Sí, confirmar", True, None, self.vista.acciones.presionar_boton_confirmar_pago, metodo="grid", fila=1, columna=0, sticky="ew", margen_x=(10, 4), margen_y=(0, 8))
         self.vista.boton_cancelar_pago = self.moldes.crear_boton(self.vista.panel_confirmacion, "Cancelar", False, None, self.vista.acciones.presionar_boton_cancelar, metodo="grid", fila=1, columna=1, sticky="ew", margen_x=(4, 10), margen_y=(0, 8))
         self.vista.label_estado_viaje = self.moldes.crear_label(self.vista.panel_confirmacion, "", tema.FUENTE_BOTON, tema.PRIMARIO, tema.FONDO, metodo="grid", fila=0, columna=0, columnas=2, sticky="ew", margen_x=10, margen_y=10)
         self.vista.label_estado_viaje.grid_remove()

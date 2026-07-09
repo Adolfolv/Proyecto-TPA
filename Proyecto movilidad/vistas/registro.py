@@ -173,7 +173,7 @@ class FormularioConductor(FormularioRegistroBase):
         self.entrada_licencia = self.moldes.crear_entrada(bloque)
         self.entrada_licencia.grid(row=11, column=1, sticky="ew", padx=5, pady=(5, 6), ipady=7)
         self.crear_entrada(bloque, "Emisión de licencia", 12, 0)
-        self.crear_entrada(bloque, "Vencimiento de licencia -> formato(DD-MM-YYYY)", 12, 1)
+        self.crear_entrada(bloque, "Vencimiento de licencia -> formato (DD-MM-YYYY)", 12, 1)
 
     def actualizar_modelos(self, evento=None):
         modelos = MARCAS_MODELOS[self.selector_marca.get()]

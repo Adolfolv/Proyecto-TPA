@@ -44,8 +44,8 @@ class VistaMenu(tk.Frame):
 
         self.moldes.crear_tarjeta_acceso_menu(
             izquierda,
-            "Suscripcion de viaje",
-            "Programa viajes recurrentes durante un periodo.",
+            "Suscripción de viaje",
+            "Programa viajes recurrentes durante un período.",
             comando=lambda: self.navegar("suscripcion"),
             metodo="grid",
             fila=0,

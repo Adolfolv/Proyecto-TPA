@@ -10,7 +10,7 @@ def normalizar_numero_tarjeta(numero):
 
 def _mensaje_entero(nombre, permite_cero):
     minimo = "mayor o igual a 0" if permite_cero else "mayor a 0"
-    return f"El {nombre} debe ser un numero entero {minimo}."
+    return f"El {nombre} debe ser un número entero {minimo}."
 
 
 def _normalizar_entero(valor, nombre, permite_cero=False):
@@ -71,7 +71,7 @@ class ValidadorSaldoSuficiente(Validador):
 class ValidadorTarjetaEncontrada(Validador):
     def validar(self, valor):
         if valor is None:
-            raise ValueError("No se encontro la tarjeta seleccionada.")
+            raise ValueError("No se encontró la tarjeta seleccionada.")
 
         return True
 
@@ -105,25 +105,25 @@ class ValidadorFechaVencimientoTarjeta(Validador):
         partes = str(valor or "").strip().split("/")
 
         if len(partes) != 2:
-            raise ValueError("Fecha de vencimiento invalida. Usa formato MM/AA.")
+            raise ValueError("Fecha de vencimiento inválida. Usa formato MM/AA.")
 
         mes, ano = partes
 
         if not mes.isdigit() or not ano.isdigit():
-            raise ValueError("Fecha de vencimiento invalida. Usa formato MM/AA.")
+            raise ValueError("Fecha de vencimiento inválida. Usa formato MM/AA.")
 
         if len(mes) != 2 or len(ano) != 2:
-            raise ValueError("Fecha de vencimiento invalida. Usa formato MM/AA.")
+            raise ValueError("Fecha de vencimiento inválida. Usa formato MM/AA.")
 
         mes = int(mes)
         ano = 2000 + int(ano)
 
         if mes < 1 or mes > 12:
-            raise ValueError("Fecha de vencimiento invalida. Usa formato MM/AA.")
+            raise ValueError("Fecha de vencimiento inválida. Usa formato MM/AA.")
 
         hoy = date.today()
         if not (ano > hoy.year or (ano == hoy.year and mes >= hoy.month)):
-            raise ValueError("La tarjeta esta vencida.")
+            raise ValueError("La tarjeta está vencida.")
 
         return True
 
@@ -136,7 +136,7 @@ class ValidadorNumeroTarjetaVisa(Validador):
             or not numero.startswith("4")
             or not 13 <= len(numero) <= 19
         ):
-            raise ValueError("Numero de tarjeta Visa invalido.")
+            raise ValueError("Número de tarjeta Visa inválido.")
 
         return True
 
@@ -146,12 +146,12 @@ class ValidadorNumeroTarjetaMastercard(Validador):
         numero = normalizar_numero_tarjeta(valor)
 
         if len(numero) != 16 or not numero.isdigit():
-            raise ValueError("Numero de tarjeta Mastercard invalido.")
+            raise ValueError("Número de tarjeta Mastercard inválido.")
 
         dos = int(numero[:2])
         cuatro = int(numero[:4])
         if not (51 <= dos <= 55 or 2221 <= cuatro <= 2720):
-            raise ValueError("Numero de tarjeta Mastercard invalido.")
+            raise ValueError("Número de tarjeta Mastercard inválido.")
 
         return True
 
@@ -164,7 +164,7 @@ class ValidadorNumeroTarjetaAmericanExpress(Validador):
             or len(numero) != 15
             or not numero.startswith(("34", "37"))
         ):
-            raise ValueError("Numero de tarjeta American Express invalido.")
+            raise ValueError("Número de tarjeta American Express inválido.")
 
         return True
 
@@ -189,13 +189,13 @@ class ValidacionesTarjeta:
         clase_tarjeta = self.tipos_tarjeta.get(tipo)
 
         if clase_tarjeta is None:
-            raise ValueError("Tipo de tarjeta invalido.")
+            raise ValueError("Tipo de tarjeta inválido.")
 
         return clase_tarjeta
 
     def _validar_cvv(self, tarjeta_validadora, cvv):
         cvv = str(cvv or "").strip()
         if len(cvv) != tarjeta_validadora.longitud_cvv or not cvv.isdigit():
-            raise ValueError("CVV invalido para el tipo de tarjeta seleccionado.")
+            raise ValueError("CVV inválido para el tipo de tarjeta seleccionado.")
 
         return True

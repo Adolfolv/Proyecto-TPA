@@ -48,8 +48,8 @@ class PanelIzquierdoAyuda:
     def crear_cabecera(self, padre):
         cabecera = self.moldes.crear_frame(padre, tema.PANEL_SUAVE, fila=0, columna=0, sticky="ew", margen_y=(0, 12), columnas_peso=((0, 1),))
         textos = self.moldes.crear_frame(cabecera, tema.PANEL_SUAVE, fila=0, columna=0, sticky="w")
-        self.moldes.crear_label(textos, f"Guia para {self.rol.lower()}", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE).pack(anchor="w")
-        self.moldes.crear_label(textos, "Informacion relevante para tu cuenta", ("Arial", 9), tema.TEXTO_SUAVE, tema.PANEL_SUAVE).pack(anchor="w", pady=(3, 0))
+        self.moldes.crear_label(textos, f"Guía para {self.rol.lower()}", tema.FUENTE_SUBTITULO, tema.TEXTO, tema.PANEL_SUAVE).pack(anchor="w")
+        self.moldes.crear_label(textos, "Información relevante para tu cuenta", ("Arial", 9), tema.TEXTO_SUAVE, tema.PANEL_SUAVE).pack(anchor="w", pady=(3, 0))
         tk.Label(cabecera, text=self.rol, font=("Arial", 9, "bold"), bg=tema.SECUNDARIO, fg=tema.TEXTO, padx=10, pady=5).grid(row=0, column=1, sticky="e")
 
     def crear_secciones(self, padre):
@@ -109,8 +109,8 @@ class PanelDerechoAyuda:
         self.bienvenida = tk.Frame(padre, bg=tema.PANEL, padx=14, pady=12)
         self.bienvenida.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=12, pady=12)
         tk.Label(self.bienvenida, text="IA", font=("Arial", 20, "bold"), bg=tema.SECUNDARIO, fg=tema.PRIMARIO, width=3, height=1).pack(pady=(4, 7))
-        tk.Label(self.bienvenida, text="En que puedo ayudarte?", font=tema.FUENTE_SUBTITULO, bg=tema.PANEL, fg=tema.TEXTO).pack()
-        tk.Label(self.bienvenida, text="Elige una consulta rapida o escribe abajo.", font=("Arial", 9), bg=tema.PANEL, fg=tema.TEXTO_SUAVE).pack(pady=(4, 10))
+        tk.Label(self.bienvenida, text="¿En qué puedo ayudarte?", font=tema.FUENTE_SUBTITULO, bg=tema.PANEL, fg=tema.TEXTO).pack()
+        tk.Label(self.bienvenida, text="Elige una consulta rápida o escribe abajo.", font=("Arial", 9), bg=tema.PANEL, fg=tema.TEXTO_SUAVE).pack(pady=(4, 10))
         opciones = tk.Frame(self.bienvenida, bg=tema.PANEL)
         opciones.pack(fill="both", expand=True)
         opciones.grid_columnconfigure(0, weight=1, uniform="sugerencias")

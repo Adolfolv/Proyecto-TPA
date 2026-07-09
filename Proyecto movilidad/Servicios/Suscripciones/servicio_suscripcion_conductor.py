@@ -155,7 +155,7 @@ class ServicioAsignacionSuscripcionConductor:
         for viaje in viajes:
             if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO):
                 viaje.estado = VIAJE_CANCELADO
-                viaje.error = "Suscripcion cancelada por el conductor."
+                viaje.error = "Suscripción cancelada por el conductor."
         self.repositorio.guardar_cambios()
         return suscripcion
 
@@ -229,7 +229,7 @@ class ServicioViajesSuscripcionConductor:
             f"({conductor.auto.patente})"
         )
         viaje.estado = VIAJE_CANCELADO
-        viaje.error = "Cancelado por el conductor. Sin liquidacion."
+        viaje.error = "Cancelado por el conductor. Sin liquidación."
         self.repositorio.guardar_cambios()
         return viaje
 

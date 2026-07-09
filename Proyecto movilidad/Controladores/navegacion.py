@@ -77,7 +77,7 @@ class RutaInicioSesion(RutaNavegacion):
 
     def ejecutar(self):
         self.limpiar_pantalla()
-        self.navegacion.ventana.title("Inicio de sesion")
+        self.navegacion.ventana.title("Inicio de sesión")
         VistaInicioSesion(
             self.navegacion.ventana,
             self.navegacion.navegar,
@@ -118,7 +118,7 @@ class RutaMenu(RutaNavegacion):
     destino = "menu"
 
     def ejecutar(self):
-        self.mostrar(VistaMenu, "Menu principal")
+        self.mostrar(VistaMenu, "Menú principal")
 
 
 class RutaAyuda(RutaNavegacion):
@@ -221,7 +221,7 @@ class RutaSuscripcion(RutaNavegacion):
 
     def ejecutar(self):
         self.limpiar_pantalla()
-        self.navegacion.ventana.title("Suscripcion de viaje")
+        self.navegacion.ventana.title("Suscripción de viaje")
         usuario = self.navegacion.obtener_usuario_actual()
         VistaSuscripcionViaje(
             self.navegacion.ventana,

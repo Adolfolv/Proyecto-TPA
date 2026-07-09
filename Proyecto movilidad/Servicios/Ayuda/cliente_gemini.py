@@ -37,7 +37,7 @@ class ClienteGemini:
 
     def generar_respuesta(self, instruccion_sistema, pregunta):
         if not self.api_key:
-            raise ValueError("No se encontro la clave GEMINI_API_KEY o AYUDA_IA_API_KEY.")
+            raise ValueError("No se encontró la clave GEMINI_API_KEY o AYUDA_IA_API_KEY.")
 
         datos = {
             "systemInstruction": {"parts": [{"text": instruccion_sistema}]},
@@ -83,15 +83,15 @@ class ClienteGemini:
         except json.JSONDecodeError:
             mensaje_api = ""
         if codigo == 401:
-            return "La clave de Gemini no es valida. Configura GEMINI_API_KEY o AYUDA_IA_API_KEY con una clave activa."
+            return "La clave de Gemini no es válida. Configura GEMINI_API_KEY o AYUDA_IA_API_KEY con una clave activa."
         if codigo == 403:
-            return "La clave de Gemini no tiene permisos para este modelo o proyecto. Revisa la API key y la facturacion en Google AI Studio."
+            return "La clave de Gemini no tiene permisos para este modelo o proyecto. Revisa la API key y la facturación en Google AI Studio."
         if codigo == 429:
             reintento = f" Intenta nuevamente en {max(int(espera), 1)} segundos." if espera else " Espera unos minutos e intenta nuevamente."
-            return "Gemini alcanzo el limite de solicitudes de este proyecto." + reintento + " Si continua, revisa la cuota o la facturacion en Google AI Studio."
+            return "Gemini alcanzó el límite de solicitudes de este proyecto." + reintento + " Si continúa, revisa la cuota o la facturación en Google AI Studio."
         if codigo == 503:
-            return "Gemini esta temporalmente saturado. Espera unos segundos e intenta nuevamente."
-        return f"Gemini respondio con error {codigo}: {mensaje_api or 'no fue posible completar la consulta.'}"
+            return "Gemini está temporalmente saturado. Espera unos segundos e intenta nuevamente."
+        return f"Gemini respondió con error {codigo}: {mensaje_api or 'no fue posible completar la consulta.'}"
 
     def _extraer_texto(self, payload):
         candidatos = payload.get("candidates", [])

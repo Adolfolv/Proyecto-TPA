@@ -33,7 +33,7 @@ class RenderizadorConductor:
         self.vista.label_nombre_pasajero.config(text=pasajero.nombre_completo)
         self.vista.label_trayecto_pasajero.config(text=pasajero.trayecto)
         self.vista.label_vehiculo_pasajero.config(
-            text=f"Vehiculo: {pasajero.vehiculo}"
+            text=f"Vehículo: {pasajero.vehiculo}"
         )
         self.vista.label_pago_pasajero.config(text=f"Pago: ${pasajero.precio}")
         self.vista.label_llegada_pasajero.config(

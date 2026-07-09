@@ -41,7 +41,7 @@ class ServicioAltaSuscripcionPasajero:
         )
         fechas = self.horarios.generar_fechas(inicio, fin, dias, horario, ahora)
         if not fechas:
-            raise ValueError("El periodo elegido no contiene horarios futuros para esos dias.")
+            raise ValueError("El período elegido no contiene horarios futuros para esos días.")
         existentes = tuple(
             viaje for viaje in self.repositorio.listar_viajes(id_pasajero=usuario.id_usuario)
             if viaje.estado in ESTADOS_VIAJE_ACTIVO
@@ -65,7 +65,7 @@ class ServicioAltaSuscripcionPasajero:
     def confirmar(self, usuario, origen, destino, fecha_inicio, fecha_fin,
                   dias_semana, hora, cantidad, conductor=None):
         if conductor is None:
-            raise ValueError("Selecciona un conductor antes de crear la suscripcion.")
+            raise ValueError("Selecciona un conductor antes de crear la suscripción.")
         resumen = self.previsualizar(
             usuario, origen, destino, fecha_inicio, fecha_fin, dias_semana, hora, cantidad,
         )
@@ -118,17 +118,17 @@ class ServicioViajesSuscripcionPasajero:
             id_pasajero=usuario.id_usuario
         ) if item.id_viaje_programado == id_viaje), None)
         if viaje is None:
-            raise ValueError("No se encontro el viaje programado.")
+            raise ValueError("No se encontró el viaje programado.")
         if viaje.estado not in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO):
-            raise ValueError("Este viaje ya no esta pendiente de confirmacion.")
+            raise ValueError("Este viaje ya no está pendiente de confirmación.")
         ahora, horario = self.reloj(), datetime.fromisoformat(viaje.fecha_hora)
         if ahora < horario - timedelta(minutes=5):
-            raise ValueError("Podras confirmar el inicio desde 5 minutos antes.")
+            raise ValueError("Podrás confirmar el inicio desde 5 minutos antes.")
         if ahora > horario + self.horarios.MARGEN_ATRASO:
-            raise ValueError("El plazo para confirmar este viaje ya vencio.")
+            raise ValueError("El plazo para confirmar este viaje ya venció.")
         suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
         if suscripcion is None or suscripcion.estado != ESTADO_ACTIVA:
-            raise ValueError("La suscripcion debe estar activa para iniciar el viaje.")
+            raise ValueError("La suscripción debe estar activa para iniciar el viaje.")
         viaje.pasajero_confirmo_en = ahora.isoformat(timespec="seconds")
         viaje.inicio_confirmado_en = ahora.isoformat(timespec="seconds")
         viaje.estado = VIAJE_EN_CURSO
@@ -164,11 +164,11 @@ class ServicioViajesSuscripcionPasajero:
             (item for item in cancelables if item.id_viaje_programado == id_viaje), None
         )
         if viaje is None:
-            raise ValueError("No se encontro el viaje programado.")
+            raise ValueError("No se encontró el viaje programado.")
         if self.horarios.proximo(cancelables) is not viaje:
-            raise ValueError("Solo se puede cancelar el proximo viaje programado.")
+            raise ValueError("Solo se puede cancelar el próximo viaje programado.")
         viaje.estado = VIAJE_CANCELADO
-        viaje.error = "Cancelado por el pasajero. El saldo se liquida al cancelar la suscripcion."
+        viaje.error = "Cancelado por el pasajero. El saldo se liquida al cancelar la suscripción."
         self.repositorio.guardar_cambios()
         return viaje
 
@@ -187,7 +187,7 @@ class ServicioCancelacionSuscripcionPasajero:
     def cancelar_suscripcion(self, usuario, id_suscripcion):
         suscripcion = self._obtener_propia(usuario, id_suscripcion)
         if suscripcion.estado != ESTADO_ACTIVA:
-            raise ValueError("La suscripcion ya no se puede cancelar.")
+            raise ValueError("La suscripción ya no se puede cancelar.")
         self.politica_pasajero.validar_sin_viaje_inminente(
             self.repositorio.listar_viajes(id_pasajero=usuario.id_usuario),
             self.reloj(),
@@ -245,11 +245,11 @@ class ServicioCancelacionSuscripcionPasajero:
         for viaje in viajes:
             if viaje.estado in (VIAJE_PROGRAMADO, VIAJE_ASIGNADO):
                 viaje.estado = VIAJE_CANCELADO
-                viaje.error = "Suscripcion cancelada por el pasajero."
+                viaje.error = "Suscripción cancelada por el pasajero."
                 viaje.reembolsado = True
 
     def _obtener_propia(self, usuario, id_suscripcion):
         suscripcion = self.repositorio.obtener_suscripcion(id_suscripcion)
         if suscripcion is None or str(suscripcion.id_pasajero) != str(usuario.id_usuario):
-            raise ValueError("No se encontro la suscripcion.")
+            raise ValueError("No se encontró la suscripción.")
         return suscripcion

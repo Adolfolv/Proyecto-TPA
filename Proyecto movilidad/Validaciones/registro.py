@@ -33,7 +33,7 @@ class ValidadorCorreo(Validador):
                 str(valor or "").strip(),
             )
         ):
-            raise ValueError("Correo invalido. Usa un formato como nombre@correo.com.")
+            raise ValueError("Correo inválido. Usa un formato como nombre@correo.com.")
 
         return True
 
@@ -41,10 +41,10 @@ class ValidadorCorreo(Validador):
 class ValidadorEdad(Validador):
     def validar(self, valor):
         if not es_numero(valor):
-            raise ValueError("Edad invalida. Debe ser un numero entre 18 y 100.")
+            raise ValueError("Edad inválida. Debe ser un número entre 18 y 100.")
 
         if not 18 <= int(valor) <= 100:
-            raise ValueError("Edad invalida. Debe ser un numero entre 18 y 100.")
+            raise ValueError("Edad inválida. Debe ser un número entre 18 y 100.")
 
         return True
 
@@ -53,17 +53,17 @@ class ValidadorTelefono(Validador):
     def validar(self, valor):
         texto = str(valor or "").strip()
         if not re.fullmatch(r"\+?[0-9 ]+", texto):
-            raise ValueError("Telefono invalido. Usa +56 9 seguido de 8 digitos.")
+            raise ValueError("Teléfono inválido. Usa +56 9 seguido de 8 dígitos.")
 
         telefono = re.sub(r"\D", "", texto)
 
         if telefono.startswith("569"):
             if len(telefono) != 11:
-                raise ValueError("Telefono invalido. Usa +56 9 seguido de 8 digitos.")
+                raise ValueError("Teléfono inválido. Usa +56 9 seguido de 8 dígitos.")
             return True
 
         if len(telefono) != 8:
-            raise ValueError("Telefono invalido. Usa +56 9 seguido de 8 digitos.")
+            raise ValueError("Teléfono inválido. Usa +56 9 seguido de 8 dígitos.")
 
         return True
 
@@ -82,7 +82,7 @@ class ValidadorPatente(Validador):
             re.fullmatch(r"[A-Z]{4}[0-9]{2}", patente)
             or re.fullmatch(r"[A-Z]{2}[0-9]{4}", patente)
         ):
-            raise ValueError("Patente invalida. Usa formato chileno: ABCD12 o AB1234.")
+            raise ValueError("Patente inválida. Usa formato chileno: ABCD12 o AB1234.")
 
         return True
 
@@ -90,10 +90,10 @@ class ValidadorPatente(Validador):
 class ValidadorAsientos(Validador):
     def validar(self, valor):
         if not es_numero(valor):
-            raise ValueError("Cantidad de pasajeros invalida. Debe ser un numero entre 1 y 9.")
+            raise ValueError("Cantidad de pasajeros inválida. Debe ser un número entre 1 y 9.")
 
         if not 1 <= int(valor) <= 9:
-            raise ValueError("Cantidad de pasajeros invalida. Debe ser un numero entre 1 y 9.")
+            raise ValueError("Cantidad de pasajeros inválida. Debe ser un número entre 1 y 9.")
 
         return True
 
@@ -103,10 +103,10 @@ class ValidadorEquipaje(Validador):
         try:
             peso = float(valor)
             if not 0 <= peso <= 500:
-                raise ValueError("Peso maximo de equipaje invalido. Debe ser un numero entre 0 y 500.")
+                raise ValueError("Peso máximo de equipaje inválido. Debe ser un número entre 0 y 500.")
 
         except (TypeError, ValueError):
-            raise ValueError("Peso maximo de equipaje invalido. Debe ser un numero entre 0 y 500.")
+            raise ValueError("Peso máximo de equipaje inválido. Debe ser un número entre 0 y 500.")
 
         return True
 
@@ -121,13 +121,13 @@ class ValidadorNumeroLicencia(Validador):
         )
 
         if len(rut) < 8:
-            raise ValueError("Numero de licencia invalido. Ingresa un RUT valido, con digito verificador.")
+            raise ValueError("Número de licencia inválido. Ingresa un RUT válido, con dígito verificador.")
 
         cuerpo = rut[:-1]
         dv = rut[-1]
 
         if not cuerpo.isdigit():
-            raise ValueError("Numero de licencia invalido. Ingresa un RUT valido, con digito verificador.")
+            raise ValueError("Número de licencia inválido. Ingresa un RUT válido, con dígito verificador.")
 
         suma = 0
         multiplicador = 2
@@ -147,7 +147,7 @@ class ValidadorNumeroLicencia(Validador):
         }.get(resto, str(resto))
 
         if dv != dv_esperado:
-            raise ValueError("Numero de licencia invalido. Ingresa un RUT valido, con digito verificador.")
+            raise ValueError("Número de licencia inválido. Ingresa un RUT válido, con dígito verificador.")
 
         return True
 
@@ -189,7 +189,7 @@ class ValidadorContrasena(Validador):
     def validar(self, valor):
         contrasena = str(valor or "")
         if len(contrasena) < 6:
-            raise ValueError("La contrasena es demasiado corta. Debe tener al menos 6 caracteres.")
+            raise ValueError("La contraseña es demasiado corta. Debe tener al menos 6 caracteres.")
 
         return True
 
@@ -198,7 +198,7 @@ class ValidadorConfirmacionContrasena(Validador):
     def validar(self, datos):
         contrasena, confirmar_contrasena = datos
         if contrasena != confirmar_contrasena:
-            raise ValueError("Las contrasenas no coinciden. Escribe la misma contrasena en ambos campos.")
+            raise ValueError("Las contraseñas no coinciden. Escribe la misma contraseña en ambos campos.")
 
         return True
     
@@ -231,7 +231,7 @@ class ValidacionesUsuario:
             try:
                 self.validador_campo_obligatorio.validar(usuario.direccion)
             except ValueError:
-                raise ValueError("La direccion es obligatoria.")
+                raise ValueError("La dirección es obligatoria.")
 
         if confirmar_contrasena is not None:
             self.validador_confirmacion.validar(

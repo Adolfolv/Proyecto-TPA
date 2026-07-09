@@ -74,5 +74,5 @@ class ControladorMovimientosBilletera:
     def _operacion_por_direccion(self, direccion):
         operacion = self.OPERACIONES_MOVIMIENTO.get(direccion)
         if operacion is None:
-            raise ValueError("Direccion de movimiento invalida.")
+            raise ValueError("Dirección de movimiento inválida.")
         return operacion

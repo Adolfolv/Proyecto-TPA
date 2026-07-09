@@ -34,11 +34,11 @@ class ProcesadorSuscripcionesPendientes:
             suscripcion = self.repositorio.obtener_suscripcion(viaje.id_suscripcion)
             if suscripcion is None or suscripcion.estado == ESTADO_CANCELADA:
                 viaje.estado = VIAJE_CANCELADO
-                viaje.error = "La suscripcion ya no esta disponible."
+                viaje.error = "La suscripción ya no está disponible."
                 cambios = True
             elif ahora - horario > PoliticaHorariosSuscripcion.MARGEN_ATRASO:
                 viaje.estado = VIAJE_FALLIDO
-                viaje.error = "El horario vencio mientras la aplicacion estaba cerrada."
+                viaje.error = "El horario venció mientras la aplicación estaba cerrada."
                 cambios = True
 
         cambios = self._finalizar_suscripciones_vencidas(ahora.date()) or cambios

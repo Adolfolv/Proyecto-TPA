@@ -18,7 +18,7 @@ class PanelInicioAdmin:
     def crear(self):
         vista = self.vista
         vista.limpiar_contenido()
-        vista.configurar_cabecera("Panel administrador", "Cerrar sesion", vista.acciones.presionar_boton_cerrar_sesion, tema.texto_boton(), vista.acciones.presionar_boton_cambiar_tema)
+        vista.configurar_cabecera("Panel administrador", "Cerrar sesión", vista.acciones.presionar_boton_cerrar_sesion, tema.texto_boton(), vista.acciones.presionar_boton_cambiar_tema)
         vista.contenido.grid_rowconfigure(0, weight=1)
         conteo = vista.controlador_admin.contar_por_tipo()
         centro = self.moldes.crear_frame(vista.contenido, tema.PANEL, fila=0, columna=0, sticky="nsew", columnas_peso=((0, 1), (1, 1)), filas_peso=((0, 1),))
@@ -27,7 +27,7 @@ class PanelInicioAdmin:
         # el menu normal de pasajeros/conductores.
         secciones = (
             ("pasajero", "Pasajeros", tema.ADMIN_PASAJERO, "Revisa cuentas de usuarios que solicitan viajes."),
-            ("conductor", "Conductores", tema.ADMIN_CONDUCTOR, "Consulta conductores, licencias y datos del vehiculo."),
+            ("conductor", "Conductores", tema.ADMIN_CONDUCTOR, "Consulta conductores, licencias y datos del vehículo."),
         )
         for columna, (tipo, titulo, color, descripcion) in enumerate(secciones):
             self.crear_tarjeta_seccion(centro, columna, tipo, titulo, color, descripcion, conteo)
@@ -77,7 +77,7 @@ class PanelListadoAdmin:
         scroll.grid(row=0, column=1, sticky="ns")
 
         if not usuarios:
-            self.moldes.crear_label(listado, "No hay usuarios registrados en esta seccion.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, metodo="grid", row=0, column=0, sticky="w")
+            self.moldes.crear_label(listado, "No hay usuarios registrados en esta sección.", tema.FUENTE_TEXTO, tema.TEXTO_SUAVE, tema.PANEL, metodo="grid", row=0, column=0, sticky="w")
             return
 
         # Cada usuario se muestra como tarjeta para dejar espacio a imagen y
@@ -244,7 +244,7 @@ class AccionesBotonesAdmin:
     def pedir_confirmacion(self, usuario, accion, al_confirmar):
         nombre = f"{usuario.nombre} {usuario.apellido}"
         self.vista.mostrar_confirmacion(
-            f"Confirmar {accion} la cuenta de {nombre}?",
+            f"¿Confirmar {accion} la cuenta de {nombre}?",
             al_confirmar,
         )
 

@@ -24,26 +24,26 @@ class ValidacionesViaje:
         try:
             cantidad = int(cantidad_usuarios)
         except (TypeError, ValueError):
-            return False, "La cantidad de usuarios debe ser un numero entero."
+            return False, "La cantidad de usuarios debe ser un número entero."
 
         if cantidad <= 0:
             return False, "La cantidad de usuarios debe ser mayor a 0."
 
         if cantidad > 4:
-            return False, "La cantidad maxima de usuarios es 4."
+            return False, "La cantidad máxima de usuarios es 4."
 
         if ubicacion_inicial == ubicacion_final:
-            return False, "La ubicacion inicial y final deben ser distintas."
+            return False, "La ubicación inicial y final deben ser distintas."
 
         if tipo_viaje == "material":
             try:
                 volumen_numero = float(str(volumen).replace(",", "."))
                 peso_numero = float(str(peso).replace(",", "."))
             except (TypeError, ValueError):
-                return False, "El volumen y el peso deben ser numeros validos."
+                return False, "El volumen y el peso deben ser números válidos."
 
             if not isfinite(volumen_numero) or not isfinite(peso_numero):
-                return False, "El volumen y el peso deben ser numeros validos."
+                return False, "El volumen y el peso deben ser números válidos."
 
             if not self.VOLUMEN_MINIMO_M3 <= volumen_numero <= self.VOLUMEN_MAXIMO_M3:
                 return False, "El volumen debe estar entre 0,01 y 2 m3."
@@ -52,7 +52,7 @@ class ValidacionesViaje:
                 return False, "El peso debe estar entre 0,1 y 500 kg."
 
             if tipo_material not in TIPOS_MATERIAL:
-                return False, "Debe seleccionar un tipo de material valido."
+                return False, "Debe seleccionar un tipo de material válido."
 
         return True, ""
 

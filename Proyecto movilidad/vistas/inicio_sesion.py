@@ -47,7 +47,7 @@ class VistaInicioSesion(tk.Frame):
 
         self.moldes.crear_label(
             panel,
-            "Iniciar sesion",
+            "Iniciar sesión",
             tema.FUENTE_LOGIN_TITULO,
             tema.TEXTO,
             tema.PANEL,
@@ -83,7 +83,7 @@ class VistaInicioSesion(tk.Frame):
         self.entrada_contrasena.grid(row=5, column=0, sticky="ew", padx=24, pady=(0, 18), ipady=9)
         tk.Checkbutton(
             panel,
-            text="Mostrar contrasena",
+            text="Mostrar contraseña",
             variable=self.mostrar_contrasena,
             command=self.actualizar_visibilidad_contrasena,
             bg=tema.PANEL,
@@ -96,7 +96,7 @@ class VistaInicioSesion(tk.Frame):
         ).grid(row=6, column=0, sticky="w", padx=24, pady=(0, 24))
         boton_inicio = self.moldes.crear_boton(
             panel,
-            "Iniciar sesion",
+            "Iniciar sesión",
             True,
             16,
             self.iniciar_sesion,
@@ -125,11 +125,11 @@ class VistaInicioSesion(tk.Frame):
         )
 
         if resultado.error == "bloqueada":
-            self.mostrar_mensaje("Esta cuenta esta bloqueada.")
+            self.mostrar_mensaje("Esta cuenta está bloqueada.")
             return
 
         if not resultado.exitoso:
-            self.mostrar_mensaje("Revisa este dato: correo o contrasena incorrectos.")
+            self.mostrar_mensaje("Revisa este dato: correo o contraseña incorrectos.")
             return
 
         if self.al_iniciar is not None:

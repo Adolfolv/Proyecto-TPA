@@ -5,14 +5,14 @@ from Validaciones.comunes import es_numero
 class ValidadorConductorReputacion(Validador):
     def validar(self, conductor):
         if conductor is None or getattr(conductor, "tipo_usuario", "") != "conductor":
-            raise ValueError("Selecciona un conductor valido.")
+            raise ValueError("Selecciona un conductor válido.")
         return True
 
 
 class ValidadorPasajeroOpinion(Validador):
     def validar(self, pasajero):
         if getattr(pasajero, "tipo_usuario", "") != "pasajero":
-            raise ValueError("Solo un pasajero puede dejar una opinion.")
+            raise ValueError("Solo un pasajero puede dejar una opinión.")
         return True
 
 
@@ -27,9 +27,9 @@ class ValidadorComentario(Validador):
     def validar(self, comentario):
         comentario = str(comentario or "").strip()
         if not comentario:
-            raise ValueError("Escribe una opinion antes de publicarla.")
+            raise ValueError("Escribe una opinión antes de publicarla.")
         if len(comentario) > 500:
-            raise ValueError("La opinion no puede superar los 500 caracteres.")
+            raise ValueError("La opinión no puede superar los 500 caracteres.")
         return True
 
 
@@ -44,7 +44,7 @@ class ValidadorOpinionUnica(Validador):
             pasajero.id_usuario,
         )
         if opinion is not None:
-            raise ValueError("Ya dejaste una opinion para este conductor.")
+            raise ValueError("Ya dejaste una opinión para este conductor.")
         return True
 
 

@@ -15,24 +15,24 @@ from Servicios.Viajes.trayectoria import (
 COORDENADAS_REALES_OSORNO = {
     "Plaza de Armas Osorno": (-40.57397, -73.13572),
     "Terminal de Buses Osorno": (-40.57293, -73.12563),
-    "Hospital Base San Jose": (-40.58794, -73.12787),
+    "Hospital Base San José": (-40.58794, -73.12787),
     "Universidad de Los Lagos": (-40.587167, -73.089164),
     "Portal Osorno": (-40.57408, -73.13048),
     "Parque Chuyaca": (-40.575000, -73.103889),
     "Mercado Municipal Osorno": (-40.57296, -73.12880),
-    "Estadio Ruben Marcos Peralta": (-40.58333, -73.13167),
+    "Estadio Rubén Marcos Peralta": (-40.58333, -73.13167),
     "Casino Marina del Sol Osorno": (-40.57539, -73.14577),
 }
 
 IMAGENES_LUGARES_OSORNO = {
     "Plaza de Armas Osorno": "plazadearmas.png",
     "Terminal de Buses Osorno": "terminal.png",
-    "Hospital Base San Jose": "hospital base.png",
+    "Hospital Base San José": "hospital base.png",
     "Universidad de Los Lagos": "ulagos.png",
     "Portal Osorno": "portalosorno.png",
     "Parque Chuyaca": "parquechuyaca.png",
     "Mercado Municipal Osorno": "mercadomunicipalosorno.png",
-    "Estadio Ruben Marcos Peralta": "estadiorubenmarcos.png",
+    "Estadio Rubén Marcos Peralta": "estadiorubenmarcos.png",
     "Casino Marina del Sol Osorno": "casino.png",
 }
 
@@ -46,22 +46,22 @@ LUGARES_OSORNO = {
 TIPOS_MATERIAL = (
     "Carga general o mixta",
     "Alimentos y perecibles",
-    "Textiles y articulos personales",
-    "Papel, carton y madera",
-    "Plasticos y caucho",
-    "Vidrio y ceramica",
+    "Textiles y artículos personales",
+    "Papel, cartón y madera",
+    "Plásticos y caucho",
+    "Vidrio y cerámica",
     "Metales y maquinaria",
-    "Electronica y electrodomesticos",
-    "Quimicos y materiales peligrosos",
-    "Materiales de construccion y minerales",
-    "Productos medicos o biologicos",
+    "Electrónica y electrodomésticos",
+    "Químicos y materiales peligrosos",
+    "Materiales de construcción y minerales",
+    "Productos médicos o biológicos",
     "Otro o no clasificado",
 )
 
 # Calles usadas solo para sembrar puntos plausibles de conductores simulados.
 CALLES_OSORNO = (
     CalleOsorno(
-        "Av. Republica - eje centro oriente",
+        "Av. República - eje centro oriente",
         (
             punto_relativo_desde_coordenada(-40.57450, -73.13630),
             punto_relativo_desde_coordenada(-40.57397, -73.13572),
@@ -73,7 +73,7 @@ CALLES_OSORNO = (
         ),
     ),
     CalleOsorno(
-        "Juan Mackenna - Manuel Rodriguez",
+        "Juan Mackenna - Manuel Rodríguez",
         (
             punto_relativo_desde_coordenada(-40.57296, -73.12880),
             punto_relativo_desde_coordenada(-40.57920, -73.13020),
@@ -90,7 +90,7 @@ CALLES_OSORNO = (
         ),
     ),
     CalleOsorno(
-        "Rene Soriano - Chuyaca - ULagos",
+        "René Soriano - Chuyaca - ULagos",
         (
             punto_relativo_desde_coordenada(-40.57500, -73.103889),
             punto_relativo_desde_coordenada(-40.57980, -73.10100),
@@ -133,7 +133,7 @@ CALLES_OSORNO = (
         ),
     ),
     CalleOsorno(
-        "Av. Errazuriz - eje sur transversal",
+        "Av. Errázuriz - eje sur transversal",
         (
             punto_relativo_desde_coordenada(-40.58333, -73.13167),
             punto_relativo_desde_coordenada(-40.58300, -73.12700),
@@ -154,28 +154,28 @@ CALLES_OSORNO = (
 )
 
 CONDUCTORES_SIMULADOS = (
-    ConductorSimulado("Martin", "Rojas", "hombre1.png", "Toyota", "Yaris", "ABCD-12", 3800),
-    ConductorSimulado("Matias", "Soto", "hombre2.png", "Hyundai", "Accent", "WXYZ-98", 4200),
-    ConductorSimulado("Diego", "Perez", "hombre3.png", "Chevrolet", "Sail", "JKLM-34", 3600),
-    ConductorSimulado("Felipe", "Munoz", "hombre4.png", "Kia", "Rio", "PQRS-56", 4500),
-    ConductorSimulado("Sebastian", "Vidal", "hombre5.png", "Suzuki", "Swift", "TUVW-78", 4100),
-    ConductorSimulado("Cristobal", "Arias", "hombre6.png", "Nissan", "Versa", "EFGH-90", 4700),
-    ConductorSimulado("Nicolas", "Munoz", "hombre7.png", "Renault", "Logan", "IJKL-11", 3900),
-    ConductorSimulado("Benjamin", "Torres", "hombre8.png", "Mazda", "2", "MNOP-22", 4300),
+    ConductorSimulado("Martín", "Rojas", "hombre1.png", "Toyota", "Yaris", "ABCD-12", 3800),
+    ConductorSimulado("Matías", "Soto", "hombre2.png", "Hyundai", "Accent", "WXYZ-98", 4200),
+    ConductorSimulado("Diego", "Pérez", "hombre3.png", "Chevrolet", "Sail", "JKLM-34", 3600),
+    ConductorSimulado("Felipe", "Muñoz", "hombre4.png", "Kia", "Rio", "PQRS-56", 4500),
+    ConductorSimulado("Sebastián", "Vidal", "hombre5.png", "Suzuki", "Swift", "TUVW-78", 4100),
+    ConductorSimulado("Cristóbal", "Arias", "hombre6.png", "Nissan", "Versa", "EFGH-90", 4700),
+    ConductorSimulado("Nicolás", "Muñoz", "hombre7.png", "Renault", "Logan", "IJKL-11", 3900),
+    ConductorSimulado("Benjamín", "Torres", "hombre8.png", "Mazda", "2", "MNOP-22", 4300),
     ConductorSimulado("Pablo", "Lagos", "hombre9.png", "Volkswagen", "Gol", "QRST-33", 4000),
-    ConductorSimulado("Agustin", "Cardenas", "hombre10.png", "Ford", "Fiesta", "UVWX-44", 4400),
+    ConductorSimulado("Agustín", "Cárdenas", "hombre10.png", "Ford", "Fiesta", "UVWX-44", 4400),
 )
 
 PASAJEROS_SIMULADOS = (
     PasajeroSimulado(
-        "Nicolas",
+        "Nicolás",
         "Vera",
         "hombre11.png",
         "Toyota",
         "Corolla",
         4200,
         "Plaza de Armas Osorno",
-        "Hospital Base San Jose",
+        "Hospital Base San José",
     ),
     PasajeroSimulado(
         "Felipe",
@@ -188,7 +188,7 @@ PASAJEROS_SIMULADOS = (
         "Universidad de Los Lagos",
     ),
     PasajeroSimulado(
-        "Benjamin",
+        "Benjamín",
         "Silva",
         "hombre13.png",
         "Chevrolet",
@@ -198,7 +198,7 @@ PASAJEROS_SIMULADOS = (
         "Parque Chuyaca",
     ),
     PasajeroSimulado(
-        "Tomas",
+        "Tomás",
         "Paredes",
         "hombre14.png",
         "Kia",
@@ -214,7 +214,7 @@ PASAJEROS_SIMULADOS = (
         "Suzuki",
         "Swift",
         4100,
-        "Estadio Ruben Marcos Peralta",
+        "Estadio Rubén Marcos Peralta",
         "Plaza de Armas Osorno",
     ),
 )

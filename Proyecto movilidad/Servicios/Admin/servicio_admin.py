@@ -39,13 +39,13 @@ class ServicioAdmin:
             ("ID", usuario.id_usuario),
             ("Tipo", tipo),
             ("Correo", usuario.correo),
-            ("Telefono", usuario.telefono),
+            ("Teléfono", usuario.telefono),
             ("Edad", usuario.edad),
             ("Estado", "Congelada" if getattr(usuario, "cuenta_congelada", False) else "Activa"),
         ]
 
         if tipo == "pasajero":
-            datos.append(("Direccion", getattr(usuario, "direccion", "")))
+            datos.append(("Dirección", getattr(usuario, "direccion", "")))
 
         if tipo == "conductor":
             auto = getattr(usuario, "auto", None)
