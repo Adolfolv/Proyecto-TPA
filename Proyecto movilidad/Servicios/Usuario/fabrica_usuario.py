@@ -1,8 +1,8 @@
-from Modelos.Usuario.usuario_datos import Auto, Conductor, Pasajero, Usuario
+from Modelos.Usuario.usuario_datos import Auto, Conductor, Pasajero
 
 
 class FabricaUsuario:
-    """Construye usuarios nuevos y reconstruye usuarios persistidos.."""
+    """Construye usuarios nuevos."""
 
     def crear_pasajero(self, datos):
         return Pasajero(id_usuario=None, **datos)
@@ -25,20 +25,3 @@ class FabricaUsuario:
             auto=Auto(**datos_auto),
             **datos_conductor,
         )
-
-    def crear_desde_dict(self, datos):
-        tipo = datos.get("tipo_usuario", "usuario")
-        datos_usuario = {
-            clave: valor
-            for clave, valor in datos.items()
-            if clave not in ("billetera", "tipo_usuario")
-        }
-
-        if tipo == "conductor":
-            datos_usuario["auto"] = Auto(**datos_usuario["auto"])
-            return Conductor(**datos_usuario)
-
-        if tipo == "pasajero":
-            return Pasajero(**datos_usuario)
-
-        return Usuario(**datos_usuario)

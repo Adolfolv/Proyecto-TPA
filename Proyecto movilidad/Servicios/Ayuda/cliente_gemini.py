@@ -14,7 +14,7 @@ class ClienteGemini:
 
     def __init__(self, api_key=None, modelo=None, timeout=25, reintentos=2):
         self.api_key = self._resolver_api_key(api_key)
-        self.modelo = modelo or os.getenv("GEMINI_MODELO", "gemini-2.5-flash-lite")
+        self.modelo = modelo or os.getenv("GEMINI_MODELO", "gemini-flash-lite-latest")
         self.timeout = timeout
         self.reintentos = reintentos
 
